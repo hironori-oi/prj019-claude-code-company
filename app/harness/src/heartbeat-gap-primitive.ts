@@ -1,5 +1,9 @@
 /**
  * heartbeat-gap-primitive — Round 14 Dev-B / Task A (DEC-019-057 連動).
+ * Round 16 Dev-S 拡張: retry hardening (jitter + circuit-breaker hook + load test 設計).
+ *   - 既存 API (HeartbeatGapTracker / trackHeartbeatStateless) は無改変.
+ *   - 新規 export: computeJitteredBackoffMs / RetryHardeningPolicy / DEFAULT_RETRY_HARDENING.
+ *   - 50,000 件 load test の skeleton は __tests__/heartbeat-load-50k.spec.ts.todo 参照.
  *
  * 目的:
  *   - tos-monitor.ts ContinuousRunDetector.recordHeartbeat() の **stateful** な
@@ -283,4 +287,130 @@ export function trackHeartbeatStateless(input: StatelessHeartbeatInput): Statele
       }
     }
   }
+}
+
+// ============================================================================
+// Round 16 Dev-S 拡張 — retry hardening primitives
+// ============================================================================
+//
+// 設計方針:
+//   - 既存 HeartbeatGapTracker / trackHeartbeatStateless は無改変 (607 tests PASS 維持).
+//   - jitter / circuit-breaker は **純関数 + 型** として追加し、caller (notify-bridge / tos-monitor /
+//     usage-monitor) が選択的に採用する。本 primitive 自体は副作用 0、API $0。
+//   - 50,000 件 load test 想定の数学的境界:
+//       * exponential backoff base=1000ms, attempt 5: 1+2+4+8+16 = 31s 累計
+//       * 5,000 並列 retry 同時 fire → thundering herd 回避に jitter 必須
+//       * full jitter: wait = rand(0, expBackoff)
+//       * decorrelated jitter: wait = min(cap, rand(base, prev*3))
+//
+// circuit-breaker 連携は src/circuit-breaker.ts の CircuitBreaker class を使う。
+// 本 primitive では型 + 純関数のみ提供し、実 fire は caller 責務とする。
+
+/** jitter 戦略 (AWS Architecture Blog "Exponential Backoff and Jitter" 準拠). */
+export type JitterStrategy = 'none' | 'full' | 'decorrelated' | 'equal'
+
+/** retry hardening policy (caller が CircuitBreaker / NotifyBridge に注入). */
+export interface RetryHardeningPolicy {
+  /** 最大 retry 回数 (default 5). */
+  maxRetries: number
+  /** base wait ms (default 1_000). */
+  baseDelayMs: number
+  /** wait の上限 ms (default 16_000). cap で thundering herd 上振れを抑制. */
+  capMs: number
+  /** jitter 戦略 (default 'full', 50,000 件 load 想定). */
+  jitter: JitterStrategy
+  /** 連続失敗で circuit を open にする閾値 (default 10). */
+  circuitFailureThreshold: number
+  /** circuit cooldown ms (default 30_000). */
+  circuitCooldownMs: number
+}
+
+/** retry hardening の既定値 (50,000 件 load 想定で設計). */
+export const DEFAULT_RETRY_HARDENING: RetryHardeningPolicy = {
+  maxRetries: 5,
+  baseDelayMs: 1_000,
+  capMs: 16_000,
+  jitter: 'full',
+  circuitFailureThreshold: 10,
+  circuitCooldownMs: 30_000,
+}
+
+/**
+ * jitter 付き exponential backoff 計算 (純関数).
+ *
+ * 入力:
+ *   - attempt   : 0-based retry 回数 (0=初回 retry, 1=2 回目 retry, ...)
+ *   - policy    : RetryHardeningPolicy
+ *   - prevWaitMs: decorrelated jitter 計算用 (default = baseDelayMs)
+ *   - rand      : DI 用 random 関数 (default Math.random) — test で deterministic 化可能
+ *
+ * 戻り値: 次の retry までの待機 ms (>= 0)。
+ *
+ * 戦略 (AWS / Polly / google-http-client 準拠):
+ *   - none         : exp = base * 2^attempt → cap で打切
+ *   - full         : rand(0, exp)            ← thundering herd 完全回避 (default)
+ *   - equal        : exp/2 + rand(0, exp/2)  ← 半分は固定で待つ
+ *   - decorrelated : min(cap, rand(base, prev*3))
+ */
+export function computeJitteredBackoffMs(
+  attempt: number,
+  policy: RetryHardeningPolicy = DEFAULT_RETRY_HARDENING,
+  prevWaitMs: number = policy.baseDelayMs,
+  rand: () => number = Math.random,
+): number {
+  if (attempt < 0) return 0
+  if (policy.baseDelayMs <= 0) return 0
+  const exp = Math.min(policy.capMs, policy.baseDelayMs * Math.pow(2, attempt))
+  switch (policy.jitter) {
+    case 'none':
+      return exp
+    case 'full':
+      return Math.floor(rand() * exp)
+    case 'equal':
+      return Math.floor(exp / 2 + rand() * (exp / 2))
+    case 'decorrelated': {
+      const lo = policy.baseDelayMs
+      const hi = Math.min(policy.capMs, prevWaitMs * 3)
+      if (hi <= lo) return lo
+      return Math.floor(lo + rand() * (hi - lo))
+    }
+  }
+}
+
+/**
+ * retry hardening の構造化結果 (caller が CircuitBreaker と組み合わせて使う).
+ *
+ * 用法 (caller 側 pseudocode):
+ *   for (let attempt = 0; attempt <= policy.maxRetries; attempt++) {
+ *     const decision = decideRetryAction(attempt, policy, lastWaitMs, breakerOpen)
+ *     if (decision.kind === 'fail-fast') throw new Error('circuit-open')
+ *     if (decision.kind === 'sleep') await sleep(decision.waitMs)
+ *     try { return await fn() } catch { lastWaitMs = decision.waitMs }
+ *   }
+ */
+export type RetryDecision =
+  | { kind: 'fire'; attempt: number; waitMs: 0 }
+  | { kind: 'sleep'; attempt: number; waitMs: number }
+  | { kind: 'fail-fast'; attempt: number; reason: 'circuit-open' | 'max-retries' }
+
+/**
+ * 次の retry action を決定する純関数 (副作用 0).
+ *
+ *   - attempt=0          → fire (即時実行)
+ *   - circuit open       → fail-fast (jitter 待機しても無駄)
+ *   - attempt > maxRetries → fail-fast ('max-retries')
+ *   - それ以外           → sleep (jittered backoff)
+ */
+export function decideRetryAction(
+  attempt: number,
+  policy: RetryHardeningPolicy = DEFAULT_RETRY_HARDENING,
+  prevWaitMs: number = policy.baseDelayMs,
+  circuitOpen: boolean = false,
+  rand: () => number = Math.random,
+): RetryDecision {
+  if (circuitOpen) return { kind: 'fail-fast', attempt, reason: 'circuit-open' }
+  if (attempt === 0) return { kind: 'fire', attempt, waitMs: 0 }
+  if (attempt > policy.maxRetries) return { kind: 'fail-fast', attempt, reason: 'max-retries' }
+  const waitMs = computeJitteredBackoffMs(attempt - 1, policy, prevWaitMs, rand)
+  return { kind: 'sleep', attempt, waitMs }
 }

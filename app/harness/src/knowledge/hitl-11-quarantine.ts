@@ -32,6 +32,7 @@ import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
 import { z } from 'zod'
 import type { KnowledgeDraft } from './ke-02-trigger.js'
+import { KnowledgeKindSchema } from './ke-01-schema.js'
 import { ensureDirSelf, fileExists, loadJson, saveJson } from '../fs-store.js'
 
 // ============================================================================
@@ -47,7 +48,14 @@ export const ManifestEntryStateSchema = z.enum([
 ])
 export type ManifestEntryState = z.infer<typeof ManifestEntryStateSchema>
 
-export const ManifestEntryKindSchema = z.enum(['pattern', 'decision', 'pitfall'])
+/**
+ * ManifestEntryKindSchema — KE-01 canonical KnowledgeKindSchema を再 export
+ * (Round 16 Dev-Q gate-11 zod schema merge).
+ *
+ * 公開 API 互換性維持のため symbol/type 名は残し、SoT のみ ke-01-schema へ統合.
+ * 既存 import 経路 / runtime 挙動 / safeParse / parse のすべて 100% 同一.
+ */
+export const ManifestEntryKindSchema = KnowledgeKindSchema
 export type ManifestEntryKind = z.infer<typeof ManifestEntryKindSchema>
 
 export const ManifestEntrySchema = z.object({

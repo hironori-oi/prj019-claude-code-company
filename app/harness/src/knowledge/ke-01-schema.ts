@@ -40,6 +40,17 @@ export const QualityScore = z.union([
 ])
 export type QualityScoreType = z.infer<typeof QualityScore>
 
+/**
+ * KnowledgeKindSchema — 全 KE-* / HITL-11 module 共通の kind enum SoT
+ * (Round 16 Dev-Q gate-11 zod schema merge).
+ *
+ * 元来 ke-01-schema は discriminatedUnion 内 z.literal('pattern' | 'decision' | 'pitfall')
+ * を 3 箇所重複保持し、hitl-11-quarantine.ts も独自に z.enum(...) を保持していた.
+ * 本 schema を canonical SoT として再公開し、quarantine 側はこれを再 export する.
+ */
+export const KnowledgeKindSchema = z.enum(['pattern', 'decision', 'pitfall'])
+export type KnowledgeKind = z.infer<typeof KnowledgeKindSchema>
+
 /** 共通 frontmatter (全 3 サブディレクトリ共通). */
 export const CommonFrontmatter = z.object({
   id: z.string().regex(knowledgeIdRegex, 'id must match (PAT|DEC|PIT)-NNN-slug'),

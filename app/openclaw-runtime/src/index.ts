@@ -96,3 +96,8 @@ export {
 // `import { spawnClaudeCode } from '@clawbridge/openclaw-runtime/cli'` でも取得可能
 // (個別 module の直接 import path も Round 11 から完全互換維持)。
 export * as cli from './cli/index.js'
+
+// Round 16 第 2 波 Dev-R 着地: 17 日 path 7 control skeleton
+// (P-UI-02 / P-UI-04 / P-UI-05 / HITL-10 / C-OC-03 / C-OC-04 / P-UI-09)
+// 完成版実装は W1-W3 (5/9-5/25)、現状 schema + skeleton + test stub のみ。
+export * as controls17day from './controls/index.js'

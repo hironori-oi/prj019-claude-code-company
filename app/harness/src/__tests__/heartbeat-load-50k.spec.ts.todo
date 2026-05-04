@@ -1,0 +1,121 @@
+/**
+ * heartbeat-load-50k.spec — Round 16 Dev-S 起案 / 実行は次 Round.
+ *
+ * 目的:
+ *   - HeartbeatGapTracker と computeJitteredBackoffMs / decideRetryAction の
+ *     50,000 件規模 load 耐性を検証 (Round 15 で 5,000 件副作用 0 達成済).
+ *   - thundering herd 回避 (jitter='full') の効果を統計的に確認.
+ *   - circuit-breaker fail-fast が想定通り発火することを確認.
+ *
+ * 実行条件 (本 file は .ts.todo のため vitest pickup 対象外 / 次 Round で .ts に rename):
+ *   - 同期 50,000 tick 実行時間 < 1s 目標 (Round 15 5,000 件: 約 80ms 観測).
+ *   - メモリ <= 50MB (tracker 1 個 + ledger なし).
+ *   - 副作用 0 (timer / fetch / fs 触らず純 in-memory).
+ *
+ * 数学的境界 (50,000 件想定):
+ *   - 5,000 並列 fire * 10 retry 平均 = 50,000 retry attempt
+ *   - jitter='full' 期待 wait = E[rand(0, exp)] = exp/2
+ *   - cap=16s で attempt>=5 の wait は 0..16s 一様分布 → 平均 8s
+ *   - Coefficient of Variation (CV) = sqrt(Var/Mean^2) で thundering 検出
+ *     * jitter='none'         : CV ≈ 0   (全員同時 → herd 再現)
+ *     * jitter='full'         : CV ≈ 0.577 (一様分布 stddev/mean)
+ *     * jitter='decorrelated' : CV ≈ 0.5+ (相関減衰)
+ *
+ * test ケース (skeleton, 全部 it.skip / 次 Round で実装):
+ *
+ * 1. perf: 50,000 tick (HeartbeatGapTracker 同期) < 1s
+ *    - tracker.markBoot() → 50_000 回 recordHeartbeat() → wall < 1000ms
+ *    - accumulatedSleep 累計が deterministic (seed 固定 now())
+ *
+ * 2. jitter dispersion: 50,000 attempt の wait 分布が full で stddev/mean ≈ 0.577
+ *    - seedrandom (Math.random をモック) で再現性確保
+ *    - 各 attempt の computeJitteredBackoffMs() を bin 集計
+ *    - chi-square test または Kolmogorov-Smirnov で uniform 検定
+ *
+ * 3. circuit-breaker fail-fast: 50,000 fire のうち breaker open 中は decideRetryAction → fail-fast
+ *    - CircuitBreaker (failureThreshold=10) を fire(false) で 10 回 open 化
+ *    - 以降 50,000-10 = 49,990 回は fail-fast で wait 0ms (cooldown 中)
+ *    - 期待 wall < 100ms (jitter sleep スキップ)
+ *
+ * 4. mixed load: 5,000 並列 tracker × 10 attempt/tracker = 50,000 retry
+ *    - Promise.all で 5,000 並列 (Vitest の concurrency)
+ *    - 各 tracker の accumulatedSleep が independent (cross-talk 0)
+ *    - 全体 wall < 5s (cap=16s でも attempt 1-2 で成功想定)
+ *
+ * 5. memory: 50,000 tick 後の heap delta <= 50MB
+ *    - process.memoryUsage().heapUsed の前後 diff
+ *    - GC を before に強制実行 (global.gc 利用)
+ *    - tracker.state() がメモリリーク 0 (lastHeartbeat / accumulatedSleep のみ)
+ *
+ * 6. determinism: seedRandom 固定で 50,000 attempt の wait 列が 8 桁一致 (再現性)
+ *    - 同じ seed で 2 回実行 → wait[i] が exact 一致
+ *    - Round 15 5,000 件 deterministic を 50,000 件に拡張
+ *
+ * 7. backoff cap: attempt=20 でも wait <= capMs (16_000)
+ *    - exp = base * 2^20 = ~1G ms だが cap で 16s に丸め
+ *    - 50,000 attempt 中 attempt >= 5 の wait 全件 <= cap
+ *
+ * 8. decorrelated jitter: prevWaitMs フィードバックループが unbounded grow しない
+ *    - 50,000 連続 retry で wait 列の最大値 <= cap
+ *    - prevWaitMs = cap で stable 状態に収束
+ *
+ * 9. fail-fast 'max-retries': attempt=maxRetries+1 で必ず fail-fast
+ *    - 50,000 並列 tracker のうち maxRetries 超過分が exact count で fail-fast
+ *
+ * 10. integration: tos-monitor ContinuousRunDetector との 8 桁一致 (50,000 tick)
+ *     - ref = ContinuousRunDetector + tracker = HeartbeatGapTracker
+ *     - 50,000 tick 後 accumulatedSleep が 8 桁一致 (Round 14 19 tests の 50,000 件版)
+ *
+ * DoD (次 Round 実行時):
+ *   - 全 10 ケース PASS
+ *   - harness 既存 607 tests + 本 +10 tests = 617 tests PASS
+ *   - 実行時間 vitest 全体で +5s 以下
+ *   - 副作用 0 (timer / fs / fetch 触らず)
+ *   - API $0 (純 in-memory)
+ *
+ * 実装サンプル (skeleton):
+ *
+ * import { describe, it, expect } from 'vitest'
+ * import {
+ *   HeartbeatGapTracker,
+ *   computeJitteredBackoffMs,
+ *   decideRetryAction,
+ *   DEFAULT_RETRY_HARDENING,
+ * } from '../heartbeat-gap-primitive.js'
+ * import { CircuitBreaker } from '../circuit-breaker.js'
+ *
+ * describe.skip('heartbeat-load-50k — Round 16 Dev-S 起案 / 実行は次 Round', () => {
+ *   it('perf: 50,000 tick < 1s', () => {
+ *     let now = 0
+ *     const t = new HeartbeatGapTracker({ now: () => now })
+ *     t.markBoot()
+ *     const start = performance.now()
+ *     for (let i = 0; i < 50_000; i++) {
+ *       now += 60_000
+ *       t.recordHeartbeat()
+ *     }
+ *     const elapsed = performance.now() - start
+ *     expect(elapsed).toBeLessThan(1000)
+ *   })
+ *
+ *   it('jitter dispersion: 50_000 attempt の wait 分布 stddev/mean ≈ 0.577 (full)', () => {
+ *     const waits: number[] = []
+ *     for (let i = 0; i < 50_000; i++) {
+ *       waits.push(computeJitteredBackoffMs(3, DEFAULT_RETRY_HARDENING))
+ *     }
+ *     const mean = waits.reduce((a, b) => a + b, 0) / waits.length
+ *     const variance = waits.reduce((s, x) => s + (x - mean) ** 2, 0) / waits.length
+ *     const cv = Math.sqrt(variance) / mean
+ *     // full jitter: uniform(0, exp) → CV = 1/sqrt(3) ≈ 0.577
+ *     expect(cv).toBeCloseTo(0.577, 1)
+ *   })
+ *
+ *   // ... 残り 8 ケース
+ * })
+ *
+ * 次 Round 引継:
+ *   - .todo を .ts に rename → vitest pickup
+ *   - global.gc 利用のため node --expose-gc 必要 (vitest config 調整)
+ *   - seedrandom 依存追加検討 (workspace 既存 fast-check で代替可能性も評価)
+ */
+export {}

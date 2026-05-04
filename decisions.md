@@ -36,6 +36,7 @@
 | DEC-019-060 | 2026-05-04 | CEO（オーナー formal「採決日は 5/5 で行きましょう。進められるところまで今から進めていきましょう。徹底的に進めて」directive 受領、status: 暫定→**confirmed** 切替、秘書公式起票） | **議決-26 採決日を 2026-05-05（朝 06:00 配布 / 09:00 採決）に確定し、drill #2 を 5/7 朝 06:00-08:00 に分離実施する 2 件統合決裁** ／ ① **5/5 採決確定**: 5/8 元計画から **3 日前倒し**、Owner 拘束 45 分（朝 06:00 配布 → 09:00 採決判定）、abort risk 5%（drill #2 切離で軸-2 conditional 解消）／ ② **drill #2 5/7 朝分離**（CEO 標準推奨採用）: 5/5 採決は drill #2 結果に conditional でない構造、Review-E R13 担当、9 シナリオ × 12 観測ポイント × 12 PASS criteria 実機検証／ ③ **配布資料 5/5-FINAL bundle 16 件 ready**: `decision-26-package/5-5-FINAL/` 配下に既存 13 件 + 5-5-case-patch 5 件統合 + DISTRIBUTION-PROCEDURE.md + MINUTES-TEMPLATE.md = 16 件、5/5 朝 06:00 配布 ready（再 review 不要）／ ④ **5/8 元計画 + 5-6-case / 5-7-case patch 保持**: fallback 連鎖用、5/5 採決 abort 時の繰下げ path 確保／ ⑤ **議決-26 採択 5 軸 status**: 軸-1 mock-claw e2e Pass + 50+ tests / 軸-2 BAN drill #1 Full Pass 5/5 達成済（drill #2 は 5/7 朝分離） / 軸-3 必須 50 = **70→80%**（Round 13 Dev-E KE 系 5/5 件完遂 +10pt） / 軸-4 API ≤$30 累計 / 軸-5 Owner 残動作 2 件のみ／ ⑥ **確度 trajectory**: 5/5 採択 case 70→**88%**（Owner directive + drill #2 分離 + 16 件 ready の 3 効果） / 5/12 production readiness 98% / 5/15 MS-2 trial 88% / 5/22 内部運用着手公式 85% / 5/30 必須 50 = 95%+ 94% / 6/3 Phase 1 公式完了 buffer 終端 95% / 6/27 朝公開 92% | **代替案却下**: 5/8 元計画維持 = Owner「進められるところまで」directive 反映不能、3 日無駄 ／ 5/6 朝 case = PM-F 推奨だが Owner directive で 5/5 確定済、選択不要 ／ 5/7 朝 case = Sec-H 確度 87% 最有力だったが Owner override で 5/5 採択 ／ drill #2 5/5 同日実施 = Review-E が BLOCKED 確定（abort risk 38%、軸-2 conditional 化リスク）、5/7 分離で risk 5% に低減。**5/5 朝採決 + drill #2 5/7 分離採用根拠 11 件**: ① W3 中核 22 日前倒し既達 + ② 5 部署 7 経路 cross-validation 収斂維持 + ③ 議決-26 採択 5 軸全 PASS roadmap 確定 + ④ Owner 残動作 2 件のみ + ⑤ API 追加コスト累計 $0 + ⑥ Owner formal「最速」directive 継続中 + ⑦ Owner formal 議決前倒し新 directive 受領 + ⑧ Round 12 完遂着地で軸-1/2/3 が事実上 PASS 化 + ⑨ workspace test 614→791→825+ pass の堅牢性確証 + ⑩ Owner 採決日 5/5 確定 directive（5/4 深夜終盤 formal） + ⑪ CEO 標準推奨 drill #2 5/7 朝分離 = abort risk 5%。**Impact**: Round 13 R-13 完遂着地後 v15.15 footer で status confirmed 切替、5/5-FINAL bundle 16 件 5/5 朝 06:00 JST 配布、議決構造 24→25 件、進捗 80→81%（Round 13 完遂進捗予約）。**根拠**: `reports/ceo-round13-integrated-report-v14.md`、`reports/decision-26-package/5-5-FINAL/INDEX.md`、`reports/pm-round13-decision-26-pre-emption-evaluation.md`（PM-F）、`reports/review-round13-drill-2-pre-emption-evaluation.md`（Review-E）、Owner 5/4 深夜終盤 directive 原文 |
 | DEC-019-061 | 2026-05-04 | CEO（オーナー directive 「徹底的に進めて」継続適用、Round 14 11 並列 dispatch authorization、秘書公式起票） | **Round 14 11 並列 dispatch + 5/5 採決準備完了 + 5/5-FINAL bundle 16 件配布 ready 統合決裁** ／ ① **Round 14 11 並列 dispatch authorization**: Dev-K（YAML fail-fast + multilingual filter integration） / Dev-L（cgroup syscall + drill #2 real wire-up） / Dev-M（HITL gate-12 implementation + cli-version-check actual exec） / Dev-N（FileHitl11Gate I/O + KE orchestrator wiring + P-UI-10） / Dev-O（heartbeat detector retry 緊急 G-02/G-09/G-10 abort risk 38%→5%） / Review-F（drill #2 5/7 runbook final + 5/5 pre-decision checklist + 5/15 mid-check runsheet） / PM-G（採決判定運営 + post-decision transition + Phase1 sign-off 5/22 detail + MS-2 trial day support + R15 dispatch） / Marketing-H（Vercel hook + cron + portfolio v3.1 + en v1.1） / Knowledge-J（INDEX-v5 = 47→55+ entries + R13 由来抽出 + gate-11 1st 適用 + gate-12 spec） / Web-Ops-B（shadcn analytics tag manager） / Sec-I（本起票） + CEO 統合 v15／ ② **採択内容 5 件**: (a) 5/5 議決-26 採決確定（朝 06:00 配布 + 09:00 採決、Owner 拘束 45 分、abort risk 5%）/ (b) drill #2 5/7 朝分離標準採用（5/5 採決前置と切離）/ (c) 配布資料 5/5-FINAL bundle 16 件 ready / (d) Round 14 11 並列 dispatch authorization / (e) 5/8 元計画 patch + 5-6 / 5-7 case patch 保持（fallback 連鎖用）／ ③ **Round 13 完遂着地累計**: code/refactor 約 4,200 行 / +120 tests（workspace 791 → 911 pass）/ レポート 約 7,500 行 / knowledge 47 entries（INDEX-v4） / portfolio 18×18 = 324/324 cell = 100% confirmed / 7 部署 12 経路 cross-validation 収斂 / HITL gate-11 spec v1.0 + grayzone dictionary v1.0 / Marketing-G 7 extraction scripts + portfolio v3 + 英語版 4,361 words／ ④ **Lv 4+「極めて強く推奨」維持根拠**: DEC-019-060 11 件根拠継承 + Round 13 12 経路 cross-validation 拡張 + 必須 50 = 70→80% pre-emption / **Owner 残動作**: 2 件不変（5/5 採決 + 6/26 公開確認）／ **API 追加コスト**: $0（Sec-I は Read + Edit + Write のみ、Round 14 全 11 並列も $0）／ **進捗**: 81 → 82%（Round 14 11 並列起動進捗予約 +1pt） | **代替案却下**: A 案（Round 14 dispatch を 5/5 採決後に持越し）= 5/5-FINAL bundle 配布準備未完成、Owner 当日判断材料不足、abort risk 増大 ／ B 案（Round 14 を 9 並列に縮小）= Web-Ops-B + Knowledge-J 等 5/5 採決後動線が不足、Phase 1 W1 着手前提が崩れる ／ C 案（5/5 採決保留 + drill #2 同日実施）= Review-E BLOCKED 38% リスク再発、Owner directive 反映不能。**11 並列 + 5/5 採決準備完了採用根拠**: ① DEC-019-060 採用根拠 11 件継承（Owner directive + drill #2 分離 + 16 件 ready）、② 5/5-FINAL bundle 16 件 5/5 朝 06:00 JST 配布 ready で再 review 不要、③ Round 14 11 並列で post-decision transition + Phase 1 sign-off 5/22 push + MS-2 5/15 trial day support の 3 大成果物前倒し可能、④ Sec-I 起票で議決構造 26 件確定 + Round 14 dashboard 反映 + progress v15 同時化、⑤ Marketing-H Vercel hook + cron で公開後 30 日運用 prep + portfolio v3.1 + 英語版 v1.1 で外部公開耐性確立、⑥ Knowledge-J INDEX-v5 = 47→55+ entries で次回提案精度 +10-15% 見込（複利効果）、⑦ Web-Ops-B shadcn analytics tag manager で 6/27 公開後の流入分析基盤確立、⑧ Owner formal「徹底的に進めて」directive を 11 並列で最速応答。**Impact**: 5/5 朝 06:00 JST Owner 配布実行可能、議決構造 25→26 件、進捗 81→82%、Round 14 完遂着地時 v15.16 footer で formal 化、5/5 採決後 v15.17 footer + Round 15 dispatch authorization 起票予定。**根拠**: `reports/decision-26-package/5-5-FINAL/INDEX.md` + 16 件 bundle、`reports/ceo-round13-integrated-report-v14.md`、`reports/dev-round14-B-heartbeat-detector-retry.md`（Dev-O）、`reports/pm-round14-5-5-post-decision-transition.md` + 3 件（PM-G）、`reports/review-round14-drill-2-5-7-runbook-final.md` + 2 件（Review-F）、`reports/web-ops-round14-shadcn-analytics-tag-manager.md`（Web-Ops-B）、Owner 5/4 深夜終盤 directive 原文「採決日は 5/5 で行きましょう / 進められるところまで進めて / 徹底的に進めて」、DEC-019-060（連動上書き対象） |
 | DEC-019-062 | 2026-05-05 | CEO（オーナー formal 議決指示「今から議決を進めていきましょう / 止まることなく開発を早く進めていきたい」即時採決受領、議決-28 として議決-26 + 27 と併合採決、CEO 公式起票） | **議決-26 + 27 + 28 全 Full Pass 即時採決完遂 + Round 15 11 並列 dispatch authorization + 加速 4 軸 case-A 採択 + 必須 50 = 5/22 95%+ + 公開 6/20 朝 09:00 JST + Phase 2 6/3 着手 + Round 14 partial 6 件 R15 移行確定** | confirmed | DEC-019-058 / 059 / 060 / 061 連動継承 + 議決-26（5 軸全 PASS）+ 議決-27（DEC-019-058〜061 acknowledge）+ 議決-28（加速 4 軸 case-A 採択）併合採決完遂、軸-A 必須 50 = 5/30 → 5/22 push（CEO 推奨 case-A 確度 60-70%、fallback 5/30 92-94% 保持）、軸-B 公開 6/27 → 6/20（土）朝 09:00 JST 前倒し（CEO 推奨 case-A 確度 70-80%、fallback 6/27 92% 保持）、軸-C Phase 2 着手 6/24 → 6/3（水）前倒し（CEO 推奨 case-A 確度 50-60%、fallback 6/10 / 6/24 保持）、軸-D Round 15 11 並列 dispatch authorization（Sec-J + 高優先 4 並列 Dev-P/Review-G/PM-H/Marketing-I + 中優先 4 並列 Dev-K/L/M/N + 低優先 3 並列 Marketing-H/Knowledge-J/Web-Ops、stagger 30-45 min）、Round 14 partial 6 件全件 R15 移行確定、Phase 1 W1 着手 5/10 確定 3 日前倒し、Phase 1 sign-off 5/22 push case 評価 R15 起動、議決構造 26 → **27 件**（議決-28 採択追加）、進捗 82 → **84%**（採決完遂 +2pt）、5/5-FINAL bundle 16 件 + v16-prep + DEC-019-062 prep = 18 件 配布完遂、確度 trajectory v16 起票 = 5/22 必須 50 = 95%+ 65% / 5/22 sign-off push 62% / 6/3 Phase 2 着手 55% / 6/20 朝公開 75%、API 追加 $0 維持、CEO 統合報告 v15 + 加速プラン v16-prep + DEC-019-062 prep の 3 文書既配布、議事録 5/5-FINAL finalize 完遂、drill #2 5/7 朝分離実機検証 confirm 維持、MS-2 trial 5/15 Owner 拘束 0 分（Sec-I 運営代行）確定維持 | 採用根拠 = ① W3 中核 22 日前倒し既達 ② 7 部署 12 経路 cross-validation 収斂維持 ③ 議決-26 採択 5 軸全 PASS roadmap 確定 ④ Owner 残動作 2 件のみ ⑤ API 追加コスト累計 $0 ⑥ Owner formal「最速」directive 継続中 ⑦ Owner formal 議決前倒し新 directive 受領 ⑧ Round 12-13 完遂着地で軸-1/2/3 が事実上 PASS 化 ⑨ workspace test 614→791→911 pass の堅牢性確証 ⑩ Owner 採決日 5/5 確定 directive ⑪ 必須 50 = 70→80% pre-emption（Round 13 Dev-J KE 系 5/5 件完遂）⑫ Owner formal Q1/Q2/Q4/Q5 加速 directive（5/4 深夜終盤受領）⑬ Owner Q3 維持 directive（MS-2 trial 5/15 Owner 拘束 0 分確定 = 加速プランの帯域確保）⑭ Owner formal 即時議決 directive「今から議決を進めていきましょう / 止まることなく開発を早く進めていきたい」（5/5 受領、計 14 件）、連動: DEC-019-058 / 059 / 060 / 061、後続: DEC-019-063（5/22 push sign-off case 採決時）/ DEC-019-064（5/30 fallback case 採決時、議決-30）/ DEC-019-065（6/13 case-B 公開 Owner 追加 directive 受領時、議決-31）、Owner directive 文「今から議決を進めていきましょう / こちらは準備できています / 止まることなく開発を早く進めていきたいです」 |
+| DEC-019-065 | 2026-05-05 | PM-I 起案 / CEO レビュー期限 5/19（status: draft） | **Round 16 9 並列構成（第 1 波 4 + 第 2 波 5）採用 + T+50 着地 stagger 圧縮 SOP 適用 + 加速 5 軸 case-B（軸-E に Knowledge INDEX v5 + Runbook 物理化追加）想定** ／ 詳細は本ファイル下部「## DEC-019-065 (起案 / status: draft …)」セクション参照。**代替案**: ① 7 並列 conservative ② 11 並列（Round 15 同等）③ 9 並列（採用） ／ **採用根拠**: Round 15 完遂実績 + API $0 維持 + Owner formal「最速」directive + stagger SOP 連続適用機会 + 軸-E 追加余力 ／ **連携**: DEC-019-066（Sec-K 担当 Round 16 第 1 波）とペア起票、5/19 CEO レビューで confirmed 切替判断 |
 | DEC-019-031 | 2026-05-03 | CEO（オーナー「全 OK」明示承認受領、即決、秘書公式起票） | **5/4-5/7 期間「先回り準備」4 部署並列発注 (CB-D/R/PM/M-Prep-2026-05-04) を事後追認、7 ファイル / 5,038 行 / 計 39 [OWNER-DECISION-REQUIRED] を 5/8 検収会議の追加配布資料として登録する** ／ ① **Dev 納品**: `dev-w0-week2-mid-detailed-design.md` (1,079 行 / [ODR] 7 件 = LLM モデル選定 Haiku 3.5 推奨 / raw_input 8,000 字 / `[critical]` prefix dropdown / PAT 取得 5/22 / 常駐 vs Vercel Pro / live test OAuth 専用化 / drill #1 当日 live CI 除外) ／ ② **Research 納品**: `research-ng3-revalidation-and-codex-bonus-impact.md` (544 行) + `research-prj020-poc-llm-prompt.md` (980 行)、計 [ODR] 9 件 (NG-3 Stage 1/2 採用 / **$1,000→$1,200 上方修正候補** / 6/1 Pro $200 維持 / 6/3 三件同時判断 / PRJ-020 重みチューニング / GPT-5.4 fallback / Few-shot 件数 / prompt injection 試行 / 重みチューニング承認方式) ／ ③ **PM 納品**: `pm-v5-template-and-meeting-runbook.md` (818 行) + `pm-cb-ceo-w3-01-decision-template.md` (423 行)、計 [ODR] 15 件 (TR-1: 4 / TR-2: 4 / TR-3: 4 / CW3-1〜3) ／ ④ **Marketing 納品**: `marketing-launch-runbook-2026-06-20.md` (660 行) + `marketing-techblog-toc-and-lp-wireframe.md` (534 行)、計 [ODR] 8 件 (取り下げ Runbook / 公開後更新権限 / Asagi シナリオ GO/NoGo / メディア配信 / OG image / 内部 prompt 漏洩防止 / シリーズ展開 / Q-Mkt-07 例外運用) ／ ⑤ **5/8 議題 v5 改訂**: §4 BAN drill 25→20 分圧縮、§5 PM 追加議題 30→40 分拡張 (§5.1 PM v4 公式承認 / §5.2 DEC-019-021〜024 再確認 / §5.3 CW3-01 テンプレ / §5.4 Marketing Runbook プレビュー)、合計 120 分維持 ／ ⑥ **5/30 議題追加**: NG-3 暫定値 $1,000/月 → $1,200/月 上方修正候補を W2 終了時オーナー再確認議題に追加 (Research レポート §3 推奨に基づく) ／ ⑦ **6/2 前夜 Research 準備必須化**: 6/3 三件同時判断 (CB-CEO-W3-01 Vercel + NG-3 Stage 移行 + Codex 6/1 移行確認) のための 6/2 Research 集約準備 (秘書 W2 タスク台帳 W3-R-Pre-01 として追加) ／ **本決裁により 5/8 検収会議は議事録扱い、追加 DEC 起票なしで進行可能** | **代替案却下**: A 案（4 部署並列発注を実施せず 5/8 議事内で議論）= 議事 120 分内で 39 [ODR] 議論不能、Phase 1 W1 5/19 着手判定が情報不足で延期リスク／B 案（4 部署成果を Phase 2 計画に持越し）= TR-1 / TR-2 / TR-3 発動シナリオが未準備、5/30 NG-3 再確認時に PM v5 起案準備不足でオーナー判断遅延／C 案（議題 v5 改訂せず Q-Mkt 圧縮版 §5(e) 5 分のみ追加）= Marketing / PM 成果が議事内で報告されず、Phase 1 W1 着手の確度向上に寄与せず ／ **事後追認 + 議題 v5 改訂 + 5/30 議題追加採用根拠**: ① 7 ファイル合計 5,038 行が 5/8 検収会議の判断材料として直結、Phase 1 W1 着手の確度を「強い条件付き Go」から「条件付き Go (確実度向上)」に向上、② [ODR] 39 件中 36 件は議事内ではなく事前資料配布で読込済の前提、議事内で残 3 件のみ判断要、③ Research が一次情報で「$1,000/月は新 pricing で抵触リスク」と検出した重要発見を 5/30 議題に正式組込、④ 6/2 Research 準備で 6/3 三件同時判断の負荷を 24h 前に分散、⑤ DEC-019-025 Agent tool 権限 SOP 順守で 4 部署とも general-purpose 系発注、書込事故ゼロ。**Impact**: 5/8 議題 v5 を秘書部門が即時改訂 (DEC-019-031 即決後 5/3 中)、5/30 W2 終了時タスク台帳更新、6/2 Research 集約準備タスク追加、active-projects.md PRJ-019 行を本日付で更新。**根拠**: `reports/dev-w0-week2-mid-detailed-design.md`、`reports/research-ng3-revalidation-and-codex-bonus-impact.md` §3、`reports/research-prj020-poc-llm-prompt.md`、`reports/pm-v5-template-and-meeting-runbook.md`、`reports/pm-cb-ceo-w3-01-decision-template.md`、`reports/marketing-launch-runbook-2026-06-20.md`、`reports/marketing-techblog-toc-and-lp-wireframe.md`、本セッション CEO 報告 + Owner「全 OK」承認 |
 
 ---
@@ -144,6 +145,138 @@
 ---
 
 **v15.15 footer (Round 13 完遂着地 + DEC-019-060 status 暫定→confirmed 切替 + Owner formal 採決日 5/5 確定 directive 受領 + drill #2 5/7 朝分離標準採用 + 配布資料 5/5-FINAL bundle ready + dashboard 81% 不変)**: 2026-05-04 深夜終盤（Owner formal「採決日は 5/5 で行きましょう」directive 受領直後）／ **DEC-019-060 status 切替**: 暫定 → **confirmed**（Owner 採決日 5/5 確定 directive を契機に 5/5 case 採択を最終確定、PM-F + Review-E R13 評価結果待ち中の前倒し可否暫定採択を Owner 直接 directive で formal 確定化）／ **Owner directive 受領内容**: 「採決日は 5/5 で行きましょう」5/4 深夜終盤 formal 受領 + CEO 標準推奨「drill #2 = 5/7 朝分離（5/5 朝は議決のみ、Owner 拘束 45 分、abort risk 5%）」標準採用／ **配布資料 5/5-FINAL bundle 確定**: `decision-26-package/5-5-FINAL/` 新規作成（既存 13 件 + 5-5-case-patch 5 件統合 + DISTRIBUTION-PROCEDURE.md + MINUTES-TEMPLATE.md = 計 16 件 5/5 朝 06:00 JST 配布 ready）／ **drill #2 5/7 朝分離（CEO 標準推奨採用）**: 5/5 朝 = 議決のみ（Owner 拘束 45 分、abort risk 5%）/ 5/7 朝 06:00-08:00 = drill #2 実機検証分離（Review-E R13 担当、5/5 採択は drill #2 結果に conditional でない構造）／ **5/8 元計画 patch 保持**: `5-7-case-patch/` `5-6-case-patch/` 保全（fallback 連鎖用、5/5 採決 abort 時の繰下げ path）／ **DEC-019-061 起票連動**（次 footer = v15.16）／ 議決構造: 25 件不変（DEC-019-001〜060）／ 進捗: 81% 不変（Round 13 起動進捗予約反映済、Round 13 完遂で 81→82-85% 想定）／ Owner 残動作: 0 件継続（5/5 議決-26 採決 + 6/26 公開最終確認のみ）／ commit hash: 後続 commit で記録予定／ 次回更新: DEC-019-061 起票 + Round 14 11 並列 dispatch authorization + 5/5 朝 06:00 JST 配布実行 = v15.16 footer
+
+---
+
+## DEC-019-065 (起案 / status: draft / 起案者: PM-I / 起案日: 2026-05-05 / レビュー期限: 2026-05-19)
+
+**タイトル**: Round 16 9 並列構成（第 1 波 4 + 第 2 波 5）採用 + T+50 着地 stagger 圧縮 SOP 適用 + 加速 5 軸 case-B（軸-E に Knowledge INDEX v5 + Runbook 物理化追加）想定
+
+**status**: draft（起案 / Sec-K 担当 DEC-019-066 ペア起票連動 / CEO レビュー 5/19 を経て confirmed 切替予定 / draft 中の参考運用は許容、formal 採択判断は CEO 5/19 まで保留）
+
+**背景**:
+- Round 15 で 11 並列稼働を完遂（5/5 既達）。stagger 圧縮実績として T+150-180 → T+50（約 1/3 短縮）を達成し、API 追加コスト累計 $0 を維持したまま並列規模拡大の堅牢性が確認された。
+- 加速 4 軸 case-A が継続運用中: 軸-A（5/22 push 評価 95%+）/ 軸-B（6/20 公開）/ 軸-C（6/3 Phase 2 着手）/ 軸-D（Round 16 9 並列）。Owner formal「最速で進めよ」directive と「議決を早められる場合は早めていきましょう」追加 directive が継続有効。
+- 既決済 SOP: DEC-019-058（Owner formal authorize SOP）/ DEC-019-062（stagger 圧縮 SOP T+150-180→T+50）/ DEC-019-064（Phase 1 W1 SOP）の 3 本が Round 16 着地基盤として整備済み。
+- Round 15 で 5/5 即時採決 + DEC-019-062 確定 + dashboard 84→86% に到達。Owner 加速継続指示を受けて Round 16 でさらに stagger 圧縮 SOP の連続適用と加速軸の 5 軸化を試行する局面。
+
+**意思決定内容（3 項目）**:
+1. **Round 16 9 並列構成採用**: 第 1 波 4 部署（PM-I + Sec-K + Dev-K + Review-G 想定）+ 第 2 波 5 部署（Dev-L + Dev-M + Marketing-I + Knowledge-K + PM-J 想定）= 計 9 並列。第 1 波 dispatch から第 2 波 dispatch までの間隔は DEC-019-062 SOP に従い T+50 を目標とし、上限 T+80 を許容。
+2. **T+50 着地 stagger 圧縮 SOP 適用**: DEC-019-062 で確定した T+150-180 → T+50 圧縮を Round 16 でも継続適用。各部署の dispatch ↔ 完遂着地 ↔ 報告書受領 ↔ CEO 統合報告のサイクル時刻を SOP 標準に従って計測・記録し、Round 17 以降の SOP 改訂材料を蓄積する。
+3. **加速 5 軸 case-B（軸-E 追加）想定**: 既存 4 軸（A: 5/22 push 評価 / B: 6/20 公開 / C: 6/3 Phase 2 / D: Round 16 並列拡大）に **軸-E = Knowledge INDEX v5 + Runbook 物理化** を追加し case-B として運用。軸-E の到達指標は (a) Knowledge INDEX v4 → v5 で 50→65+ entries / (b) Runbook 物理化 = 既存 docs から手順書を切り出して `projects/PRJ-019/runbooks/` 配下に物理ファイル化（drill #2 / drill #3 / 5/22 push / 6/20 公開の 4 件最小）。
+
+**代替案（3 案）**:
+- 代替案 ①: **7 並列 conservative**（第 1 波 3 + 第 2 波 4）— rate limit リスク最小だが Owner 加速 directive に対する応答速度が劣後し、stagger 圧縮 SOP の適用試行回数が減る。
+- 代替案 ②: **11 並列（Round 15 同等規模）**— 実績ベースで安全側だが、加速軸の 5 軸化を伴う Round 16 では 1 部署あたりの管理負荷が増し、stagger 圧縮 SOP の T+50 着地が崩れるリスクがある。Round 15 は 4 軸構成下での 11 並列であり、5 軸化局面では並列数を絞るほうが SOP 安定性が増す。
+- 代替案 ③（採用）: **9 並列（第 1 波 4 + 第 2 波 5）**— 11 並列実績から 2 部署絞り、第 1 波を 4 部署に圧縮することで stagger 圧縮 T+50 SOP の安定運用と軸-E 追加の管理余力を両立する。
+
+**採用根拠（5 件）**:
+- ① **Round 15 実績**: 11 並列完遂 + stagger T+50 着地という実証データがあり、9 並列はその安全側内側に収まる。
+- ② **API $0 維持**: Round 15 まで API 追加コスト累計 $0 を維持。9 並列は 11 並列より小規模のため $0 継続見込み。
+- ③ **Owner 加速指示**: 「最速」+ 「議決を早められる場合は早める」の二重 directive 下で、9 並列は加速継続と SOP 安定運用の最適バランス。
+- ④ **stagger 圧縮 SOP 連続適用機会**: DEC-019-062 SOP を Round 15 → Round 16 へ連続適用することで SOP 改訂材料が 2 回分蓄積し、Round 17 以降の SOP 進化が加速。
+- ⑤ **軸-E 追加余力**: 9 並列 = 11 並列比 -2 部署で生じる管理余力を Knowledge INDEX v5 + Runbook 物理化に振り向けることで、加速 5 軸化を無理なく実現。
+
+**リスク（3 件 + 緩和策）**:
+- リスク ①: **rate limit**（緩和: 第 1 波 4 部署で API 同時叩き上限を Round 15 比 -7 に圧縮、各部署の Read/Edit/Write 中心構成を継続）
+- リスク ②: **tests への影響**（緩和: 全部署「tests 影響 0」制約を継続、副作用 0 / 既存 DEC 改変禁止 / 追記のみ ルールを Round 16 標準として全 dispatch prompt に明示）
+- リスク ③: **stagger 効果検証の不確実性**（緩和: T+50 着地不達時のフォールバックとして DEC-019-062 SOP の T+80 上限を使用、Round 16 完遂時に SOP 適合率を記録し DEC-019-062 v2 改訂条件をトリガー化）
+
+**第 1 波 4 部署候補（dispatch 順序想定）**:
+- (1-1) PM-I: 本起案 DEC-019-065 担当（Round 16 構成 SOP 起案）
+- (1-2) Sec-K: DEC-019-066 起票（Round 16 dispatch authorization + 配布資料 v17 整備 + dashboard 86→88% 起動進捗予約）
+- (1-3) Dev-K: Phase 1 W1 SOP 適合 + 5/22 push 評価 95%+ 維持タスク（DEC-019-064 SOP 連続適用）
+- (1-4) Review-G: drill #3 前倒し case 評価 + Phase 1 W1 SOP 検証 + 5/22 push 評価ランブック差分
+
+**第 2 波 5 部署候補（T+50 着地後 dispatch）**:
+- (2-1) Dev-L: Phase 2 着手 6/3 ロードマップ詳細化（軸-C 連動）
+- (2-2) Dev-M: Open Claw 6/20 公開向け実装連続（軸-B 連動）
+- (2-3) Marketing-I: 6/20 公開 announce 配布資料 v3 + case study v4 + dynamic disclosure 公開 30 日運用評価
+- (2-4) Knowledge-K: INDEX v4 → v5（50→65+ entries）+ HITL gate-11 PII review 3 件目 dry run + 軸-E（Runbook 物理化）共同担当
+- (2-5) PM-J: Phase 1 W1 進捗集約 + 議決-29（Phase 2 着手日確定）起案ドラフト + Round 17 設計
+
+**軸-E 到達指標（追加 5 軸）**:
+- (E-1) Knowledge INDEX v4 → v5 = 50 → 65+ entries（+15 件、PRJ-019 由来 + 横展開可能なナレッジを優先抽出）
+- (E-2) Runbook 物理化 = `projects/PRJ-019/runbooks/` 配下に 4 件最小（drill #2 / drill #3 / 5/22 push / 6/20 公開）
+- (E-3) Runbook 各件は YAML frontmatter（title / owner / trigger / preconditions / steps / rollback / SLA）+ 手順本文（200-400 行）構成
+- (E-4) PRJ-018 Asagi / PRJ-012 Sumi で再利用可能なテンプレ化を Knowledge-K が並行検討（横展開 readiness 評価）
+
+**連携**:
+- DEC-019-066（Sec-K 担当 / 同 Round 16 第 1 波）と本案件はペア起票。Sec-K 側は Round 16 dispatch authorization + 配布資料 v17 整備 + dashboard 86→88% 起動進捗予約を担当。本案 DEC-019-065 が Round 16 構成 SOP の根拠を提供し、DEC-019-066 が実 dispatch を駆動する役割分担。
+- 既決済 DEC-019-058 / -062 / -064 を前提とし、本案は 3 SOP の連続適用案件。
+- レビュー期限 5/19: CEO レビュー後、status: draft → confirmed 切替判断。confirmed 切替後の Round 17 以降で軸-E 到達指標を本格運用化。
+
+**measurable success criteria（CEO レビュー判断材料）**:
+- (M-1) Round 16 第 1 波 4 部署すべて T+50 内に dispatch 完了 → 達成 / 未達
+- (M-2) Round 16 完遂着地時に API 追加コスト累計 = $0 維持 → 達成 / 未達
+- (M-3) tests 影響 = 0 維持（全部署 Read/Edit/Write 中心、code 改変は副作用 0 ガード下のみ）→ 達成 / 未達
+- (M-4) DEC-019-062 SOP 適合率（dispatch 間隔 T+50 ± 30 内）= 80%+ → 達成 / 未達
+- (M-5) 軸-E 到達指標（E-1〜E-4）の Round 16 完遂時の達成度 → 0/4 / 1/4 / 2/4 / 3/4 / 4/4 で報告
+
+**フォローアップ案件**:
+- DEC-019-067（Round 16 完遂着地後の status 暫定→confirmed 切替 trigger / Round 17 構成 SOP 起案）
+- DEC-019-068（軸-E 到達指標が 3/4 以上達成時の Knowledge INDEX v5 → v6 ロードマップ起案）
+- DEC-019-069（5/22 push 評価結果反映 / 軸-A 確度更新）
+
+---
+
+## DEC-019-066 (起案 / status: draft / 起案者: Sec-K / 起案日: 2026-05-05 / レビュー期限: 2026-05-26)
+
+**タイトル**: Round 16 SOP formal 化 + stagger 圧縮 SOP 拡張 + Sec hardening
+
+**背景**:
+- Round 15 で stagger 圧縮 T+150-180 → T+50（約 1/3 短縮）達成、再現性確認のため SOP 化が必要。
+- DEC-019-058（Owner formal authorize SOP）/ DEC-019-062（stagger 圧縮 SOP 起案）/ DEC-019-064（Phase 1 W1 SOP）/ DEC-019-065（Round 16 9 並列構成 / PM-I 起案中）と連動。
+- Sec-J で絵文字 0 ガード + NFKC 正規化 + 35 ペア辞書多言語フィルタ formal 化済 → 同水準で round 横断 hardening を SOP 化。
+- Round 16 以降 9 並列継続前提で 5/26 までに 3 round（R16/R17/R18）の暫定運用実績を取得しレビューする。
+
+**意思決定内容（採択 3 軸）**:
+
+① **Round 16 SOP（dispatch 順序 / stagger 圧縮 / authorize 範囲 / 集計手順）**
+- dispatch 順序: 第 1 波（PM/Research/Dev、最大 5 並列、T+0〜T+50） + 第 2 波（Marketing/Review/Knowledge/Secretary/Web-Ops/Sec、最大 4 並列、T+0〜T+150）
+- authorize 範囲: CEO authorize で完結（Owner formal directive 不要、DEC-019-058 SOP 例外時のみ Owner 介入）
+- 集計手順: CEO 統合報告 v17 にて Sec hardening 4 項目チェック PASS 確認後 round 完遂判定
+
+② **stagger 圧縮 SOP の数値化**
+- 第 1 波: T+0 〜 **T+50**（Round 15 実績準拠、stretch goal）
+- 第 2 波: T+0 〜 **T+150**（旧 T+150-180 上限維持下の圧縮）
+- 全波完遂 hard limit: T+180（超過時 CEO 強制 ack）
+- 例外条件: (a) Owner directive 緊急受領時 = T+0 即時、(b) drill #2 連動時 = drill 担当のみ T+0〜T+30、(c) API spike 検知時 = 当該部署 5 分停止
+
+③ **Sec hardening 追加 4 項目**
+- (1) **API spike 検知**: 過去 3 round 平均 + 2σ trigger、CEO 通知 + 5 分停止、API spend cap $30/月不変（DEC-019-050）
+- (2) **副作用 0 自動検証**: Read/Edit/Write のみ許容、`git status` 差分が想定 artifact のみであること検証
+- (3) **絵文字 0 自動チェック**: NFKC + 35 ペア多言語フィルタ（Sec-J 既存）、検出時 redaction 指示
+- (4) **tests PASS gate**: workspace 791 PASS baseline 維持、regress 検知時即時 revert + Review エスカレーション
+
+**代替案 + 却下根拠**:
+- 代替案 A（T+30 まで圧縮）: Round 15 実績の T+50 再現性 80%、T+30 は API spike risk 高 → 却下
+- 代替案 B（Sec hardening 6 項目: rate-limit / token rotation 追加）: subscription plan 主軸下で rate-limit は API spike 検知で代替、token rotation は Phase 2 範囲 → 却下
+- 代替案 C（SOP 化せず round 別 ad-hoc 継続）: Round 17 以降の再現性が CEO 個人スキル依存 → 却下
+
+**採用根拠**:
+- (a) Round 15 実績（T+50 / T+150 達成）→ 数値 SOP 化が fact ベース
+- (b) Sec-J の絵文字 0 + NFKC + 35 ペア辞書 formal 化済 → 軸-③ (3) 即適用可能
+- (c) tests baseline 791 PASS（R12 達成）→ 軸-③ (4) gate を即運用可能
+- (d) API $0 維持と 100% 整合（DEC-019-051 subscription plan 主軸）
+- (e) Owner formal「最速で進めよ」directive 継続中、SOP 化で round 単位 judgement コスト削減
+
+**リスク**:
+- R1（中）: T+50 圧縮 Round 16 再現性 60% 留まり可能性 → fallback で T+150 帯保持、5/26 レビュー検証
+- R2（低）: API spike 誤検知 → 平均 + 2σ 閾値で false positive 低減、CEO ack で解除
+- R3（低）: 既存 artifact emoji 痕跡誤検出 → read-only は記録のみ明記
+- R4（低）: tests gate で外部 dependency 起因 regress 帰責 → Review 連携で帰責切分
+
+**連携**:
+- DEC-019-065（PM-I / Round 16 9 並列構成）と本案件はペア起票。PM-I が「9 並列構成 + 部署配分」、Sec-K（本案）が「dispatch 順序 + Sec hardening」を起案。5/26 formal レビュー時に DEC-019-065 + DEC-019-066 を統合採択想定。
+- 既決済 DEC-019-058 / -062 / -064 を前提とし、本案は 4 SOP の連続適用案件。
+- Sec runsheet: `projects/PRJ-019/runsheets/sec-round16-sop.md`（約 110 行、本起案と連動）
+- Sec 報告書: `projects/PRJ-019/reports/sec-k-r16-dec-066-draft.md`（約 110 行、起案概要 + 連携 + レビュー期限）
+- レビュー期限 **5/26**: Round 16 〜 Round 18 の暫定運用実績集計後、Review 部門 + Sec で formal レビュー、CEO 経由 Owner 報告。formal 採択後 Round 19 以降で Phase 1 W4 完遂（6/20 想定）まで継続運用。
+
+**制約遵守**:
+- API 消費: $0 / 副作用: 0（decisions.md 追記 + runsheets/ + reports/ 新規のみ）
+- 絵文字: 0 / tests 影響: 0（baseline 791 維持）/ 既存 DEC 改変: 0（追記のみ）
 
 ---
 
