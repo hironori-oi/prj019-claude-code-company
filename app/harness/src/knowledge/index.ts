@@ -20,8 +20,12 @@ export {
   DecisionFrontmatter,
   PitfallFrontmatter,
   QualityScore,
+  KnowledgeKindSchema,
+  Hitl11WebhookKindSchema,
   detectKnowledgeKind,
   isValidKnowledgeEntry,
+  kindToIdPrefix,
+  idPrefixToKind,
   validateKnowledgeEntry,
   type KnowledgeEntryType,
   type KnowledgeFrontmatterType,
@@ -30,6 +34,8 @@ export {
   type DecisionFrontmatterType,
   type PitfallFrontmatterType,
   type QualityScoreType,
+  type KnowledgeKind,
+  type Hitl11WebhookKind,
 } from './ke-01-schema.js'
 
 export {

@@ -1,0 +1,20 @@
+{
+  "harness": {
+    "baseline": 617,
+    "updated_at": "2026-05-05",
+    "round": "R17",
+    "note": "R15=607 -> R16/R17 で +10 増 (DEC-019-066 §3.4 baseline 更新)"
+  },
+  "workspace": {
+    "baseline": 1503,
+    "updated_at": "2026-05-05",
+    "round": "R16",
+    "note": "PRJ-019 app workspace 全体 1,503 PASS 維持 (既存 2 FAIL は本 patch と無関係)"
+  },
+  "openclaw-runtime": {
+    "baseline": 330,
+    "updated_at": "2026-05-05",
+    "round": "R16",
+    "note": "openclaw-runtime 23 files / 330 tests PASS (R16 達成値)"
+  }
+}

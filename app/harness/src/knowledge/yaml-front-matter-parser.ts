@@ -35,6 +35,7 @@
 import { promises as fs } from 'node:fs'
 import { join, basename } from 'node:path'
 import {
+  KnowledgeKindSchema,
   detectKnowledgeKind,
   validateKnowledgeEntry,
   type KnowledgeEntryType,
@@ -286,11 +287,11 @@ export function toKnowledgeEntry(
 function pickKind(
   fm: Readonly<Record<string, FrontmatterValue>>,
 ): 'pattern' | 'decision' | 'pitfall' | 'unknown' {
+  // Round 17 Dev-V: KnowledgeKindSchema.safeParse 採用 (canonical SoT 経由).
+  // 既存挙動と完全互換: parse 失敗時は 'unknown' fallback.
   const kindRaw = asString(fm['kind']) ?? asString(fm['type'])
-  if (kindRaw === 'pattern' || kindRaw === 'decision' || kindRaw === 'pitfall') {
-    return kindRaw
-  }
-  return 'unknown'
+  const parsed = KnowledgeKindSchema.safeParse(kindRaw)
+  return parsed.success ? parsed.data : 'unknown'
 }
 
 function pickQualityScore(

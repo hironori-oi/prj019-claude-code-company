@@ -1,7 +1,14 @@
 /**
- * P-UI-02 — cool-down モーダル (Round 16 第 2 波 skeleton, W2 完遂予定)
+ * P-UI-02 — cool-down モーダル (Round 17 第 2 波 W1 完成版, Dev-W 担当)
  * 30s cool-down 中の next loop 起動抑止 + Owner 警告モーダル発火。
  * Spec: ../../specs/17day-path-7ctrl.md#p-ui-02
+ *
+ * 完成範囲 (Round 17 W1):
+ *  - state machine: idle → active → expired/overridden
+ *  - clock skew detect (system time 後退) → fail-closed (active 継続 + 例外通知)
+ *  - HITL 第 12 種 override port 経由 force release
+ *  - 多重 trigger は最後勝ち + 残り時間リセット
+ *  - 副作用 0: clock / overrideChecker は DI port (test 全て pure)
  */
 import { z } from 'zod'
 
@@ -31,13 +38,65 @@ export interface CooldownClock {
   now(): number
 }
 
-/** skeleton: 完成版は W2 で実装。現状 idle 固定返却で副作用 0。 */
-export function evaluateCooldown(input: CooldownInput, _clock: CooldownClock): CooldownOutput {
+/** HITL 第 12 種 override port (true = Owner 強制解除済) */
+export interface CooldownOverrideChecker {
+  isOverridden(loopId: string): boolean
+}
+
+/** clock skew 検出時に投げる例外 (fail-closed: cooldown は active 継続) */
+export class CooldownClockSkewError extends Error {
+  readonly loopId: string
+  readonly abortedAt: string
+  readonly observedNow: number
+  constructor(loopId: string, abortedAt: string, observedNow: number) {
+    super(`cooldown clock skew detected: loopId=${loopId} abortedAt=${abortedAt} now=${observedNow}`)
+    this.name = 'CooldownClockSkewError'
+    this.loopId = loopId
+    this.abortedAt = abortedAt
+    this.observedNow = observedNow
+  }
+}
+
+const NO_OP_OVERRIDE: CooldownOverrideChecker = { isOverridden: () => false }
+
+export function evaluateCooldown(
+  input: CooldownInput,
+  clock: CooldownClock,
+  override: CooldownOverrideChecker = NO_OP_OVERRIDE,
+): CooldownOutput {
   CooldownInputSchema.parse(input)
-  // TODO(W2): state machine + override path + clock skew detection
+
+  const abortedAtMs = Date.parse(input.abortedAt)
+  const nowMs = clock.now()
+
+  // clock skew: system time が abortedAt より過去 → fail-closed
+  if (nowMs < abortedAtMs) {
+    throw new CooldownClockSkewError(input.loopId, input.abortedAt, nowMs)
+  }
+
+  const elapsedMs = nowMs - abortedAtMs
+  const nextAllowedAtIso = new Date(abortedAtMs + COOLDOWN_DURATION_MS).toISOString()
+
+  // HITL 第 12 種 override 優先 (active 中のみ意味あり)
+  if (elapsedMs < COOLDOWN_DURATION_MS && override.isOverridden(input.loopId)) {
+    return {
+      cooldownState: 'overridden',
+      remainingMs: 0,
+      nextAllowedAt: new Date(nowMs).toISOString(),
+    }
+  }
+
+  if (elapsedMs >= COOLDOWN_DURATION_MS) {
+    return {
+      cooldownState: 'expired',
+      remainingMs: 0,
+      nextAllowedAt: nextAllowedAtIso,
+    }
+  }
+
   return {
-    cooldownState: 'idle',
-    remainingMs: 0,
-    nextAllowedAt: input.abortedAt,
+    cooldownState: 'active',
+    remainingMs: COOLDOWN_DURATION_MS - elapsedMs,
+    nextAllowedAt: nextAllowedAtIso,
   }
 }

@@ -1,20 +1,26 @@
 /**
- * P-UI-05 — 異常検知 + rollback (Round 16 第 2 波 skeleton, W2 完遂予定)
+ * P-UI-05 — 異常検知 + rollback (Round 17 第 2 波 W1 完成版, Dev-W 担当)
  * cost burst / loop time / output 異常 → 連続 2 loop 越えで auto rollback。
  * Spec: ../../specs/17day-path-7ctrl.md#p-ui-05
+ *
+ * 完成範囲 (Round 17 W1):
+ *  - 連続 2 loop breach 確定 → rollback 起動
+ *  - rollback executor port (DI) 経由で副作用は外部委譲
+ *  - rollback 失敗 → kill switch interlock signal (kill port DI)
+ *  - NaN observed → metric_nan_skip (Review escalate は呼出側責務)
+ *  - state は呼出側保持 (関数は pure: state を読み新 state は返却値で示す)
  */
 import { z } from 'zod'
 
 export const AnomalyMetricSchema = z.enum(['cost_per_loop', 'loop_duration', 'output_anomaly'])
 export type AnomalyMetric = z.infer<typeof AnomalyMetricSchema>
 
-// 注: observedValue は NaN を許容する (NaN は detectAnomaly 側で metric_nan_skip 判定)。
-// zod の z.number() は既定で NaN を reject するため、明示的に許容する。
+// observedValue は NaN を許容する (NaN は detectAnomaly 側で metric_nan_skip 判定)。
 const ObservedValueSchema = z.custom<number>(
   (v) => typeof v === 'number',
   { message: 'observedValue must be number (NaN allowed for skip path)' },
 )
-// threshold は positive finite を強制 (異常検知の比較対象として無効値を弾く)。
+
 export const AnomalyInputSchema = z.object({
   metric: AnomalyMetricSchema,
   observedValue: ObservedValueSchema,
@@ -36,17 +42,71 @@ export interface AnomalyState {
   lastLoopId: string | null
 }
 
-/** skeleton: 完成版は W2 で実装。NaN 除外 + 連続 2 越え判定のみ stub。 */
-export function detectAnomaly(input: AnomalyInput, _state: AnomalyState): AnomalyOutput {
+export interface RollbackExecutor {
+  /** rollback 実行: ok=true で成功、失敗時は ok=false を返す (throw しない) */
+  rollback(loopId: string): Promise<{ ok: boolean; targetCommit?: string; reason?: string }>
+}
+
+export interface KillSwitchTrigger {
+  /** rollback 失敗時の interlock 発火 (副作用は呼出先) */
+  fire(reason: string): Promise<void>
+}
+
+const NO_OP_KILL: KillSwitchTrigger = { fire: async () => {} }
+
+/**
+ * detectAnomaly — pure な breach 判定のみ。rollback 起動は evaluateAndAct 側で。
+ * 後方互換のため signature 維持 (旧テスト + skeleton barrel export 用)。
+ */
+export function detectAnomaly(input: AnomalyInput, state: AnomalyState): AnomalyOutput {
   AnomalyInputSchema.parse(input)
   if (!Number.isFinite(input.observedValue)) {
     return { anomalyDetected: false, rollbackTriggered: false, reason: 'metric_nan_skip' }
   }
-  // TODO(W2): rollback execution + kill-switch interlock on rollback failure
   const breached = input.observedValue > input.threshold
+  if (!breached) {
+    return { anomalyDetected: false, rollbackTriggered: false, reason: 'within_threshold' }
+  }
+  const isConsecutive = state.lastLoopId !== null && state.lastLoopId !== input.loopId
+  const breaches = isConsecutive ? state.consecutiveBreaches + 1 : Math.max(state.consecutiveBreaches, 1)
+  if (breaches >= 2) {
+    return {
+      anomalyDetected: true,
+      rollbackTriggered: false, // executor 連動は evaluateAndAct で
+      reason: 'confirmed_consecutive_breach_pending_rollback',
+    }
+  }
   return {
-    anomalyDetected: breached,
+    anomalyDetected: true,
     rollbackTriggered: false,
-    reason: breached ? 'threshold_exceeded_pending_confirm' : 'within_threshold',
+    reason: 'first_breach_observation',
+  }
+}
+
+/** 連動 path: 確定時 rollback 起動 + 失敗時 kill switch interlock */
+export async function evaluateAndAct(
+  input: AnomalyInput,
+  state: AnomalyState,
+  executor: RollbackExecutor,
+  kill: KillSwitchTrigger = NO_OP_KILL,
+): Promise<AnomalyOutput> {
+  const verdict = detectAnomaly(input, state)
+  if (verdict.reason !== 'confirmed_consecutive_breach_pending_rollback') {
+    return verdict
+  }
+  const result = await executor.rollback(input.loopId)
+  if (result.ok) {
+    return {
+      anomalyDetected: true,
+      rollbackTriggered: true,
+      rollbackToCommit: result.targetCommit,
+      reason: 'rollback_completed',
+    }
+  }
+  await kill.fire(`rollback_failed:${result.reason ?? 'unknown'}`)
+  return {
+    anomalyDetected: true,
+    rollbackTriggered: false,
+    reason: `rollback_failed_kill_switch_armed:${result.reason ?? 'unknown'}`,
   }
 }

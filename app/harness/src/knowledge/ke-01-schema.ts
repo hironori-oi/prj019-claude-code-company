@@ -51,6 +51,50 @@ export type QualityScoreType = z.infer<typeof QualityScore>
 export const KnowledgeKindSchema = z.enum(['pattern', 'decision', 'pitfall'])
 export type KnowledgeKind = z.infer<typeof KnowledgeKindSchema>
 
+/**
+ * Hitl11WebhookKindSchema — HITL 第 11 種 (knowledge_pii_review) の Slack
+ * quick-action 受領 payload `kind` 値の canonical SoT (Round 17 Dev-V).
+ *
+ * 元来 file-hitl11-gate.ts に inline `type Hitl11WebhookKind = ...` で 3 文字列
+ * union があったが、runtime 検証 (zod) を通せず webhook receive で string が
+ * 直接 if 分岐していた. 本 schema を SoT 化し、file-hitl11-gate は再 export と
+ * `safeParse` で受信 payload 検証できる構造へ寄せる.
+ */
+export const Hitl11WebhookKindSchema = z.enum([
+  'knowledge_pii_review_approve',
+  'knowledge_pii_review_reject',
+  'knowledge_pii_review_partial',
+])
+export type Hitl11WebhookKind = z.infer<typeof Hitl11WebhookKindSchema>
+
+/**
+ * kindToIdPrefix — KnowledgeKind → ID prefix 変換 helper (Round 17 Dev-V).
+ *
+ * 既存 inline 分岐 (hitl-11-quarantine.ts makeEntryId 内 + organization/knowledge/
+ * 配下サンプル) で `pattern`→`PAT` / `decision`→`DEC` / `pitfall`→`PIT` の
+ * 3 種マッピングが重複していたため、canonical SoT として helper 化する.
+ *
+ * 戻り値は **大文字 3 文字 + ハイフン** (e.g. `PAT-`) で knowledgeIdRegex 整合.
+ */
+const KIND_TO_ID_PREFIX = Object.freeze({
+  pattern: 'PAT-',
+  decision: 'DEC-',
+  pitfall: 'PIT-',
+} as const satisfies Record<KnowledgeKind, string>)
+
+export function kindToIdPrefix(kind: KnowledgeKind): 'PAT-' | 'DEC-' | 'PIT-' {
+  return KIND_TO_ID_PREFIX[kind]
+}
+
+/** 逆変換: ID prefix → KnowledgeKind. 不正 prefix は null. */
+export function idPrefixToKind(prefix: string): KnowledgeKind | null {
+  const upper = prefix.toUpperCase()
+  if (upper === 'PAT-' || upper === 'PAT') return 'pattern'
+  if (upper === 'DEC-' || upper === 'DEC') return 'decision'
+  if (upper === 'PIT-' || upper === 'PIT') return 'pitfall'
+  return null
+}
+
 /** 共通 frontmatter (全 3 サブディレクトリ共通). */
 export const CommonFrontmatter = z.object({
   id: z.string().regex(knowledgeIdRegex, 'id must match (PAT|DEC|PIT)-NNN-slug'),

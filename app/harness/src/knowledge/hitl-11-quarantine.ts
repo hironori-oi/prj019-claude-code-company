@@ -32,7 +32,7 @@ import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
 import { z } from 'zod'
 import type { KnowledgeDraft } from './ke-02-trigger.js'
-import { KnowledgeKindSchema } from './ke-01-schema.js'
+import { KnowledgeKindSchema, kindToIdPrefix } from './ke-01-schema.js'
 import { ensureDirSelf, fileExists, loadJson, saveJson } from '../fs-store.js'
 
 // ============================================================================
@@ -313,7 +313,8 @@ export class Hitl11Quarantine {
   }
 
   private makeEntryId(draft: KnowledgeDraft): string {
-    const prefix = draft.kind === 'pattern' ? 'PAT' : draft.kind === 'decision' ? 'DEC' : 'PIT'
+    // Round 17 Dev-V: kindToIdPrefix helper を採用 (canonical SoT 経由).
+    const prefix = kindToIdPrefix(draft.kind).slice(0, -1) // 'PAT-' → 'PAT'
     const slug = draft.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')

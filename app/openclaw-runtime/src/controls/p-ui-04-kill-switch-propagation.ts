@@ -1,7 +1,10 @@
 /**
- * P-UI-04 — kill switch propagation (Round 16 第 2 波 skeleton, W1 fallback 完遂予定)
+ * P-UI-04 — kill switch propagation (Round 17 W1 完成版, 5/9 kickoff)
  * kill switch 発火 → 30s 内に全子プロセス SIGTERM → SIGKILL 連鎖到達。
  * Spec: ../../specs/17day-path-7ctrl.md#p-ui-04
+ *
+ * Round 17 W1 で I/O port 注入: subprocess kill token broadcaster + verify port +
+ * graceful → forceful → verified ステートマシン。本ファイルは process.kill を直接呼ばない。
  */
 import { z } from 'zod'
 
@@ -23,21 +26,108 @@ export const KillOutputSchema = z.object({
   survivors: z.array(z.number().int().positive()),
   latencyMs: z.number().int().nonnegative(),
   status: KillStatusSchema,
+  deadlineExceeded: z.boolean(),
 })
 export type KillOutput = z.infer<typeof KillOutputSchema>
 
 export interface ProcessKiller {
+  /** SIGTERM / SIGKILL を pid に送る port。成功時 true。 */
   signal(pid: number, sig: 'SIGTERM' | 'SIGKILL'): Promise<boolean>
 }
 
-/** skeleton: 完成版は W1 fallback で実装。現状 dryRun 相当の no-op。 */
-export async function propagateKill(input: KillInput, _killer: ProcessKiller): Promise<KillOutput> {
+/** Round 17 W1: subprocess kill token 統合用の追加 port。 */
+export interface KillBroadcasterOptions {
+  /**
+   * graceful 後 / forceful 前の待機時間 (default: SIGTERM_GRACE_MS)。
+   * test 注入で 0 にできる。
+   */
+  gracePeriodMs?: number
+  /** harness の registerSubprocessKill 経由で取得した kill token を broadcast する port。 */
+  killTokenBroadcaster?: (event: 'fired' | 'verified' | 'failed', killReason: string) => void
+  /** 残存 pid 検証 port (graceful 後 / forceful 後)。default: 全 false (= 全終了相当)。 */
+  verifySurvivors?: (pidTree: readonly number[]) => Promise<readonly number[]>
+  /** Round 17 W1: 注入可能な sleep + 経過時間取得 (test 用)。 */
+  sleep?: (ms: number) => Promise<void>
+  now?: () => number
+}
+
+/** Round 17 W1 完成版: graceful → forceful → verified の 3 段階 kill propagation。 */
+export async function propagateKill(
+  input: KillInput,
+  killer: ProcessKiller,
+  opts: KillBroadcasterOptions = {},
+): Promise<KillOutput> {
   KillInputSchema.parse(input)
-  // TODO(W1): graceful → forceful → verify pid tree
-  return {
-    totalKilled: 0,
-    survivors: [...input.pidTree],
-    latencyMs: 0,
-    status: 'failed',
+  const grace = opts.gracePeriodMs ?? SIGTERM_GRACE_MS
+  const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)))
+  const now = opts.now ?? (() => Date.now())
+  const verifySurvivors = opts.verifySurvivors ?? (async () => [])
+  const t0 = now()
+
+  if (input.pidTree.length === 0) {
+    opts.killTokenBroadcaster?.('verified', input.killReason)
+    return {
+      totalKilled: 0,
+      survivors: [],
+      latencyMs: Math.max(0, now() - t0),
+      status: 'all_terminated',
+      deadlineExceeded: false,
+    }
   }
+
+  opts.killTokenBroadcaster?.('fired', input.killReason)
+
+  // graceful: 全 pid に SIGTERM
+  const sigtermFailures: number[] = []
+  for (const pid of input.pidTree) {
+    try {
+      const ok = await killer.signal(pid, 'SIGTERM')
+      if (!ok) sigtermFailures.push(pid)
+    } catch {
+      sigtermFailures.push(pid)
+    }
+  }
+
+  await sleep(grace)
+
+  // 残存検証 1 回目
+  let survivors = [...(await verifySurvivors(input.pidTree))]
+  // SIGTERM 自体が失敗した pid も併合 (重複排除)
+  for (const pid of sigtermFailures) {
+    if (!survivors.includes(pid)) survivors.push(pid)
+  }
+
+  // forceful: 残存に SIGKILL
+  if (survivors.length > 0) {
+    const stillSurvivors: number[] = []
+    for (const pid of survivors) {
+      try {
+        const ok = await killer.signal(pid, 'SIGKILL')
+        if (!ok) stillSurvivors.push(pid)
+      } catch {
+        stillSurvivors.push(pid)
+      }
+    }
+    // 残存検証 2 回目 (forceful 後の最終確認)
+    const verifiedFinal = await verifySurvivors(input.pidTree)
+    survivors = Array.from(new Set([...stillSurvivors, ...verifiedFinal])).filter((pid) =>
+      input.pidTree.includes(pid),
+    )
+  }
+
+  const latencyMs = Math.max(0, now() - t0)
+  const deadlineExceeded = latencyMs > KILL_DEADLINE_MS
+  const totalKilled = input.pidTree.length - survivors.length
+  let status: 'all_terminated' | 'partial' | 'failed'
+  if (survivors.length === 0) status = 'all_terminated'
+  else if (totalKilled > 0) status = 'partial'
+  else status = 'failed'
+
+  if (status === 'all_terminated' && !deadlineExceeded) {
+    opts.killTokenBroadcaster?.('verified', input.killReason)
+  } else {
+    opts.killTokenBroadcaster?.('failed', input.killReason)
+  }
+
+  return { totalKilled, survivors, latencyMs, status, deadlineExceeded }
 }

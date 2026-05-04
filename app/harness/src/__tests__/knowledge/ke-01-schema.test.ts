@@ -11,9 +11,13 @@
  */
 import { describe, it, expect } from 'vitest'
 import {
+  Hitl11WebhookKindSchema,
+  KnowledgeKindSchema,
   KnowledgeSchemaError,
   detectKnowledgeKind,
+  idPrefixToKind,
   isValidKnowledgeEntry,
+  kindToIdPrefix,
   validateKnowledgeEntry,
 } from '../../knowledge/ke-01-schema.js'
 
@@ -115,5 +119,43 @@ describe('KE-01 schema validator', () => {
     expect(detectKnowledgeKind(validPitfall)).toBe('pitfall')
     expect(detectKnowledgeKind(null)).toBe('unknown')
     expect(detectKnowledgeKind({ frontmatter: { kind: 'foo' } })).toBe('unknown')
+  })
+
+  // ==========================================================================
+  // Round 17 Dev-V: Hitl11WebhookKindSchema + kindToIdPrefix helper
+  // ==========================================================================
+
+  it('Hitl11WebhookKindSchema が 3 値を pass / 不正値を reject する', () => {
+    expect(Hitl11WebhookKindSchema.safeParse('knowledge_pii_review_approve').success).toBe(true)
+    expect(Hitl11WebhookKindSchema.safeParse('knowledge_pii_review_reject').success).toBe(true)
+    expect(Hitl11WebhookKindSchema.safeParse('knowledge_pii_review_partial').success).toBe(true)
+    expect(Hitl11WebhookKindSchema.safeParse('knowledge_pii_review_xxx').success).toBe(false)
+    expect(Hitl11WebhookKindSchema.safeParse(null).success).toBe(false)
+    expect(Hitl11WebhookKindSchema.safeParse(undefined).success).toBe(false)
+  })
+
+  it('kindToIdPrefix が 3 種を正しく PAT-/DEC-/PIT- に写像する', () => {
+    expect(kindToIdPrefix('pattern')).toBe('PAT-')
+    expect(kindToIdPrefix('decision')).toBe('DEC-')
+    expect(kindToIdPrefix('pitfall')).toBe('PIT-')
+  })
+
+  it('idPrefixToKind が 逆変換 + 不正値で null を返す', () => {
+    expect(idPrefixToKind('PAT-')).toBe('pattern')
+    expect(idPrefixToKind('DEC-')).toBe('decision')
+    expect(idPrefixToKind('PIT-')).toBe('pitfall')
+    // ハイフンなしも受容 (lenient)
+    expect(idPrefixToKind('pat')).toBe('pattern')
+    // 不正値
+    expect(idPrefixToKind('XXX-')).toBeNull()
+    expect(idPrefixToKind('')).toBeNull()
+  })
+
+  it('KnowledgeKindSchema と kindToIdPrefix が網羅的に整合する', () => {
+    // KnowledgeKindSchema の全 enum 値で kindToIdPrefix が定義済かを round-trip 検証
+    for (const k of KnowledgeKindSchema.options) {
+      const prefix = kindToIdPrefix(k)
+      expect(idPrefixToKind(prefix)).toBe(k)
+    }
   })
 })

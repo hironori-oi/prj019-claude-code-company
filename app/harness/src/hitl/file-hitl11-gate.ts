@@ -49,6 +49,10 @@ import {
   type Hitl11ReviewResult,
 } from '../knowledge/hitl-11-knowledge-pii.js'
 import type { KnowledgeDraft } from '../knowledge/ke-02-trigger.js'
+import {
+  Hitl11WebhookKindSchema,
+  type Hitl11WebhookKind as Hitl11WebhookKindCanonical,
+} from '../knowledge/ke-01-schema.js'
 import { CLAWBRIDGE_ROOT } from '../paths.js'
 import { ensureDirSelf, fileExists, loadJson, saveJson } from '../fs-store.js'
 
@@ -59,10 +63,16 @@ import { ensureDirSelf, fileExists, loadJson, saveJson } from '../fs-store.js'
 /** gate-11 file 配置 root (default: ~/.clawbridge/hitl11/). */
 export const HITL11_PENDING_DIR = join(CLAWBRIDGE_ROOT, 'hitl11')
 
-export type Hitl11WebhookKind =
-  | 'knowledge_pii_review_approve'
-  | 'knowledge_pii_review_reject'
-  | 'knowledge_pii_review_partial'
+/**
+ * Hitl11WebhookKind — Slack quick-action 受領 payload の `kind` 値.
+ *
+ * Round 17 Dev-V で canonical SoT を `ke-01-schema.ts` の
+ * `Hitl11WebhookKindSchema` (zod enum) へ統合した.
+ * 公開 API 互換性のため type 名はここで再 export する.
+ * 既存 import 経路 / runtime 挙動はすべて 100% 同一.
+ */
+export type Hitl11WebhookKind = Hitl11WebhookKindCanonical
+export { Hitl11WebhookKindSchema }
 
 /** Slack quick-action 受領 payload (spec §4.2 簡略版). */
 export interface Hitl11WebhookPayload {
@@ -258,6 +268,10 @@ export class FileHitl11Gate {
     if (req.nonce !== payload.nonce) return { ok: false, error: 'nonce_mismatch' }
     if (this.now().getTime() > Date.parse(req.expiresAt)) {
       return { ok: false, error: 'expired' }
+    }
+    // kind の runtime 検証 (Round 17 Dev-V: zod safeParse)
+    if (!Hitl11WebhookKindSchema.safeParse(payload.kind).success) {
+      return { ok: false, error: 'kind_mismatch' }
     }
     // kind ↔ field consistency
     if (payload.kind === 'knowledge_pii_review_reject') {
