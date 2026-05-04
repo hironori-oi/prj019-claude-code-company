@@ -1,0 +1,99 @@
+name: denylist-lint
+
+# Round 14 Dev-A: needs-scout denylist 自動 lint workflow。
+#
+# 出典: dev-round14-A-yaml-failfast-multilingual-lint.md §C
+# 連動: DENYLIST-OPERATIONS.md §5 自動 lint (CI 想定 → 本 workflow で workflow 化)
+#
+# 動作:
+#   - PR で `app/needs-scout/config/denylist.yaml` または loader 関連 src が変更された場合に発火
+#   - YAML schema 検証 (zod strict / 13 領域 key 整合 / tier 跨ぎ重複検出 / 空 keyword 検出)
+#   - typecheck + needs-scout vitest を併走 (denylist 整合性は coverage に反映される)
+#   - 失敗時: PR check 上で fail (exit 1)、merge block
+#
+# 月額コスト: $0 (public repo は GitHub Actions 無制限無料枠)。
+#
+# DEC-019-053 整合: 本 workflow は Tier 0 (secret 不要) — 純粋 lint なので env / secret 不要。
+
+on:
+  pull_request:
+    paths:
+      - 'app/needs-scout/config/denylist.yaml'
+      - 'app/needs-scout/src/filters/denylist-loader.ts'
+      - 'app/needs-scout/src/filters/critical-domain-filter.ts'
+      - 'app/needs-scout/src/filters/multilingual-filter.ts'
+      - 'app/needs-scout/src/filters/normalization*.ts'
+      - 'app/needs-scout/scripts/lint-denylist.ts'
+      - 'app/needs-scout/package.json'
+      - '.github/workflows/denylist-lint.yml'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: 'Verbose output (true / false)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: denylist-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: 'app/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      # ---------------------------------------------------------------------
+      # Step 1: typecheck — denylist-loader.ts / multilingual-filter.ts などの
+      # 型整合性が崩れていないことを確認。zod schema 違反は load 時に throw する
+      # ため、起動 fail-fast 経路の型を pre-check で固める。
+      # ---------------------------------------------------------------------
+      - name: typecheck (needs-scout)
+        run: pnpm --filter @clawbridge/needs-scout run typecheck
+
+      # ---------------------------------------------------------------------
+      # Step 2: lint:denylist — denylist.yaml 専用 lint。
+      # 内部で loadDenylistFullTable() → assertDenylistIntegrity() を起動し、
+      # 13 領域 key set / tier 跨ぎ重複 / 空 keyword / dual placement 整合を検証。
+      # 違反時は exit 1。
+      # ---------------------------------------------------------------------
+      - name: lint:denylist (YAML schema + tier integrity + duplicate detection)
+        run: pnpm --filter @clawbridge/needs-scout run lint:denylist
+
+      # ---------------------------------------------------------------------
+      # Step 3: vitest — needs-scout 全 test (denylist-loader / multilingual-filter /
+      # normalization-multilingual / critical-domain-filter) を回し、denylist
+      # 変更が下流に regression を生まないことを確認。
+      # ---------------------------------------------------------------------
+      - name: vitest (needs-scout)
+        run: pnpm --filter @clawbridge/needs-scout run test

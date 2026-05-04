@@ -20,6 +20,39 @@ import { promises as fs } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { createHash } from 'node:crypto'
 
+// ============================================================================
+// Round 12 Dev-B (DEC-019-057): IsolationGuard 配線
+// ============================================================================
+
+/**
+ * harness の IsolationGuard が impl する軽量 contract.
+ * audit は harness package を import しないが、append 前後で本 interface を
+ * 呼び出して異 process 競合を検知する.
+ */
+export interface PidGuard {
+  /** pid 不一致なら throw, 一致 or 未起動なら return. */
+  checkPid(currentPid: number): void
+}
+
+/**
+ * append 時に IsolationGuard.checkPid が pid 不一致を検出した場合に
+ * audit-store が throw する error.
+ */
+export class AuditLogStoreError extends Error {
+  override readonly name = 'AuditLogStoreError'
+  readonly code: 'isolation_violation' | 'append_failure'
+  override readonly cause?: unknown
+  constructor(
+    code: 'isolation_violation' | 'append_failure',
+    message: string,
+    cause?: unknown,
+  ) {
+    super(message)
+    this.code = code
+    if (cause !== undefined) this.cause = cause
+  }
+}
+
 export type AuditEventType =
   | 'spawn'
   | 'spawn_timeout'
@@ -104,6 +137,17 @@ export interface FileAuditLogStoreOptions {
   rotation?: Partial<AuditRotationPolicy>
   /** 注入用 (テスト) */
   now?: () => Date
+  /**
+   * Round 12 Dev-B (DEC-019-057): 異 process 競合検知用の pid guard.
+   * harness 側の IsolationGuard を渡す想定. append 前後に checkPid(currentPid) が
+   * 呼ばれ, 不一致なら AuditLogStoreError('isolation_violation', ...) を throw する.
+   */
+  pidGuard?: PidGuard
+  /**
+   * pid 取得関数 (DI). default: () => process.pid.
+   * test 用に固定 pid を注入したい場合に使う.
+   */
+  pidProvider?: () => number
 }
 
 /**
@@ -155,6 +199,8 @@ export class FileAuditLogStore implements AuditLogStore {
   private readonly retentionMs: number
   private readonly rotateOnAppend: boolean
   private readonly now: () => Date
+  private readonly pidGuard: PidGuard | undefined
+  private readonly pidProvider: () => number
 
   /** in-memory cache: 末尾 entry の id + hash。冒頭 ロード後ずっと保持。 */
   private lastId = 0
@@ -169,6 +215,13 @@ export class FileAuditLogStore implements AuditLogStore {
     this.retentionMs = opts.rotation?.retentionMs ?? DEFAULT_RETENTION_MS
     this.rotateOnAppend = opts.rotation?.rotateOnAppend ?? true
     this.now = opts.now ?? (() => new Date())
+    this.pidGuard = opts.pidGuard
+    this.pidProvider =
+      opts.pidProvider ??
+      (() =>
+        typeof process !== 'undefined' && typeof process.pid === 'number'
+          ? process.pid
+          : 0)
   }
 
   async append(event: AuditEventInput): Promise<AuditAppendResult> {
@@ -178,7 +231,29 @@ export class FileAuditLogStore implements AuditLogStore {
     return result
   }
 
+  /**
+   * pidGuard.checkPid を強制呼び出し. 不一致なら AuditLogStoreError throw.
+   * pidGuard 未設定の場合は no-op (既存テスト互換).
+   */
+  private invokePidGuard(): void {
+    if (this.pidGuard === undefined) return
+    const pid = this.pidProvider()
+    try {
+      this.pidGuard.checkPid(pid)
+    } catch (err) {
+      // IsolationViolationError or generic Error → audit-store の error code に正規化
+      const msg = (err as Error)?.message ?? String(err)
+      throw new AuditLogStoreError(
+        'isolation_violation',
+        `audit append blocked by pid guard: ${msg}`,
+        err,
+      )
+    }
+  }
+
   private async appendInner(event: AuditEventInput): Promise<AuditAppendResult> {
+    // Round 12 Dev-B: append 前 pid guard
+    this.invokePidGuard()
     await this.ensureLoaded()
     const id = this.lastId + 1
     const ts = event.ts ?? this.now().toISOString()
@@ -203,6 +278,10 @@ export class FileAuditLogStore implements AuditLogStore {
     await fs.appendFile(this.filePath, JSON.stringify(entry) + '\n', 'utf-8')
     this.lastId = id
     this.lastHash = hash
+    // Round 12 Dev-B: append 後 pid guard (file 書込中の race を検知).
+    //   ここで例外が出ても entry 自体は既に書き込み済なので, caller は graceful shutdown
+    //   経路に進むこと推奨.
+    this.invokePidGuard()
     if (this.rotateOnAppend) {
       try {
         await this.rotate()

@@ -14,6 +14,7 @@
 export {
   FileAuditLogStore,
   computeHash,
+  AuditLogStoreError,
   type AuditLogStore,
   type AuditEvent,
   type AuditEventType,
@@ -24,4 +25,5 @@ export {
   type AuditVerifyResult,
   type FileAuditLogStoreOptions,
   type AuditRotationPolicy,
+  type PidGuard,
 } from './audit-store.js'

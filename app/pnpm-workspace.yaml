@@ -7,6 +7,11 @@ packages:
   - 'audit'
   - 'notify'
   - 'web'
+  # Round 9 案 9-A1 前倒し (CB-D-W3-01 + CB-D-W3-02 統合): needs_scout skill MVP
+  - 'needs-scout'
+  # Round 10 R10 Dev-γ 前倒し (CB-D-W4-01 統合 e2e): mock-claw full flow scaffold
+  # needs_scout → JSON IF dispatch → CEO mock → tos-monitor → kill-switch → audit chain → recovery
+  - 'e2e'
   # CI workflow openclaw-monitor.yml が --filter で参照する monitor パッケージ
   # (DEC-019-053 v15.2 / Plan A 移行で workspace 正式メンバー化、2026-05-04)
   - 'scripts/openclaw-monitor'

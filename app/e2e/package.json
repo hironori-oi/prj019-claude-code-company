@@ -1,0 +1,33 @@
+{
+  "name": "@clawbridge/e2e-mock-claw",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PRJ-019 Phase 1 W4→W0 前倒し (R10 Dev-γ): mock-claw e2e full flow scaffold (needs_scout → JSON IF dispatch → CEO mock → tos-monitor → kill-switch → audit chain → recovery)",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "echo 'e2e-mock-claw: lint TBD'",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@clawbridge/audit": "workspace:*",
+    "@clawbridge/harness": "workspace:*",
+    "@clawbridge/needs-scout": "workspace:*",
+    "@clawbridge/openclaw-runtime": "workspace:*",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "@types/node": "^22.10.0"
+  }
+}

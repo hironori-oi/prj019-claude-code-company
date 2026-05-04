@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "rolloutPhase": "A (warn)",
+    "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
+    "issue": "ARCH-01 (DEC-019-041)",
+    "round": "Round 10 R10 Dev-γ 前倒し (CB-D-W4-01 + CB-D-W4-02 統合 e2e)"
+  },
+  "extends": "../tsconfig.legacy-relax.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "composite": false,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@clawbridge/harness": ["../harness/src/index.ts"],
+      "@clawbridge/openclaw-runtime": ["../openclaw-runtime/src/index.ts"],
+      "@clawbridge/needs-scout": ["../needs-scout/src/index.ts"],
+      "@clawbridge/audit": ["../audit/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts"]
+}

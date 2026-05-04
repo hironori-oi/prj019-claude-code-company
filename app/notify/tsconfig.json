@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "rolloutPhase": "A (warn)",
+    "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
+    "issue": "ARCH-01 (DEC-019-041)",
+    "introduced": "Round 12 Dev-B (DEC-019-057 連動 / Slack webhook POST 配線)"
+  },
+  "extends": "../tsconfig.legacy-relax.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts"]
+}

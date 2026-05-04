@@ -1,0 +1,392 @@
+# needs-scout critical-domain denylist v1 — Round 12 Dev-A YAML 直書き化 (CB-D-W3-01 完遂)
+#
+# 設計:
+#   - 13 領域 × 4 tier (baseline / critical / major / minor / backlog) で keyword を分類。
+#     ※ baseline = Round 9 着地分 (DEC-019-010 確定時 13 領域基本セット)
+#     ※ critical / major / minor = Round 10/11 拡張分 (review-round9 §3.2/§3.3 分類)
+#     ※ backlog = 将来候補 (Round 11 minor 16 件の audit lineage、enabled: false で runtime 除外)
+#   - 各 tier には enabled: true|false フラグを持ち、loader 側で enabled === true のみ runtime denylist に load。
+#   - keywords は lowercase 部分一致用 (大小文字混在 / 全角混在は normalization.ts NFKC layer が吸収)。
+#
+# 連動:
+#   - DEC-019-010 (重要 13 領域 fail-safe denylist)
+#   - CB-D-W3-01 (needs_scout skill config 直接埋込)
+#   - Round 10 dev-α: critical 7 + major 26 着地
+#   - Round 11 Dev-A: minor 14 着地 + 既存確認 2 件 = 16 件完遂
+#   - Round 12 Dev-A: NFKC + YAML 化 + backlog tier の audit 化 (本 file)
+#
+# 運用ルール (Round 13 引継):
+#   - keyword 追加は PR ベース、Review 部門 1 名 + Dev 部門 1 名の approval 必須
+#   - tier 移動 (backlog → minor 等) は DEC log への記録必須
+#   - Object.freeze 完全準拠 (loader 側で freeze、本 file は YAML データのみ)
+
+version: 1
+
+domains:
+
+  # 1. 重要インフラ (Critical Infrastructure)
+  critical_infrastructure:
+    baseline:
+      enabled: true
+      keywords:
+        - power grid
+        - electric grid
+        - nuclear
+        - water utility
+        - pipeline
+        - scada
+        - ics
+        - industrial control
+        - gas utility
+        - critical infrastructure
+    major:
+      enabled: true
+      keywords:
+        - smart grid
+        - 配電制御
+        - ガス供給管理
+        - データセンター冷却
+        - 上下水処理
+    minor:
+      enabled: true
+      keywords:
+        - 廃棄物処理制御
+        - 空調 bacnet
+        - エレベーター制御
+    backlog:
+      enabled: false
+      keywords:
+        - 廃棄物処理制御
+        - 空調 bacnet
+        - エレベーター制御
+
+  # 2. 教育 (Education)
+  education:
+    baseline:
+      enabled: true
+      keywords:
+        - k-12
+        - k12
+        - student record
+        - student records
+        - school grade
+        - school grades
+        - edtech minor
+        - minor education
+        - school district
+        - transcript service
+    critical:
+      enabled: true
+      keywords:
+        - coppa
+    major:
+      enabled: true
+      keywords:
+        - 偏差値判定
+        - 教員評価
+        - 自動採点
+        - テスト採点
+    minor:
+      enabled: true
+      keywords:
+        - 学習進捗評価
+        - 学習進捗判定
+    backlog:
+      enabled: false
+      keywords:
+        - 学習進捗評価
+        - 学習進捗判定
+
+  # 3. 住居 (Housing)
+  housing:
+    baseline:
+      enabled: true
+      keywords:
+        - housing application
+        - tenant screening
+        - rental discrimination
+        - eviction
+        - housing voucher
+        - section 8
+        - mortgage approval
+        - fair housing
+    major:
+      enabled: true
+      keywords:
+        - tenant scoring
+        - rent automation
+    minor:
+      enabled: true
+      keywords:
+        - 修繕費判定
+        - 敷金判定
+        - 礼金算定
+    backlog:
+      enabled: false
+      keywords:
+        - 修繕費判定
+        - 敷金判定
+        - 礼金算定
+
+  # 4. 雇用 (Employment)
+  employment:
+    baseline:
+      enabled: true
+      keywords:
+        - hiring decision
+        - resume screening
+        - applicant tracking
+        - background check
+        - firing
+        - termination
+        - wage decision
+        - salary decision
+        - employment screening
+    major:
+      enabled: true
+      keywords:
+        - ats 自動判定
+        - 採用適性スコア
+    minor:
+      enabled: true
+      keywords:
+        - applicant tracking system
+    backlog:
+      enabled: false
+      keywords:
+        - applicant tracking system
+
+  # 5. 金融 (Finance)
+  finance:
+    baseline:
+      enabled: true
+      keywords:
+        - credit score
+        - credit decision
+        - loan approval
+        - lending
+        - mortgage
+        - banking customer
+        - investment advice
+        - fintech kyc
+        - aml screening
+        - kyc verification
+    critical:
+      enabled: true
+      keywords:
+        - trading bot
+    major:
+      enabled: true
+      keywords:
+        - algo trading
+        - defi 自動運用
+    minor:
+      enabled: true
+      keywords:
+        - cic スコア
+    backlog:
+      enabled: false
+      keywords:
+        - cic スコア
+
+  # 6. 保険 (Insurance)
+  insurance:
+    baseline:
+      enabled: true
+      keywords:
+        - insurance claim
+        - insurance underwriting
+        - underwriter
+        - claims processing
+        - insurance pricing
+        - risk pricing
+        - health insurance
+        - auto insurance
+    major:
+      enabled: true
+      keywords:
+        - underwriting ai
+    minor:
+      enabled: true
+      keywords:
+        - 引受査定 ai
+        - actuary 自動
+    backlog:
+      enabled: false
+      keywords:
+        - 引受査定 ai
+        - actuary 自動
+
+  # 7. 法律 (Legal)
+  legal:
+    baseline:
+      enabled: true
+      keywords:
+        - legal advice
+        - lawyer ai
+        - court ruling
+        - judicial
+        - sentencing
+        - attorney advice
+        - paralegal automation
+        - contract review high-stakes
+    critical:
+      enabled: true
+      keywords:
+        - 弁護士法 72 条
+        - 弁護士法72条
+    major:
+      enabled: true
+      keywords:
+        - legal opinion
+        - 法律 ai
+    backlog:
+      enabled: false
+      keywords:
+        - legal advice
+
+  # 8. 医療 (Medical)
+  medical:
+    baseline:
+      enabled: true
+      keywords:
+        - diagnosis
+        - patient record
+        - patient records
+        - medical advice
+        - prescription
+        - clinical decision
+        - phi
+        - hipaa
+        - medical imaging diagnosis
+        - mental health diagnosis
+        - therapy session
+        - symptom check
+    critical:
+      enabled: true
+      keywords:
+        - 医師法 17 条
+        - 医師法17条
+    major:
+      enabled: true
+      keywords:
+        - telemedicine 診断
+        - online consultation 診断
+
+  # 9. 行政 (Government / Public Administration)
+  government:
+    baseline:
+      enabled: true
+      keywords:
+        - government benefit
+        - public benefit
+        - social welfare
+        - welfare eligibility
+        - tax assessment
+        - public service eligibility
+        - voter registration
+        - voting system
+        - election
+
+  # 10. 製品安全 (Product Safety)
+  product_safety:
+    baseline:
+      enabled: true
+      keywords:
+        - product recall
+        - product safety
+        - consumer safety
+        - food safety
+        - drug safety
+        - pharmaceutical safety
+        - toy safety
+        - automotive safety
+        - firearm safety
+    major:
+      enabled: true
+      keywords:
+        - haccp 判定
+    minor:
+      enabled: true
+      keywords:
+        - iso 9001 判定
+        - iso 13485 判定
+    backlog:
+      enabled: false
+      keywords:
+        - iso 9001 判定
+        - iso 13485 判定
+
+  # 11. 国家安全保障 (National Security)
+  national_security:
+    baseline:
+      enabled: true
+      keywords:
+        - national security
+        - classified
+        - defense system
+        - weapons system
+        - cyber warfare
+        - intelligence agency
+        - military operations
+        - export control
+        - itar
+        - ofac
+    major:
+      enabled: true
+      keywords:
+        - offensive cyber
+        - laws
+    backlog:
+      enabled: false
+      keywords:
+        - cyber warfare
+
+  # 12. 移住 (Immigration)
+  immigration:
+    baseline:
+      enabled: true
+      keywords:
+        - immigration
+        - visa application
+        - asylum
+        - deportation
+        - border control
+        - ice enforcement
+        - cbp
+        - uscis
+        - refugee
+    critical:
+      enabled: true
+      keywords:
+        - 行政書士法 1 条の 2
+        - 行政書士法1条の2
+    major:
+      enabled: true
+      keywords:
+        - refugee status
+        - asylum 申請
+
+  # 13. 法執行 (Law Enforcement)
+  law_enforcement:
+    baseline:
+      enabled: true
+      keywords:
+        - law enforcement
+        - predictive policing
+        - arrest record
+        - arrest records
+        - criminal record
+        - criminal records
+        - parole decision
+        - probation decision
+        - facial recognition surveillance
+        - police body cam analysis
+    critical:
+      enabled: true
+      keywords:
+        - compas
+    major:
+      enabled: true
+      keywords:
+        - recidivism risk

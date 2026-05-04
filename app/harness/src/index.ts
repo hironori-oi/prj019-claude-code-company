@@ -23,6 +23,16 @@ export {
   FileKillSwitch,
   killProcessTree,
   realKillProcessTreeDeps,
+  KillSwitchError,
+  SUBPROCESS_KILL_LIMIT,
+  // Round 13 Dev-D Task A: graceful shutdown 設定
+  KillSwitchOptionsSchema,
+  DEFAULT_KILL_SWITCH_GRACEFUL,
+  KILL_SWITCH_ENV_GRACE_KEY,
+  KILL_SWITCH_ENV_SIGTERM_KEY,
+  KILL_SWITCH_ENV_SIGKILL_KEY,
+  resolveKillSwitchOptionsFromEnv,
+  mergeKillSwitchGracefulConfig,
   type KillSwitch,
   type KillTriggerHandler,
   type KillTriggerMeta,
@@ -31,6 +41,10 @@ export {
   type CircuitBreakerOpenTarget,
   type KillProcessTreeDeps,
   type KillProcessTreeResult,
+  type KillToken,
+  type KillSwitchErrorCode,
+  type KillSwitchOptionsType,
+  type ResolvedKillSwitchGracefulConfig,
 } from './kill-switch.js'
 
 export {
@@ -94,6 +108,35 @@ export {
 } from './circuit-breaker.js'
 
 export {
+  FileTosMonitor,
+  createTosMonitor,
+  createAuditHook,
+  shouldFallbackToApiKey,
+  ContinuousRunDetector,
+  CostCapDetector,
+  RateSpikeDetector,
+  MockAnthropicWarningSource,
+  ANTHROPIC_WARNING_FIXTURES,
+  NG3_PLANS,
+  type TosMonitor,
+  type TosMonitorOptions,
+  type TosMonitorEvent,
+  type TosMonitorEventType,
+  type TosMonitorTier,
+  type TosMonitorListener,
+  type Ng3Plan,
+  type Ng3PlanConfig,
+  type WarningEvent,
+  type AnthropicWarningSource,
+  type FallbackDecision,
+  type FallbackDecisionInput,
+  type FallbackReason,
+  type SubscriptionSessionState,
+  type AuditAppender,
+  type RateSpikeSample,
+} from './tos-monitor.js'
+
+export {
   FileUsageMonitor,
   type UsageMonitor,
   type UsageProvider,
@@ -105,6 +148,54 @@ export {
 } from './usage-monitor.js'
 
 export * from './paths.js'
+
+// Round 13 Dev-E 前倒し: KE 系 5 件 (KE-01〜04 + HITL-11) を W4→W2 push.
+export * from './knowledge/index.js'
+
+// Round 14 Dev-D Task A: HITL gate 第 12 種 (cli_version_update_approval) harness adapter.
+// - 既存 hitl-gate.ts / slack-quick-action.ts は無改変、本 adapter 経由で gate-12 を運用.
+// - HitlActionType への正式追加は CEO 議決待ち、現状は 'paid_api_call' 流用.
+export {
+  GATE_12_TYPE,
+  Gate12CheckOutcomeSchema,
+  Gate12ApproveActionSchema,
+  Gate12RejectActionSchema,
+  Gate12DeferActionSchema,
+  Gate12DecisionSchema,
+  Gate12RequestSchema,
+  Gate12SlackQuickActionSchema,
+  ACTION_ID_GATE12_APPROVE,
+  ACTION_ID_GATE12_REJECT,
+  ACTION_ID_GATE12_DEFER,
+  gate12RequestToHitlAction,
+  interpretHitlResult as interpretGate12HitlResult,
+  buildGate12SlackButtons,
+  parseGate12SlackQuickAction,
+  fireGate12HitlGate,
+  type Gate12CheckOutcome,
+  type Gate12ApproveAction,
+  type Gate12RejectAction,
+  type Gate12DeferAction,
+  type Gate12Decision,
+  type Gate12Request,
+  type Gate12SlackQuickAction,
+  type Gate12SlackButton,
+  type BuildGate12SlackButtonsOptions,
+  type FireGate12Options,
+} from './hitl/gate-12-cli-version-update.js'
+
+// Round 15 Dev-M (M-1): gate-12 + audit-store SHA-256 chain 統合 fire helper.
+// - 既存 gate-12-cli-version-update.ts / hitl-gate.ts / audit-store.ts は無改変.
+// - request 発火 + decision 確定の 2 entry を 'hitl_decision' type で append.
+export {
+  buildGate12FireAuditPayload,
+  buildGate12DecisionAuditPayload,
+  fireGate12WithAudit,
+  Gate12ChainIntegrityError,
+  type Gate12FirePhase,
+  type Gate12AuditFireOptions,
+  type Gate12AuditFireResult,
+} from './hitl/gate-12-audit-fire.js'
 
 export {
   RealTimeSource,

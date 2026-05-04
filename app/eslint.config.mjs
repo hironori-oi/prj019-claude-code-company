@@ -40,4 +40,47 @@ export default tseslint.config(
       'no-console': 'off',
     },
   },
+  // Round 13 Dev-B (DEC-019-057): notify package は harness / audit を import 禁止.
+  // 依存方向は「harness → notify (一方向)」を正式化、逆方向は ESLint で検出して禁止する.
+  {
+    files: ['notify/src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@clawbridge/harness', '@clawbridge/harness/*'],
+              message:
+                'notify package must NOT import @clawbridge/harness (循環依存禁止 / Round 13 Dev-B Task C).',
+            },
+            {
+              group: ['@clawbridge/audit', '@clawbridge/audit/*'],
+              message:
+                'notify package must NOT import @clawbridge/audit (循環依存禁止 / Round 13 Dev-B Task C).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Round 13 Dev-B (DEC-019-057): harness は notify を直接 import 禁止.
+  // 必ず notify-bridge.ts 経由で transport 注入する (caller 側の wiring が責務).
+  {
+    files: ['harness/src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@clawbridge/notify', '@clawbridge/notify/*'],
+              message:
+                'harness must NOT import @clawbridge/notify directly. Use notify-bridge.ts transport injection (Round 13 Dev-B Task C).',
+            },
+          ],
+        },
+      ],
+    },
+  },
 )

@@ -156,6 +156,57 @@ pnpm typecheck && pnpm test && pnpm lint
 
 **Slack smoke は v2.1 (`../reports/dev-1password-slack-integration-v2-1.md`) §2 を参照** (3 段階 = pre-flight / dry-run / live)。v1/v2 §3.2 Case 2 のコマンド (`node --experimental-vm-modules -e ...`) は撤回済み。
 
+### Path C: drill #2 1-shot real-execution (5/7 朝 06:00-08:00 JST、Review-F 担当)
+
+drill #2 は subprocess 実機検証。Round 14 Dev-C で `--mode real` flag 整備 + Round 15 Dev-L (Task L-2) で audit log SHA-256 hash chain integrity verifier と G-12 dry-run-guard 抑止 helper が wire-up 済。
+
+```bash
+cd projects/PRJ-019/app/e2e
+
+# dry-run (mock 経路 / 副作用ゼロ確証)
+pnpm tsx src/__tests__/drill-2-1-shot-real-execution.harness.ts --mode dry-run --date 2026-05-07 --verbose
+
+# real-mode (5/7 朝 06:00 operator 起動 / 実 Claude Code CLI を spawn)
+pnpm tsx src/__tests__/drill-2-1-shot-real-execution.harness.ts \
+  --mode real \
+  --date 2026-05-07 \
+  --cli-path /usr/local/bin/claude \
+  --verbose
+```
+
+**audit log + hash chain wire-up** (Round 15 Dev-L Task L-2):
+
+drill 中の audit entry 整合性検証は、harness 経由ではなく `drill-2-real-wireup.ts` helper を使う:
+
+```ts
+import {
+  createDrillRealWireupContext,
+  appendScenarioStandardSequence,
+  verifyDrillHashChainIntegrity,
+  verifyDrillG12NotFiring,
+  disposeDrillRealWireupContext,
+} from './src/__tests__/drill-2-real-wireup.js'
+
+const ctx = await createDrillRealWireupContext({ mode: 'audit-real' })
+try {
+  // 9 scenarios x 2 entries = 18 audit entry を append
+  for (const s of DRILL_2_SCENARIOS) {
+    await appendScenarioStandardSequence(ctx, s, { pid, exitCode, exitSignal, aborted })
+  }
+  // SHA-256 hash chain integrity verify
+  const integrity = await verifyDrillHashChainIntegrity(ctx, 18)
+  // G-12 (DryRunGuard) が drill モード中に発火していないことを assert
+  const g12 = await verifyDrillG12NotFiring(ctx)
+  console.log(integrity.chainValid, g12.notFiring)
+} finally {
+  await disposeDrillRealWireupContext(ctx)
+}
+```
+
+**resource quota** (Round 15 Dev-L Task L-1):
+
+subprocess spawn 時の cgroup v2 / Job Object 強制は `cli/spawn-resource-attach.ts` の `attachResourcePlanCrossPlatform(spec, pid, opts)` 1 関数に統合済。MIN/DEFAULT/MAX 値は `cli/resource-quota-constants.ts` で一元管理 (`DRILL_2_RECOMMENDED_QUOTA = { cpuPercent: 200, memoryBytes: 512 MiB, maxMs: 60s, killGraceMs: 200ms }`)。Linux 以外は noop+warn fallback で副作用ゼロ。
+
 ## Secrets Management (DEC-019-048 / DEC-019-049 / DEC-019-053)
 
 ### Tier 1 (Vault 必須 / 9 fields)

@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "title": "needs-scout multilingual unification fixture",
+    "purpose": "Round 15 Dev-K (K-2) integration test fixture. 35-pair core + Round 14 expansion.",
+    "source": "extracted from src/filters/normalization-multilingual.ts KANJI_UNIFICATION_PAIRS",
+    "round": "PRJ-019 Round 15 Dev-K",
+    "lastUpdated": "2026-05-05",
+    "totalPairs": 50,
+    "categories": [
+      "zh-traditional-to-simplified",
+      "ja-old-to-new",
+      "ko-hanja-to-unified"
+    ]
+  },
+  "zh_traditional_to_simplified": [
+    { "variant": "醫", "canonical": "医", "domain": "medical", "example": "醫師 -> 医师" },
+    { "variant": "藥", "canonical": "薬", "domain": "medical", "example": "藥品 -> 薬品" },
+    { "variant": "療", "canonical": "疗", "domain": "medical", "example": "治療 -> 治疗" },
+    { "variant": "護", "canonical": "护", "domain": "medical", "example": "護理 -> 护理" },
+    { "variant": "診", "canonical": "诊", "domain": "medical", "example": "診斷 -> 诊断" },
+    { "variant": "斷", "canonical": "断", "domain": "medical", "example": "診斷 -> 诊断" },
+    { "variant": "書", "canonical": "书", "domain": "legal", "example": "行政書士 -> 行政书士" },
+    { "variant": "條", "canonical": "条", "domain": "legal", "example": "第 72 條 -> 第 72 条" },
+    { "variant": "號", "canonical": "号", "domain": "legal", "example": "第 17 號 -> 第 17 号" },
+    { "variant": "機", "canonical": "机", "domain": "general", "example": "機関 -> 机关" },
+    { "variant": "關", "canonical": "关", "domain": "general", "example": "関連 -> 关联" },
+    { "variant": "電", "canonical": "电", "domain": "critical_infrastructure", "example": "電力 -> 电力" },
+    { "variant": "網", "canonical": "网", "domain": "general", "example": "網絡 -> 网络" },
+    { "variant": "業", "canonical": "业", "domain": "general", "example": "業務 -> 业务" },
+    { "variant": "務", "canonical": "务", "domain": "general", "example": "業務 -> 业务" },
+    { "variant": "證", "canonical": "证", "domain": "finance", "example": "證券 -> 证券" },
+    { "variant": "銀", "canonical": "银", "domain": "finance", "example": "銀行 -> 银行" },
+    { "variant": "財", "canonical": "财", "domain": "finance", "example": "財務 -> 财务" },
+    { "variant": "產", "canonical": "产", "domain": "finance", "example": "不動產 -> 不动产" },
+    { "variant": "動", "canonical": "动", "domain": "general", "example": "動車 -> 动车" },
+    { "variant": "車", "canonical": "车", "domain": "general", "example": "自動車 -> 自动车" },
+    { "variant": "檢", "canonical": "检", "domain": "legal", "example": "檢察 -> 检察" },
+    { "variant": "驗", "canonical": "验", "domain": "product_safety", "example": "檢驗 -> 检验" },
+    { "variant": "審", "canonical": "审", "domain": "legal", "example": "審判 -> 审判" },
+    { "variant": "議", "canonical": "议", "domain": "government", "example": "議會 -> 议会" },
+    { "variant": "識", "canonical": "识", "domain": "national_security", "example": "識別 -> 识别" },
+    { "variant": "別", "canonical": "别", "domain": "national_security", "example": "識別 -> 识别" },
+    { "variant": "訴", "canonical": "诉", "domain": "legal", "example": "訴訟 -> 诉讼" },
+    { "variant": "訟", "canonical": "讼", "domain": "legal", "example": "訴訟 -> 诉讼" },
+    { "variant": "監", "canonical": "监", "domain": "law_enforcement", "example": "監視 -> 监视" },
+    { "variant": "視", "canonical": "视", "domain": "law_enforcement", "example": "監視 -> 监视" },
+    { "variant": "標", "canonical": "标", "domain": "product_safety", "example": "標準 -> 标准" },
+    { "variant": "準", "canonical": "准", "domain": "product_safety", "example": "標準 -> 标准" }
+  ],
+  "ja_old_to_new": [
+    { "variant": "辯", "canonical": "弁", "domain": "legal", "example": "辯護士 -> 弁護士" },
+    { "variant": "髙", "canonical": "高", "domain": "general", "example": "髙橋 -> 高橋" },
+    { "variant": "德", "canonical": "徳", "domain": "general", "example": "德 -> 徳" },
+    { "variant": "澤", "canonical": "沢", "domain": "general", "example": "澤 -> 沢" },
+    { "variant": "濱", "canonical": "浜", "domain": "general", "example": "濱 -> 浜" },
+    { "variant": "寳", "canonical": "宝", "domain": "general", "example": "寳 -> 宝" },
+    { "variant": "澁", "canonical": "渋", "domain": "general", "example": "澁 -> 渋" },
+    { "variant": "壽", "canonical": "寿", "domain": "general", "example": "壽 -> 寿" },
+    { "variant": "萬", "canonical": "万", "domain": "general", "example": "萬 -> 万" },
+    { "variant": "竝", "canonical": "並", "domain": "general", "example": "竝 -> 並" },
+    { "variant": "假", "canonical": "仮", "domain": "general", "example": "假名 -> 仮名" },
+    { "variant": "應", "canonical": "応", "domain": "education", "example": "應急 -> 応急" },
+    { "variant": "對", "canonical": "対", "domain": "general", "example": "對策 -> 対策" },
+    { "variant": "擔", "canonical": "担", "domain": "employment", "example": "擔當 -> 担当" },
+    { "variant": "當", "canonical": "当", "domain": "general", "example": "擔當 -> 担当" },
+    { "variant": "圓", "canonical": "円", "domain": "finance", "example": "圓 -> 円" }
+  ],
+  "ko_hanja_to_unified": [
+    { "variant": "國", "canonical": "国", "domain": "immigration", "example": "韓國 -> 韩国" },
+    { "variant": "學", "canonical": "学", "domain": "education", "example": "學校 -> 学校" },
+    { "variant": "會", "canonical": "会", "domain": "government", "example": "國會 -> 国会" },
+    { "variant": "長", "canonical": "长", "domain": "general", "example": "隊長 -> 队长" },
+    { "variant": "師", "canonical": "师", "domain": "medical", "example": "醫師 -> 医师" },
+    { "variant": "樂", "canonical": "乐", "domain": "education", "example": "音樂 -> 音乐" },
+    { "variant": "團", "canonical": "团", "domain": "national_security", "example": "團體 -> 团体" },
+    { "variant": "體", "canonical": "体", "domain": "national_security", "example": "團體 -> 团体" }
+  ],
+  "integration_test_strings": {
+    "zh_legal": {
+      "raw": "新興 法律 服務 — 行政書士 が 第 72 條 の 行政書士法 を 解釋",
+      "expectMultilingualHit": true,
+      "expectedDomain": "legal",
+      "rationale": "繁体 '書' '條' を簡体 '书' '条' に変換後、'行政书士' は denylist のいずれにも一致しないが、原文 raw に 'attorney' 'lawyer' 'advice' を含めれば baseline 一致する。本 fixture は multilingual layer 単独で hit させる目的で content を意図的に曖昧化"
+    },
+    "ja_old_legal": {
+      "raw": "新規 辯護士 サービス が 法律 相談 を 提供",
+      "expectMultilingualHit": true,
+      "expectedDomain": "legal",
+      "rationale": "旧字体 '辯' を新字体 '弁' に変換後、'弁護士' は denylist の一部 keyword 候補。fail-safe で reject 想定"
+    },
+    "ko_immigration": {
+      "raw": "한국 새로운 國 visa 政策",
+      "expectMultilingualHit": true,
+      "expectedDomain": "immigration",
+      "rationale": "한자 '國' を統一字 '国' に変換 + 'visa' baseline 一致で reject"
+    }
+  }
+}
