@@ -55,6 +55,22 @@ export {
 } from './hitl-enforcer.js'
 
 export {
+  createKickoffGate,
+  buildKickoffHitlAction,
+  DevKickoffProposalSchema,
+  DEV_KICKOFF_ACTION_TYPE,
+  KICKOFF_SLA_MS,
+  type CostRollbackHook,
+  type DevKickoffActionType,
+  type DevKickoffProposal,
+  type KickoffApprovalResult,
+  type KickoffGate,
+  type KickoffGateOptions,
+  type KickoffHitlGate,
+  type KickoffStatus,
+} from './hitl-kickoff-gate.js'
+
+export {
   executeScenario,
   banDrillScenario1,
   banDrillScenario2,
