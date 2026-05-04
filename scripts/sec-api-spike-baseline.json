@@ -1,0 +1,21 @@
+{
+  "hour_window": {
+    "warn_usd": 5.0,
+    "fail_usd": 10.0,
+    "note": "1h 累積 spend 閾値。warn=$5/h, fail=$10/h は placeholder。Owner tune 可。"
+  },
+  "monthly_trajectory": {
+    "warn_ratio": 2.0,
+    "cap_usd_default": 30,
+    "note": "当月 elapsed 比に対する spend 比 > 200% で warn。例: 月初 5 日経過時に $10 超 (期待 $5 の 200%)。"
+  },
+  "cooldown_sec": 1800,
+  "pii_redaction": {
+    "kind_hash_algo": "sha256-prefix8",
+    "prompt_body": "never_read",
+    "note": "prompt body / messages 配列は一切読まず、kind ラベルのみ SHA-256 先頭 8 桁で hash 化。"
+  },
+  "updated_at": "2026-05-05",
+  "round": "R18",
+  "source_dec": "DEC-019-066 §3.1"
+}

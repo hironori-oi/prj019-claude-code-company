@@ -352,6 +352,71 @@
 
 ---
 
+## DEC-019-068 (起案 / status: DRAFT / 起案者: PM-K / 起案日: 2026-05-05 / レビュー期限: 2026-06-02 (Round 19 正式議決時))
+
+**タイトル**: stagger 圧縮 SOP 連続 4 round 適用効果評価 + デフォルト運用フロー昇格判断（Round 18 着地宣言起案）
+
+**status 注意**: 本議決は **DRAFT** であり、Round 18 完遂着地後の Round 19 で初めて正式議決として発議される。Round 18 進行中は措置案 / 運用方針案として参照のみ可。確定値（適合率累積、measurable 評価）は Round 18 完遂後に PM-L (or 後続 PM) が更新する。
+
+**背景**:
+- DEC-019-062（stagger 圧縮 T+50 SOP 起案）以降、Round 15 / Round 16 / Round 17 と 3 round 連続で 9 並列構成 + T+0-50 第 1 波 / T+0-150 第 2 波 / hard limit T+180 を適用済。
+- Round 17 完遂着地（PM-J / DEC-019-067 起案）で M-1〜M-6 の連続 3 round 累積データ取得済、5/26 formal レビューで DEC-019-065 + 066 + 067 の 3 件統合採択へ進行中。
+- Round 18 = SOP 連続 **4 round** 目の適用機会、5/26 formal 採択直後の Round で「statistically significant」と扱える厚み（n=4）に到達する見込。
+- DEC-019-067 フォローアップ案件 (a) として明示済（連続 3 round 80%+ 達成時の Round 18 以降 SOP confirmed 切替 + Phase 1 W4 完遂運用 SOP 定着）。
+
+**意思決定内容（DRAFT 採択 3 軸）**:
+
+① **Round 18 9 並列構成 + stagger 圧縮 SOP 連続 4 round 適用継続**
+- 第 1 波 4 部署 / 第 2 波 5 部署、T+0-50 / T+0-150 / hard limit T+180、例外 3 件（Owner / drill #2 / API spike）すべて DEC-019-066 軸-② 継承
+- Round 18 部署配分は Round 19 PM 起案時に確定（PM-K 起案範囲外、本 DRAFT は枠組のみ規定）
+
+② **デフォルト運用フロー昇格判断 trigger 4 条件**
+- (T-1) 連続 4 round 累計 SOP 適合率 ≥ 80%（n=36 件中 ≥29 件 T+50 ± 30 内）
+- (T-2) API 追加コスト累計 = $0 維持（4 round 連続）
+- (T-3) tests 791 PASS baseline ± 0 維持（4 round 連続）
+- (T-4) Owner 拘束 0 分維持（4 round 連続、formal directive 例外を除く）
+- 4/4 達成 → Round 19 で「**stagger 圧縮 SOP = デフォルト運用フロー**」昇格議決、PRJ-019 内部運用後 PRJ-018 / PRJ-012 横展開検討
+
+③ **Phase 1 W4 完遂（6/20 想定）までの SOP 定着評価**
+- Round 18 → Round 19 → Round 20 と SOP 維持運用、各 Round 完遂時に T-1〜T-4 4 条件を継続モニタ
+- Phase 1 W4 完遂時点で 5+ round 累積（n≥45）達成 → confirmed 切替後の改訂条件 trigger 設定（5+ round で 70% 割れ等）を別 DEC で起案
+
+**代替案 + 却下根拠（DRAFT）**:
+- 代替案 A（連続 5 round データ収集後昇格）: Phase 1 W4 完遂タイミングと近接 → 昇格判断遅延リスク → 却下推奨
+- 代替案 B（Round 18 で T+30 試行に圧縮）: DEC-019-066 R1 リスク（T+30 で API spike risk 高）解消未確証 → 却下推奨
+- 代替案 C（4 round 累計データで昇格 / 採用候補）: n=36 で statistical significance 担保、5/26 formal 採択直後の Round で評価可能
+
+**採用根拠（DRAFT）**:
+- (a) DEC-019-067 フォローアップ案件 (a) で明示済 → roadmap 整合性
+- (b) Round 17 完遂着地で連続 3 round 累積 80%+ 達成見込（DEC-019-067 M-4 達成時）→ Round 18 で n=36 に拡大が自然
+- (c) 5/26 formal 採択（DEC-065 + 066 + 067 統合）直後の Round = SOP 確定後の最初の検証 round として最適
+- (d) Phase 1 W4 完遂（6/20）まで 1 ヶ月、SOP 定着検証期間として十分
+
+**measurable success criteria（Round 19 正式議決時 update）**:
+- (M-1) Round 18 第 1 波 4 部署 T+50 内 dispatch 完了 → 達成 / 未達
+- (M-2) Round 18 完遂時 API 累計 $0 維持 → 達成 / 未達
+- (M-3) tests 791 PASS baseline ± 0 → 達成 / 未達
+- (M-4) **連続 4 round 累計 SOP 適合率 ≥ 80%（n=36）** → 達成 / 未達 ★ 昇格判断 critical
+- (M-5) Round 17 完遂後の 17 日 path W2 / W3 進行整合 → 達成 / fallback / 未達
+- (M-6) 軸-E 到達指標 4/4 達成（Knowledge INDEX v6 + Runbook 4 件 + frontmatter + 横展開 readiness）
+
+**議決 trajectory（30 → 32 件 update）**:
+- Round 17 完遂時点累計: **30 件**（DEC-019-001〜067、Round 17 起案 3 件 = 065 / 066 / 067 内訳）
+- Round 18 着地時点予定: **31 件**（+ DEC-019-068 DRAFT 確定）
+- Round 19 正式議決時: **32 件**（+ DEC-019-069 = 17 日 path 1 日前倒し連鎖評価 / DEC-019-067 フォローアップ (b)）
+
+**フォローアップ案件**:
+- DEC-019-069（17 日 path W1 5/9 kickoff 成立時の Phase 1/2 全 timeline 1 日前倒し連鎖評価、6/19 公開 case 評価着手）= DEC-019-067 フォローアップ (b) 継承
+- DEC-019-070（軸-E 4/4 達成時の Knowledge INDEX v6→v7 + Runbook 物理化 PRJ-018 / PRJ-012 横展開ロードマップ）= DEC-019-067 フォローアップ (c) 継承
+- DEC-019-071（昇格後の SOP 改訂条件 trigger 設定 = 5+ round で 70% 割れ等）
+
+**制約遵守**:
+- API 消費: $0（PM-K は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 追記 + reports/ 新規のみ）
+- 絵文字: 0 / tests 影響: 0（baseline 791 維持）/ 既存 DEC 改変: 0（DEC-019-067 fix forward-only、PM-J draft text 削除なし）
+- DRAFT 維持: Round 18 進行中は status DRAFT 固定、Round 19 で正式議決時に status: confirmed / rejected / revised へ遷移
+
+---
+
 **v15.14 footer (Round 12 完遂着地 + Round 13 9-10 並列 dispatch authorization + DEC-019-060 起票（暫定）+ 議決-26 前倒し可否暫定採択 + 配布資料 5/5/6/7 case 別 patch 準備 + CASE-SWITCH-CHECKLIST 新設 + dashboard 81%)**: 2026-05-04 深夜終盤（Round 12 全 10 並列完遂着地 + CEO Round 12 統合報告 v13（260+ 行）受領直後 / Owner formal「最速で進めよ」directive 継続中 + 「議決を早められる場合は早めていきましょう」追加 directive 受領）／ **DEC-019-060 起票（status: 暫定）= Round 13 9-10 並列 dispatch authorization + 議決-26 前倒し評価着手**（Dev-F NFKC 多言語拡張 + denylist v3 / Dev-G primitive 完全分離 + 8 桁一致維持 / Dev-H drill #2 実機検証 wiring + KillToken 統合 / Dev-I CLI version-check 拡張 5 outcome / Dev-J Phase 1 sign-off 5/22 push 詳細評価（必要稼働率 19.8-23.4%） / Review-E drill #2 前倒し case 評価 + 5/5/6/7 ランブック差分 + 50 ctrl 95% 加速 / PM-F 議決-26 前倒し case 別シナリオ + Phase 2 着手 6/24 → 6/10 14 日前倒し case 評価 / Marketing-G dynamic disclosure 公開後 30 日運用 + 18×18 final QA + case study v3 / Knowledge-I INDEX-v3 → v4 = 40 → 50+ entries + HITL gate-11 PII review 2 件目 dry run / Secretary-H（本起票）DEC-019-060 起票 + 配布資料 5/5/6/7 case 別 patch 3 ディレクトリ + CASE-SWITCH-CHECKLIST 新設 + dashboard 81% + progress v14 + weekly digest 5/4 EOD updated）／ **Round 12 完遂着地累計**: code/refactor 約 3,800 行 / +174 tests（workspace 614 → 791 pass、+177 net）/ レポート 約 6,800 行 + 6,500 字 / config YAML 392 行 / knowledge +10 件（累計 33 → 40 entries）／ **CB-D-W3-01 完遂（22 日前倒し）= W3 中核 2 件すべて完遂**（CB-D-W3-04 = R11 + CB-D-W3-01 = R12）／ **Round 12 大成果 6 件**（① CB-D-W3-01 完遂 = NFKC + denylist YAML 392 行 / ② tos-monitor primitive 委譲 + 8 桁一致 / ③ real child_process.spawn + NDJSON + drill #2 dry-run 45 セル / ④ kill-switch + KillToken + barrel + 256 件上限 / ⑤ 5/22 push 評価 GO 条件付 = 必要稼働率 19.8-23.4% / ⑥ portfolio 18×18 = 100%（324/324 cell））／ **議決-26 前倒し評価着手 = Owner directive 直接 trigger**（Owner「議決を早められる場合は早めていきましょう」5/4 深夜終盤 → 5/8 元計画 → 5/5 / 5/6 / 5/7 case 別評価 + Round 13 PM-F + Review-E が成立条件 + 5 軸 status 確度を case 別マトリクスで提示、CEO 判断後 confirmed 切替）／ **配布資料 5/5/6/7 case 別 patch 準備完了**（既存 13 件配布資料の日付依存記述（5/8 → 5/5 / 5/6 / 5/7）を上書きする差分パッチを 3 サブディレクトリ `decision-26-package/5-5-case-patch/` `5-6-case-patch/` `5-7-case-patch/` 配下に各 4-6 ファイル準備、即時切替可能化、PATCH-INDEX 起票）／ **5/8 元計画 case 最終 ready 確認**（既存 13 件配布資料に 5/8 → 5/5/6/7 切替時の影響項目チェックリスト追加 = `decision-26-package/CASE-SWITCH-CHECKLIST.md` 新規作成 150-200 行、6 軸 case 別差分明示）／ **採択内容**: (a) 議決-26 前倒し可否暫定採択 / (b) Round 13 9-10 並列 dispatch authorization / (c) 配布資料 5/5/6/7 case 別差分パッチ準備 / (d) 5/8 元計画 case 最終 ready 確認 ／ **Lv 4+「極めて強く推奨」維持根拠 6 件 + 議決前倒し追加根拠 3 件 = 9 件**（① W3 中核 22 日前倒し既達 + ② 5 部署 7 経路 cross-validation 収斂維持 + ③ 議決-26 採択 5 軸全 PASS roadmap 確定 + ④ Owner 残動作 2 件のみ + ⑤ API 追加コスト累計 $0 + ⑥ Owner formal「最速」directive 継続中 + ⑦ Owner formal 議決前倒し新 directive 受領 + ⑧ Round 12 完遂着地で軸-1/2/3 が事実上 PASS 化（5/5 前倒し case でも採択可能性 70%+）+ ⑨ workspace test 614→791 pass の堅牢性確証）／ **確度 trajectory v13 → v14 更新（議決前倒し 3 case 別）**: 5/5 議決-26 採択 case = **70%** / 5/6 case = **80%** / 5/7 case = **87%** / 5/8 元計画 case = 90→**92%**（前倒し評価併走で確度逆向上） / 5/12 production readiness 97→**98%** / 5/15 MS-2 trial 85→**88%** / 5/22 内部運用着手公式 = 5/22 push 評価成立時 = 5/22 → 5/15-5/19 短縮可否評価中 / 5/30 必須 50 = 95%+ 92→**94%** / 6/3 Phase 1 公式完了 buffer 終端 93→**95%** / 6/27 朝公開 90→**92%** ／ **議決構造**: 既存 24 件 + DEC-019-060 = **25 件**（DEC-019-001〜060）／ **進捗**: 80 → **81%**（Round 13 9-10 並列稼働起動進捗予約 +1pt = 議決前倒し case 別評価着手 +0.5pt + drill #2 前倒し評価着手 +0.3pt + 配布資料 patch 準備 +0.2pt、Round 13 完遂時 81→85-87% 想定）／ **Owner 残動作**: **0 件継続**（5/5 / 5/6 / 5/7 / 5/8 議決-26 採択判定 = case 別 4 択、当日 45-50 分 + 6/26 6/27 公開最終確認 30-45 分のみ、判断-6 formal 受領は Round 13 完遂後 30-45 min 想定の v14 報告で再 ask）／ **API 追加コスト**: $0（Secretary-H は Read + Edit + Write のみ、Round 13 全部署も $0 見込）／ **配布資料体系 4 系統 ready**（5/8 元計画 13 件 + 5/5 case patch + 5/6 case patch + 5/7 case patch = 4 系統、CEO 判断 confirmed 後 30 分以内に Owner 配布可能）／ commit hash: meta-only（DEC-019-060 起票 + 配布資料 5/5/6/7 case 別 patch + CASE-SWITCH-CHECKLIST + dashboard 81% + progress v14 + weekly digest 5/4 EOD updated、本 commit）／ **次回更新**: Round 13 全 9-10 部署完遂着地時 v15.15 footer（CEO 統合報告 v14 + 議決-26 前倒し case 別評価結果 + DEC-019-060 status 暫定→confirmed 切替 trigger）/ 議決-26 採決後（5/5 / 5/6 / 5/7 / 5/8 case 別）v15.16 footer（議事録反映 + 議決-26 採択 5 軸全 PASS 確度 confirmed + 前倒し case 採択時の Phase 1/2 timeline 確定反映）
 
 ---

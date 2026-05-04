@@ -55,6 +55,23 @@ export interface KillSwitchTrigger {
 const NO_OP_KILL: KillSwitchTrigger = { fire: async () => {} }
 
 /**
+ * Round 18 W2 cross-control: p-ui-04 kill switch terminal latch を問い合わせる port。
+ * isActive() が true の時、p-ui-05 は rollback を起動しない (kill = terminal)。
+ */
+export interface KillTerminalQuery {
+  isActive(): boolean
+  lastReason(): string | null
+}
+
+/**
+ * Round 18 W2 cross-control: rollback 完遂時 p-ui-09 が post-rollback verify を回す
+ * ための notifier port。RLS verify は呼出側が runRlsChecklist を別途実行する。
+ */
+export interface PostRollbackNotifier {
+  onRollbackCompleted(payload: { loopId: string; targetCommit?: string }): Promise<void> | void
+}
+
+/**
  * detectAnomaly — pure な breach 判定のみ。rollback 起動は evaluateAndAct 側で。
  * 後方互換のため signature 維持 (旧テスト + skeleton barrel export 用)。
  */
@@ -83,19 +100,45 @@ export function detectAnomaly(input: AnomalyInput, state: AnomalyState): Anomaly
   }
 }
 
+/**
+ * Round 18 W2 拡張オプション。後方互換のため optional のまま。
+ *  - killQuery: kill switch が terminal latch なら rollback 起動を抑止
+ *  - postRollback: rollback 完遂後の post-rollback verify を呼出側に通知
+ */
+export interface EvaluateAndActOptions {
+  killQuery?: KillTerminalQuery
+  postRollback?: PostRollbackNotifier
+}
+
 /** 連動 path: 確定時 rollback 起動 + 失敗時 kill switch interlock */
 export async function evaluateAndAct(
   input: AnomalyInput,
   state: AnomalyState,
   executor: RollbackExecutor,
   kill: KillSwitchTrigger = NO_OP_KILL,
+  opts: EvaluateAndActOptions = {},
 ): Promise<AnomalyOutput> {
   const verdict = detectAnomaly(input, state)
   if (verdict.reason !== 'confirmed_consecutive_breach_pending_rollback') {
     return verdict
   }
+  // Round 18 W2 cross-control invariant:
+  //   p-ui-04 kill switch fired → p-ui-05 rollback NOT triggered (kill is terminal)
+  if (opts.killQuery?.isActive()) {
+    return {
+      anomalyDetected: true,
+      rollbackTriggered: false,
+      reason: `rollback_skipped_kill_terminal:${opts.killQuery.lastReason() ?? 'unknown'}`,
+    }
+  }
   const result = await executor.rollback(input.loopId)
   if (result.ok) {
+    if (opts.postRollback) {
+      await opts.postRollback.onRollbackCompleted({
+        loopId: input.loopId,
+        targetCommit: result.targetCommit,
+      })
+    }
     return {
       anomalyDetected: true,
       rollbackTriggered: true,

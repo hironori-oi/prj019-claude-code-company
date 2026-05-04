@@ -50,6 +50,10 @@ export const RlsOutputSchema = z.object({
   inconclusiveCount: z.number().int().nonnegative().optional(),
   aborted: z.boolean().optional(),
   reviewSigned: z.boolean().optional(),
+  /** Round 18 W2: cross-control audit trail entries (count of recorded audit events) */
+  auditTrailCount: z.number().int().nonnegative().optional(),
+  /** Round 18 W2: post-rollback context (true なら p-ui-05 rollback 後の verify run) */
+  postRollback: z.boolean().optional(),
 })
 export type RlsOutput = z.infer<typeof RlsOutputSchema>
 
@@ -64,10 +68,58 @@ export interface ReviewSigner {
 
 const NO_OP_SIGNER: ReviewSigner = { sign: async () => ({ signed: false }) }
 
+/**
+ * Round 18 W2 cross-control audit trail entry。
+ * hitl-10 permission denied / p-ui-05 rollback completed などの
+ * cross-control event を RLS 検証実行コンテキストに記録する。
+ */
+export const RlsAuditEntrySchema = z.object({
+  source: z.enum(['hitl-10', 'p-ui-05', 'p-ui-04']),
+  kind: z.enum(['permission_denied', 'permission_approved', 'rollback_completed', 'kill_terminal']),
+  ticketId: z.string().min(1).optional(),
+  detail: z.string().optional(),
+  recordedAt: z.string().datetime(),
+})
+export type RlsAuditEntry = z.infer<typeof RlsAuditEntrySchema>
+
+export interface RlsAuditTrail {
+  /** entry を追加。idempotent: 重複 ticketId+kind は無視可。 */
+  record(entry: RlsAuditEntry): void
+  /** 全 entry 取得 (snapshot)。 */
+  list(): readonly RlsAuditEntry[]
+  /** 件数。 */
+  count(): number
+}
+
+/** インメモリ実装 (test/runtime 共通)。 */
+export function createRlsAuditTrail(): RlsAuditTrail {
+  const entries: RlsAuditEntry[] = []
+  return {
+    record: (e) => {
+      RlsAuditEntrySchema.parse(e)
+      entries.push(e)
+    },
+    list: () => entries.slice(),
+    count: () => entries.length,
+  }
+}
+
+export interface RlsContextOptions {
+  /** Round 18 W2: cross-control audit trail (hitl-10 / p-ui-05 由来) */
+  auditTrail?: RlsAuditTrail
+  /**
+   * Round 18 W2: post-rollback verify モード。p-ui-05 rollback_completed 後に
+   * 立てると output.postRollback=true で記録 + audit に kind=rollback_completed が
+   * 含まれていなければ failures に WARN しない (= 上位責務)。
+   */
+  postRollback?: boolean
+}
+
 export async function runRlsChecklist(
   input: RlsInput,
   exec: RlsExecutor,
   signer: ReviewSigner = NO_OP_SIGNER,
+  ctx: RlsContextOptions = {},
 ): Promise<RlsOutput> {
   RlsInputSchema.parse(input)
   const failures: RlsFailure[] = []
@@ -89,6 +141,8 @@ export async function runRlsChecklist(
           inconclusiveCount: inconclusive,
           aborted: true,
           reviewSigned: false,
+          auditTrailCount: ctx.auditTrail?.count() ?? 0,
+          postRollback: ctx.postRollback ?? false,
         }
       }
       continue
@@ -122,5 +176,7 @@ export async function runRlsChecklist(
     inconclusiveCount: inconclusive,
     aborted: false,
     reviewSigned,
+    auditTrailCount: ctx.auditTrail?.count() ?? 0,
+    postRollback: ctx.postRollback ?? false,
   }
 }

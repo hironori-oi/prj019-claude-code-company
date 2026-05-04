@@ -58,6 +58,36 @@ export interface PermissionApprover {
 const NO_OP_CEO_FALLBACK: CeoFallbackNotifier = { notify: async () => ({ delivered: true }) }
 
 /**
+ * Round 18 W2 cross-control audit sink。
+ * 権限変更承認の終局状態 (approved / rejected / timeout) を p-ui-09 RLS 検証
+ * 実行コンテキストへ伝搬する。実装は p-ui-09 の RlsAuditTrail と互換 shape。
+ *
+ *   hitl-10 permission denied → p-ui-09 RLS checklist must include audit trail entry
+ */
+export interface PermissionAuditSink {
+  /**
+   * decision 終局時に呼出。kind は state→audit kind の素直なマッピング:
+   *   approved → permission_approved
+   *   rejected / timeout → permission_denied
+   *   pending は記録しない (まだ終局でないため)。
+   */
+  recordDecision(payload: {
+    ticketId: string
+    state: 'approved' | 'rejected' | 'timeout'
+    detail?: string
+    recordedAt: string
+  }): void
+}
+
+/**
+ * Round 18 W2 拡張オプション。後方互換のため optional のまま。
+ *  - auditSink: 終局判定 (approved / rejected / timeout) を cross-control audit に流す
+ */
+export interface PermissionApprovalOptions {
+  auditSink?: PermissionAuditSink
+}
+
+/**
  * Owner 通知 retry × 3 → 全失敗時 CEO fallback。
  * approver が pending を返す場合は SLA 内なら pending、過ぎていれば timeout。
  */
@@ -67,6 +97,7 @@ export async function requestPermissionApproval(
   now: () => number = () => Date.now(),
   approver?: PermissionApprover,
   ceoFallback: CeoFallbackNotifier = NO_OP_CEO_FALLBACK,
+  opts: PermissionApprovalOptions = {},
 ): Promise<PermissionChangeOutput> {
   PermissionChangeInputSchema.parse(input)
   const ts = now()
@@ -105,7 +136,14 @@ export async function requestPermissionApproval(
 
   const decision = await approver.decide(ticketId, expiresAt, now)
   const nowAfter = now()
+  const recordedAt = new Date(nowAfter).toISOString()
   if (decision.state === 'pending' && nowAfter >= expiresAt) {
+    opts.auditSink?.recordDecision({
+      ticketId,
+      state: 'timeout',
+      detail: `changeType=${input.changeType}`,
+      recordedAt,
+    })
     return {
       approvalState: 'timeout',
       expiresAt: new Date(expiresAt).toISOString(),
@@ -115,6 +153,12 @@ export async function requestPermissionApproval(
     }
   }
   if (decision.state === 'approved') {
+    opts.auditSink?.recordDecision({
+      ticketId,
+      state: 'approved',
+      detail: `changeType=${input.changeType}`,
+      recordedAt,
+    })
     return {
       approvalState: 'approved',
       approvedAt: new Date(decision.approvedAt ?? nowAfter).toISOString(),
@@ -125,6 +169,12 @@ export async function requestPermissionApproval(
     }
   }
   if (decision.state === 'rejected') {
+    opts.auditSink?.recordDecision({
+      ticketId,
+      state: 'rejected',
+      detail: `changeType=${input.changeType}`,
+      recordedAt,
+    })
     return {
       approvalState: 'rejected',
       expiresAt: new Date(expiresAt).toISOString(),
