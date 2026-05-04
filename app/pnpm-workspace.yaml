@@ -1,0 +1,9 @@
+packages:
+  - 'harness'
+  - 'claude-bridge'
+  - 'openclaw-runtime'
+  - 'orchestrator'
+  - 'sandbox'
+  - 'audit'
+  - 'notify'
+  - 'web'

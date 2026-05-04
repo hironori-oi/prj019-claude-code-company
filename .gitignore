@@ -1,0 +1,57 @@
+# =============================================================================
+# PRJ-019 Clawbridge — standalone repo root .gitignore
+# =============================================================================
+# 親 monorepo claude-code-company から detach した独立 repo として運用
+# (DEC-019-053 v15.2 / Plan A 採択 2026-05-04)
+# =============================================================================
+
+# ---- Node / pnpm ----
+**/node_modules/
+**/dist/
+**/build/
+**/.next/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Coverage / Test artifacts ----
+**/coverage/
+**/.nyc_output/
+**/.vitest-cache/
+**/__tests__/.tmp/
+
+# ---- TypeScript ----
+*.tsbuildinfo
+
+# ---- Env / secrets (Tier 1 真の secret は GitHub Actions Secrets / Vault 管理) ----
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+.doppler/
+.vault-token
+**/.doppler/
+**/.vault-token
+
+# ---- Local Clawbridge runtime state ----
+.clawbridge/
+**/.clawbridge/
+
+# ---- Open Claw vendor (CB-D-W0-04 で clone する上流リポ、再現可能なので除外) ----
+**/openclaw-runtime/upstream/
+**/openclaw-runtime/vendor/
+
+# ---- Editor / OS ----
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ---- Misc ----
+*.tmp
+*.bak

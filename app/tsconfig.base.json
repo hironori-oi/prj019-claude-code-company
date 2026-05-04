@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "_meta": {
+    "purpose": "PRJ-019 Clawbridge monorepo の TS strict 統一 base (ARCH-01 / DEC-019-041 W0-Week2 buffer)",
+    "rollout": "Phase A (warn) -> Phase B (error) の段階移行。詳細は ./docs/tsconfig-rollout.md",
+    "owner": "Dev 部門 A 担当",
+    "lastUpdated": "2026-05-03"
+  },
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "useUnknownInCatchVariables": true,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**"]
+}

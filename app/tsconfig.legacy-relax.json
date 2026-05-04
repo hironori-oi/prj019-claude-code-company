@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "_meta": {
+    "purpose": "Phase A (warn) 期間中、既存 package が緩和設定で動くための一時的 override base.",
+    "deprecation": "Phase B 移行 (~Phase 1 W4 末) で削除予定。新規 package は使用禁止。"
+  },
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "verbatimModuleSyntax": false,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "useUnknownInCatchVariables": false
+  }
+}

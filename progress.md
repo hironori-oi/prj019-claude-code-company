@@ -1,0 +1,146 @@
+# PRJ-019 進捗管理（progress.md）
+
+## 案件情報
+
+- **案件 ID**: PRJ-019
+- **案件名（仮）**: Clawbridge（仮称） — Open Claw を自律オーナーとする AI 組織ハーネス基盤
+- **現在 Phase**: **Phase 1 着手準備（W0、2026-05-02〜2026-05-18）**
+- **全体進捗**: **45%**（Phase 0 完了 + Phase 1 Go 決裁 + W0-Week1 4 Round 並列発注完遂 + DEC-019-009〜053 連続発行 + Owner Vault 9/9 fields 完遂 + Slack 3 channel live smoke 全 200 OK / 1 attempt 達成 = W0-Week2 着手前疎通検証 100% 完遂、Owner 残動作 4→1 件圧縮）
+- **起案日**: 2026-05-02
+- **Phase 1 着手承認日**: 2026-05-02（DEC-019-007）
+- **Phase 1 W1 着手予定日**: 2026-05-19
+- **Phase 1 W4 完了予定日**: 2026-06-13
+- **担当**: オーナー本人 ／ CEO 統括 ／ 秘書（登録完了 + Phase 1 タスク管理） ／ リサーチ（主担当 + 補追完了） ／ PM（要件整理 + v2 完成 + WBS 確定） ／ レビュー（セキュリティ評価 v1 + v2 完成、強い条件付き Go 推奨） ／ Dev（W1 着手待機）
+
+---
+
+## マイルストーン
+
+| # | マイルストン | 予定日 | 実績日 | ステータス |
+|---|---|---|---|---|
+| 0 | 起案 + 案件登録（brief / decisions / progress / tasks / risks + app/README.md） | 2026-05-02 | 2026-05-02 | **完了** |
+| 1 | リサーチ部門の徹底調査完了 + 補追（ToS とサブスク駆動経路） | 2026-05-09 目標 | 2026-05-02 | **完了**（前倒し）|
+| 2 | PM 要件整理 v1 完成 + v2 アーキテクチャ + Phase 1 ディテール計画完成 | 2026-05-12 目標 | 2026-05-02 | **完了**（前倒し）|
+| 3 | レビュー部門のセキュリティリスク評価レポート v1 + v2（サブスク駆動採用版）完成 | 2026-05-14 目標 | 2026-05-02 | **完了**（前倒し）|
+| 4 | **Phase 0 完了 + DEC-019-005〜008 で Phase 1 Go 決裁** | 2026-05-16 目標 | 2026-05-02 | **完了**（強い条件付き Go） |
+| 5 | **Phase 1 W0 準備期間**（環境準備 / 契約 / オーナー直接確認） | 2026-05-02〜2026-05-18 | — | **進行中** |
+| 6 | Phase 1 W1 着手（ハードガード前倒し: G-01/G-04/G-05/G-06/G-08） | 2026-05-19 着手、2026-05-23 完了 | — | 未着手 |
+| 7 | Phase 1 W2（監視・隔離: G-02/G-03'/G-07/G-09/G-10、tos_monitor 実装） | 2026-05-26〜2026-05-30 | — | 未着手 |
+| 8 | Phase 1 W2 終了時 — DEC-019-008 NG-3 暫定値の再確認（オーナー） | 2026-05-30 | — | 未着手 |
+| 9 | Phase 1 W3（ニーズ判定 + 公開ガード: G-11） | 2026-06-02〜2026-06-06 | — | 未着手 |
+| 10 | Phase 1 W4（副作用ゼロ証明 + ベンチマーク 10 連続実行） | 2026-06-09〜2026-06-13 | — | 未着手 |
+| 11 | **Phase 1 完了レポート + Phase 2 Go/NoGo 決裁（DEC-019-XXX）** | 2026-06-13 | — | 未着手 |
+
+---
+
+## Phase 0 完了 + Phase 1 着手承認（2026-05-02）
+
+### Phase 0 成果物（7 ファイル）
+
+1. `reports/secretary-registration-summary.md` — 秘書登録完了報告
+2. `reports/research-openclaw-harness-investigation.md` — リサーチ部門徹底調査
+3. `reports/research-supplement-tos-and-subscription-paths.md` — リサーチ補追（ToS / 7 サブスク経路評価）
+4. `reports/pm-requirements-and-architecture.md` — PM 要件定義 v1
+5. `reports/pm-architecture-v2-and-phase1-plan.md` — PM v2（OQ-01〜05 反映 / Phase 1 WBS）
+6. `reports/review-security-and-risk-assessment.md` — レビュー v1（API キー前提）
+7. `reports/review-v2-subscription-risk-and-fallback.md` — レビュー v2（サブスク駆動採用 / 強い条件付き Go）
+
+### CEO 決裁（2026-05-02）
+
+- **DEC-019-005**: OQ-01〜05 オーナー判断を全面受容、Phase 1 着手前提として正式採用
+- **DEC-019-006**: サブスク駆動接続方式 = **P-D 改**（公式 Claude Code CLI 常駐 + Open Claw subprocess spawn）／ アカウント分離は不採用（NG-2 連鎖 BAN リスク優先）
+- **DEC-019-007**: Phase 1 を **強い条件付き Go** で正式承認（4 週間、月次予算 $300、必須コントロール 21/23 を着手前クリア、BAN リスク承認）
+- **DEC-019-008**: NG-3 24/7 連続自律稼働回避方針 CEO 暫定値（12 h/日 上限、API 換算 $1,000/月相当で停止、W2 終了時再確認）
+
+### 次マイルストーン（W0 準備期間: 2026-05-02〜2026-05-18）
+
+- リポジトリ作成（clawbridge 専用）／ Vercel Sandbox アカウント整備 ／ Anthropic Max $200 契約 ／ Codex Pro $100 確認 ／ OpenAI ToS オーナー直接確認 ／ 1Password Vault 構築 ／ GitHub branch protection 一括適用準備
+- **W0 全タスク完遂を W1 着手の前提条件**とする
+
+---
+
+## オーナー W0 タスク完了 + DEC-019-009〜013 発行（2026-05-02）
+
+### マイルストーン
+
+- **CB-O-01 完了**: OpenAI ToS 全文取得 + CEO 一次解釈「条件付き許容」確定（DEC-019-010）
+- **CB-O-02 完了**: 既 Claude Max $200 アップグレード済 + オーナー判断「オプション A 採用」確定（DEC-019-011、Sumi/Asagi 巻き添えリスク受容）
+- **CB-O-03 完了**: ChatGPT Pro **$200/月**（$100 想定撤回）既契約確定、Codex 5h 制限 100% 残（DEC-019-009）
+- **GO-06 部分完了**: 月次予算 $300 承認受領、Spend Cap 設定はオーナー残タスク（DEC-019-012）
+- **DEC-019-009〜013 発行**（5 件）:
+  - DEC-019-009: Codex プラン仕様確定（Pro $200、月次予算 $300 を「追加発生分の上限」として再定義）
+  - DEC-019-010: OpenAI ToS 解釈確定（条件付き許容、対象分野ホワイト/ブラック + multi-account 禁止 + OSS ライセンス検証）
+  - DEC-019-011: DEC-019-006 部分撤回 → オプション A 採用（既存 claude.ai 継続使用）
+  - DEC-019-012: 月次予算 $300 + Spend Cap（Anthropic Hard $50 / OpenAI Hard $20）
+  - DEC-019-013: オプション A 採用に伴う追加コントロール群 C-A-01〜05 発令
+- **W0 タスク追加発令**（7 件）:
+  - CB-S-W0-02 対象分野ホワイト/ブラックリスト原案（5/9 / レビュー）
+  - CB-PM-W0-02 コスト計画 v3（5/9 / PM）
+  - CB-D-W0-06 使用量モニタリング（5/12 / Dev）
+  - CB-S-W0-04 BAN drill 2 回（5/12 + 5/17 / レビュー + Dev）
+  - CB-D-W0-05 Sumi/Asagi バックアップ（5/15 / Dev）
+  - CB-S-W0-03 BAN 退避手順書（5/15 / レビュー）
+  - CB-D-W0-07 OAuth トークン隔離（5/15 / Dev）
+
+### 次マイルストーン
+
+- **2026-05-09**: 対象分野ホワイト/ブラックリスト原案策定（CB-S-W0-02）+ コスト計画 v3（CB-PM-W0-02）
+- **2026-05-12**: 使用量モニタリング組み込み完遂（CB-D-W0-06）+ BAN drill 1 回目（CB-S-W0-04）
+- **2026-05-15**: Sumi/Asagi 完全バックアップ（CB-D-W0-05）+ BAN 退避手順書（CB-S-W0-03）+ OAuth トークン隔離（CB-D-W0-07）
+- **2026-05-17**: BAN drill 2 回目（CB-S-W0-04）
+- **2026-05-18**: W0 完了レビュー（CB-S-W0-01）+ オーナー Spend Cap 設定（Anthropic / OpenAI）
+- **2026-05-19**: Phase 1 W1 着手
+
+### オーナー残タスク
+
+- リマインダー: `reports/owner-pending-tasks-2026-05-02.md` を参照
+  - CB-O-05 Doppler 登録（5/15 期限、30 分、CEO 推奨）
+  - Anthropic Spend Cap 設定（Hard $50/月、5/18 期限、5 分）
+  - OpenAI Spend Cap 設定（Hard $20/月、5/18 期限、5 分）
+
+---
+
+## v1 起案（2026-05-02）
+
+### 起案の経緯
+
+1. **オーナー指示** — Open Claw（clawbro.ai/ja）を ChatGPT Codex x5 サブスクで動作させ、claude-code-company 組織を Open Claw が「オーナー」として運営する完全自動化基盤を構築したい。Phase 0 は徹底調査と要件整理が主目的、実装は調査完了後に別決裁
+2. **秘書登録**（本セッション、2026-05-02） — `dashboard/active-projects.md` に PRJ-019 行追加 + `projects/PRJ-019/` 配下に 5 点ドキュメント（brief / decisions / progress / tasks / risks）+ `app/README.md` を整備
+3. **次アクション** — リサーチ部門への Phase 0 調査依頼（CEO 経由）
+
+### 進捗ログ
+
+#### 2026-05-02 PM アーキテクチャ v2 + Phase 1 ディテール計画書完成
+
+- PM 部門が `reports/pm-architecture-v2-and-phase1-plan.md` を作成。オーナー判断 OQ-01〜OQ-05（Codex Pro $200 5x / Anthropic サブスク駆動 / OpenAI ToS 確認済 / 自前ハーネス確定 / PRJ-018 並走）を全面反映。サブスク駆動 3 案併記（P-C/P-D/P-E）、必須コントロール 12 項目を W1〜W4 WBS に配置、Phase 1 月次予算 $300、副作用ゼロ証明手順を確定。**Phase 1 着手 Go 推奨**（条件付き）。
+
+#### 2026-05-02 PM 要件定義書 v1 完成
+
+- PM 部門が `reports/pm-requirements-and-architecture.md` を作成（CB-P-01〜CB-P-06 を実質完遂）。リサーチ確定制約（API キー必須／HITL 前提／推奨スタック）を全面採用、ハーネス権限マトリクス・5 ゲート HITL・コスト/wall-clock キャップ・Phase 計画・Go/NoGo 基準・オープン論点 OQ-01〜OQ-10 を整理。次はレビュー部門 CB-S-01〜CB-S-05 入力へ。
+
+#### 2026-05-02 起案 + 案件登録
+
+- 秘書部門が PRJ-019 として案件登録
+- 仮称「Clawbridge」を秘書側で提案（Claw + bridge、Open Claw と claude-code-company の架橋）
+- 5 点ドキュメント整備:
+  - `brief.md`（v1 起案）— 3 大キーワード（人間不在の完全自動化 / Codex サブスクで動く Open Claw / ハーネスエンジニアリング）強調
+  - `decisions.md`（DEC-019-001）— Phase 0 起案、実装は別決裁
+  - `progress.md`（本ファイル）— Phase 0 着手記録
+  - `tasks.md` — リサーチ・PM・レビュー部門の Phase 0 タスク登録
+  - `risks.md` — 当初リスク R-019-01〜R-019-05 起票
+- `app/README.md` でハーネス基盤としての性質明記（アプリ実体は当面なし）
+- `dashboard/active-projects.md` を PRJ-019 行追加 + 「次に採番する案件 ID: PRJ-020」に更新
+- レポート: `projects/PRJ-019/reports/secretary-registration-summary.md`
+
+---
+
+## 次回更新タイミング
+
+- リサーチ部門の Phase 0 調査着手・中間報告・完了時
+- PM の要件整理完了時
+- レビュー部門のセキュリティ評価完了時
+- DEC-019-XXX（Phase 1 Go/NoGo）発行時
+
+---
+
+**v1 起案**: 2026-05-02 ／ **v2 更新**: 2026-05-02（Phase 0 完了 + Phase 1 Go） ／ **v3 更新**: 2026-05-02（オーナー W0 タスク 4 件完了 + DEC-019-009〜013 発行 + W0 タスク 7 件追加 + 進捗 15%→20%）／ **v4 更新**: 2026-05-04（DEC-019-014〜053 連続発行による W0-Week1 マルチ Round 並列発注成果着地、Round 1+2+3+4 = 25 件 / ~12,000 行 / 26 実装ファイル / 25 cross-ref 編集、Round 4 = Dev T2 HITL 11 種 gate templates 5 日前倒し完遂 + PM cross-ref 100% + Marketing tone 戦略 + Web-Ops portfolio 設計、DEC-019-052 一括採択 + DEC-019-053 `.env.example` 2-tier 再設計、Owner 5/4 当日中に **Vault 5 items × 9 fields 完全投入完遂** + Slack 3 channel **live smoke 全 200 OK / 1 attempt** = W0-Week2 着手前最大不確実性 (1Password CLI + Slack 3-channel + op run resolution 統合) **完全解消**、Owner 残動作 4→**1 件**に圧縮 (OP_SERVICE_ACCOUNT_TOKEN のみ)、確度: 5/22 mock 70% 化 92→**94%** / 5/26 Phase 1 着手 88→**90%** / 6/20 sign-off 79→**80%** / 6/27 朝公開 78→**79%**、進捗 20%→**45%**）

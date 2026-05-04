@@ -1,0 +1,133 @@
+name: openclaw-monitor
+
+# 出典: SOP §6 自動化 (research-issue-changelog-monitor-ops.md)
+# daily polling baseline + manual dispatch。
+# 月額コスト: $0 (public repo は GitHub Actions 無制限無料枠)。
+#
+# DEC-019-048 (1Password CLI 採択) 反映:
+#   - ローカル開発: 1Password CLI (op run) で op:// reference を解決
+#   - GitHub Actions: 後述の Plan B (DEC-019-053 v15.2 補足) に切替
+#
+# DEC-019-049 (Slack 新規 workspace) 反映:
+#   - severity 高 (L3) → drill channel
+#   - severity 中 (L2) → monitor channel
+#   - severity 低 (L1) → log のみ (Slack 通知なし、HITL channel 直行はしない)
+#
+# DEC-019-053 (2-tier 設計) 反映:
+#   - Tier 1 真の secret (本 workflow で使用は 7 fields) を GitHub Actions Secrets に直接登録
+#     (Slack 3 webhook + Resend api_key + 2 通知 email + GitHub PAT)。
+#   - Tier 2 (平文 12 fields) は workflow 内 env: で直接記述、Secrets 不使用。
+#
+# DEC-019-053 v15.2 補足 (Plan B / Personal plan 適応):
+#   - 1Password Personal plan は Service Account 非対応のため、
+#     1password/load-secrets-action は使用せず GitHub Actions Secrets を直接展開する。
+#   - Owner は Vault `prj019` から 7 値を読み出し (op read or 1Password GUI reveal)、
+#     同名で GitHub Actions Secrets に登録する。
+#   - rotation 時は Vault と GitHub Secrets の両方を更新 (90 日サイクル)。
+#
+# DEC-019-053 v15.2 / Plan A 採択 (2026-05-04):
+#   - 本 workflow は PRJ-019 専用 standalone repo `prj019-claude-code-company` の root に
+#     配置される (親 monorepo claude-code-company から detach)。
+#   - working-directory は repo root から見た相対パス `app/scripts/openclaw-monitor`。
+#   - 親 monorepo 内の旧 path `projects/PRJ-019/app/scripts/openclaw-monitor/.github/...`
+#     は廃止 (Plan A 移行で本ファイルが正規化された)。
+
+on:
+  schedule:
+    # 18:00 UTC = 03:00 JST (Owner 起床後の朝 sync 前に digest が届くタイミング)
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'mode (check / report / dispatch)'
+        required: false
+        default: 'check'
+        type: choice
+        options:
+          - check
+          - report
+          - dispatch
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openclaw-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: app/scripts/openclaw-monitor
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: 'app/scripts/openclaw-monitor/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Restore monitor state cache
+        uses: actions/cache@v4
+        with:
+          path: app/scripts/openclaw-monitor/state.json
+          key: openclaw-monitor-state-${{ github.run_id }}
+          restore-keys: |
+            openclaw-monitor-state-
+
+      # -----------------------------------------------------------------------
+      # DEC-019-053 v15.2 Plan B: GitHub Actions Secrets 直接展開
+      # -----------------------------------------------------------------------
+      # 1Password Personal plan は Service Account 非対応のため、
+      # 1password/load-secrets-action を使わず Secrets から直接 env に展開する。
+      # Owner は Vault `prj019` から下記 7 値を読み出し、同名で GitHub Actions
+      # Secrets に登録する (登録手順は dev-1password-slack-integration-v3.md 参照)。
+      - name: Run check
+        env:
+          # ---- Tier 1 真の secret (GitHub Actions Secrets から直接展開) ----
+          # 3 Slack webhook (DEC-019-049: HITL / monitor / drill 独立 channel)
+          SLACK_WEBHOOK_HITL: ${{ secrets.SLACK_WEBHOOK_HITL }}
+          SLACK_WEBHOOK_MONITOR: ${{ secrets.SLACK_WEBHOOK_MONITOR }}
+          SLACK_WEBHOOK_DRILL: ${{ secrets.SLACK_WEBHOOK_DRILL }}
+          # Resend (Slack 失敗時 fallback + L3 直接メール)
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          OWNER_NOTIFY_EMAIL: ${{ secrets.OWNER_NOTIFY_EMAIL }}
+          DEV_NOTIFY_EMAIL: ${{ secrets.DEV_NOTIFY_EMAIL }}
+          # GitHub PAT (rate-limit 緩和、anonymous でも動く)
+          # NOTE: Secret 名は GH_ prefix。GitHub Actions は GITHUB_ prefix の Secret 登録を
+          # 禁止 (HTTP 422) するため、Secret 名は GH_PAT_READ_ONLY、env 注入名は
+          # GITHUB_PAT_READ_ONLY (コード側 sources.ts で参照) と分離する。
+          GITHUB_PAT_READ_ONLY: ${{ secrets.GH_PAT_READ_ONLY }}
+          # ---- Tier 2 平文 (workflow 内直接記述、Secrets 不使用) ----
+          # DEC-019-049: severity → channel mapping は notify.ts 側で実施
+          # DEC-019-053: Tier 2 は Vault / Secrets 経由せず env で直接記述
+          NODE_ENV: production
+          TZ: Asia/Tokyo
+          SLACK_CHANNEL_HITL: '#hitl'
+          SLACK_CHANNEL_MONITOR: '#monitor'
+          SLACK_CHANNEL_DRILL: '#drill'
+        run: pnpm run ${{ inputs.mode || 'check' }}
+
+      - name: Upload state artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openclaw-monitor-state-${{ github.run_id }}
+          path: app/scripts/openclaw-monitor/state.json
+          retention-days: 30

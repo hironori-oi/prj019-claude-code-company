@@ -1,0 +1,45 @@
+{
+  "name": "@clawbridge/root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PRJ-019 Clawbridge - Open Claw を自律オーナーとする AI 組織ハーネス基盤 (monorepo root)",
+  "type": "module",
+  "engines": {
+    "node": ">=22.14.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "build": "pnpm -r --parallel build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "verify:zero-side-effect": "bash scripts/verify-zero-side-effect.sh",
+    "_comment_preflight": "DEC-019-053 + v2.2 hotfix — Tier 1 op:// 解決状態を post なしで検証。op run なし / Vault 未投入でも動作する mode env (推奨初期)。",
+    "preflight": "tsx scripts/preflight-env.ts",
+    "_comment_preflight_resolved": "v2.2 — Vault 完成後、全 9 fields が [resolved] になることを op run 経由で確認する mode resolved。",
+    "preflight:resolved": "op run --env-file=.env.local -- tsx scripts/preflight-env.ts",
+    "_comment_preflight_vault": "v2.2 — `op item list` で Vault 構築進捗を可視化する mode vault。次に作るべき item を提示。",
+    "preflight:vault": "tsx scripts/preflight-vault.ts",
+    "_comment_slack_smoke": "DEC-019-049 / v2.1 §2.2-2.3 — RC-3 完了後の 3 channel smoke。`--dry-run` で post なし、無印で live post。要 `op run --env-file=.env.local --` 前置。",
+    "slack-smoke": "tsx scripts/slack-smoke.ts",
+    "slack-smoke:dry": "tsx scripts/slack-smoke.ts --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "eslint": "^9.17.0",
+    "@eslint/js": "^9.17.0",
+    "typescript-eslint": "^8.18.0",
+    "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "zod": "^3.24.0"
+  }
+}

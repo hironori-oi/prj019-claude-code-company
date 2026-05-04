@@ -1,0 +1,18 @@
+{
+  "name": "@clawbridge/audit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Append-only audit log layer (W0 stub)",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'audit: W0 stub, no build'",
+    "test": "echo 'audit: W0 stub, no tests'",
+    "lint": "echo 'audit: W0 stub'",
+    "typecheck": "echo 'audit: W0 stub, no tsconfig yet'"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "@types/node": "^22.10.0"
+  }
+}

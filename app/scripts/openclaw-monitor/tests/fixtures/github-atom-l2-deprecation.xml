@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>tag:github.com,2008:https://github.com/anthropics/claude-code/releases</id>
+  <title>Release notes from claude-code</title>
+  <updated>2026-05-08T12:00:00Z</updated>
+  <entry>
+    <id>tag:github.com,2008:Repository/1/v1.46.0</id>
+    <updated>2026-05-08T12:00:00Z</updated>
+    <title>v1.46.0</title>
+    <content type="html">
+      Minor release. The legacy --legacy-flag is deprecated and will be removed in v2.
+    </content>
+  </entry>
+</feed>

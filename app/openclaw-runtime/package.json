@@ -1,0 +1,29 @@
+{
+  "name": "@clawbridge/openclaw-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenClaw OSS wrapper layer (W0 mock + skeleton, Real impl: W1)",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clawbridge/harness": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "@types/node": "^22.10.0"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@clawbridge/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PRJ-019 Clawbridge Web (Next.js 15 App Router) - 透明性 Dashboard + 権限 UI + 提案承認 UI / DEC-019-033 + DEC-020-003",
+  "type": "module",
+  "scripts": {
+    "_comment_secrets": "DEC-019-048 (1Password CLI 採択) + DEC-019-053 (2-tier 設計) — Tier 1 = 真の secret 9 fields のみ Vault 登録、Tier 2 = 平文 12 fields。`dev`/`build`/`start` は `op run --env-file=../.env.local --` 前置で Tier 1 を解決する想定 (op:// が `.env.local` に含まれる場合)。`dev:noop` は Vault 登録前 / 1Password CLI 未導入環境向けの公式 unblock path (Owner 5/4 検証済 = localhost:3000 表示確認)。Tier 2 のみで起動する場合は `dev:noop` を使う。",
+    "_comment_dev_recommend": "推奨: Vault 登録完了前は `pnpm dev:noop`。Vault 登録完了後は `pnpm dev` (op signin → op run -- 経由)。",
+    "dev": "op run --env-file=../.env.local -- next dev",
+    "build": "op run --env-file=../.env.local -- next build",
+    "start": "op run --env-file=../.env.local -- next start",
+    "dev:noop": "echo 'INFO: dev:noop = DEC-019-053 公式 unblock path (Tier 2 のみ、op 未要求)。Vault 登録前 / 1Password CLI 未導入時に使用。' && next dev",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "15.0.3",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.46.1",
+    "casbin": "^5.34.0",
+    "zod": "^3.24.0",
+    "tailwindcss": "^3.4.14",
+    "next-themes": "^0.4.3",
+    "@heroicons/react": "^2.2.0",
+    "geist": "^1.3.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
+    "lucide-react": "^0.460.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "typescript": "^5.7.0",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "15.0.3"
+  }
+}

@@ -1,0 +1,95 @@
+# =============================================================================
+# PRJ-019 Clawbridge - Casbin Policy (initial seed, hot-reloadable)
+# DEC-019-033 §⑤ 7 categories: fs / command / network / hitl / cost / time / genre
+#
+# Object format: "category:resource_path"
+# Effect: allow | deny  (deny envelope wins)
+#
+# 重要不変条件:
+#  - open_claw_restricted は permission 変更不可 (policy_versions write は owner のみ)
+#  - 13 prohibited domains (genre:*) は永遠 deny envelope (Owner UI でも解除不可)
+# =============================================================================
+
+# --- Roles ---
+g, owner, super_role
+g, operator, observer_role
+g, open_claw_restricted, restricted_role
+
+# P0-4 (review-scaffold-code-review-v1.md §3.1) 対応:
+#   13 prohibited domains (genre:*) は永遠 deny envelope。Owner UI でも解除不可。
+#   従来は restricted_role だけに deny を貼っていたが、owner / operator 経由で
+#   genre:adult 等を作業した場合に deny されない不具合があったため、
+#   全ロールが暗黙加入する集約 role `prohibited_subject` を導入し、deny を 1 箇所に集約する。
+g, owner,                 prohibited_subject
+g, operator,              prohibited_subject
+g, open_claw_restricted,  prohibited_subject
+
+# ---------------------------------------------------------------------------
+# OWNER: full read; write only via UI flow (HITL 10 may apply)
+# ---------------------------------------------------------------------------
+p, super_role, fs:*,         *,       allow
+p, super_role, command:*,    *,       allow
+p, super_role, network:*,    *,       allow
+p, super_role, hitl:*,       *,       allow
+p, super_role, cost:*,       *,       allow
+p, super_role, time:*,       *,       allow
+p, super_role, genre:*,      *,       allow
+
+# ---------------------------------------------------------------------------
+# OPERATOR: read only (dashboard observer)
+# ---------------------------------------------------------------------------
+p, observer_role, fs:*,      read,    allow
+p, observer_role, command:*, read,    allow
+p, observer_role, network:*, read,    allow
+p, observer_role, hitl:*,    read,    allow
+p, observer_role, hitl:*,    approve, allow
+p, observer_role, cost:*,    read,    allow
+p, observer_role, time:*,    read,    allow
+p, observer_role, genre:*,   read,    allow
+
+# ---------------------------------------------------------------------------
+# OPEN_CLAW_RESTRICTED: minimal default (initially fail-closed)
+# Phase 1 W1 で initial enable list を Owner 承認で個別 allow 追加
+# ---------------------------------------------------------------------------
+p, restricted_role, fs:projects/PRJ-*/app/**,   read,  allow
+p, restricted_role, fs:organization/knowledge/**, read, allow
+p, restricted_role, hitl:propose,               write, allow
+p, restricted_role, cost:read,                  read,  allow
+
+# ---------------------------------------------------------------------------
+# DENY ENVELOPE - 13 prohibited domains (DEC-019-033 §⑤ / 永遠 deny)
+# Owner UI でも解除不可。policy_versions に保存しないハードコード扱い。
+#
+# P0-4: subject を prohibited_subject (全 3 ロールが加入) に変更し、
+#       owner / operator / open_claw_restricted いずれの経路でも deny される。
+# ---------------------------------------------------------------------------
+p, prohibited_subject, genre:adult,                  *, deny
+p, prohibited_subject, genre:gambling,               *, deny
+p, prohibited_subject, genre:weapons,                *, deny
+p, prohibited_subject, genre:drugs,                  *, deny
+p, prohibited_subject, genre:hate_speech,            *, deny
+p, prohibited_subject, genre:self_harm,              *, deny
+p, prohibited_subject, genre:csam,                   *, deny
+p, prohibited_subject, genre:malware,                *, deny
+p, prohibited_subject, genre:phishing,               *, deny
+p, prohibited_subject, genre:bioweapon,              *, deny
+p, prohibited_subject, genre:election_interference,  *, deny
+p, prohibited_subject, genre:dox,                    *, deny
+p, prohibited_subject, genre:non_consensual,         *, deny
+
+# ---------------------------------------------------------------------------
+# DENY ENVELOPE - critical resources (root, secrets, organization rules)
+# ---------------------------------------------------------------------------
+p, restricted_role, fs:.env*,                       *, deny
+p, restricted_role, fs:**/secrets/**,               *, deny
+p, restricted_role, fs:organization/**,             write, deny
+p, restricted_role, command:rm,                     *, deny
+p, restricted_role, command:sudo,                   *, deny
+# P0-3 (review-scaffold-code-review-v1.md §3.1) 対応:
+#   従来 `command:curl?(http://*)` は keyMatch4 が `?(...)` glob を解釈できず
+#   無効パターン扱いとなり HTTP curl が deny されない不具合があった。
+#   修正方針: curl exec を全面 deny。HTTPS 含む正当 curl 利用は HITL 7
+#   (external_api) gate 経由に統一する (Phase 1 W1)。
+p, restricted_role, command:curl,                   exec, deny
+p, restricted_role, network:169.254.169.254,        *, deny
+p, restricted_role, network:metadata.google.internal, *, deny

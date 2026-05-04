@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "rolloutPhase": "A (warn)",
+    "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
+    "issue": "ARCH-01 (DEC-019-041)"
+  },
+  "extends": "../tsconfig.legacy-relax.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts"]
+}

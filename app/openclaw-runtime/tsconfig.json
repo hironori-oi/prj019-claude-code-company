@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "rolloutPhase": "A (warn)",
+    "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
+    "issue": "ARCH-01 (DEC-019-041)"
+  },
+  "extends": "../tsconfig.legacy-relax.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "composite": false,
+    "paths": {
+      "@clawbridge/harness": ["../harness/src/index.ts"],
+      "@clawbridge/harness/*": ["../harness/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "vendor",
+    "upstream",
+    "src/**/__tests__/**",
+    "src/**/*.test.ts"
+  ]
+}
