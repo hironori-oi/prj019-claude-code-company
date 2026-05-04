@@ -6,12 +6,17 @@
 export {
   FileCostTracker,
   DEFAULT_LIMITS,
+  DEFAULT_WATCHDOG_RATIOS,
+  computeWatchdogThresholds,
+  classifyWatchdogTier,
   type CostTracker,
   type CostCategory,
   type CostRecord,
   type CostLedger,
   type BudgetLimits,
   type BudgetCheckResult,
+  type WatchdogTier,
+  type WatchdogThreshold,
 } from './cost-tracker.js'
 
 export {
@@ -20,6 +25,8 @@ export {
   type KillTriggerHandler,
   type KillTriggerMeta,
   type KillRecord,
+  type SubprocessKillTarget,
+  type CircuitBreakerOpenTarget,
 } from './kill-switch.js'
 
 export {
@@ -50,6 +57,8 @@ export {
   type UsageCallRecord,
   type UsageAggregate,
   type UsageMonitorConfig,
+  type SlackMonitorNotify,
+  type WatchdogState,
 } from './usage-monitor.js'
 
 export * from './paths.js'

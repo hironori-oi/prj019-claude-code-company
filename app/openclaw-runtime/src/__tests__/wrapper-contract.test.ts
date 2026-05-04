@@ -27,11 +27,15 @@ describe('SubprocessSpawnContract (DEC-019-006 P-D 改 整合)', () => {
       env: { PATH: '/usr/bin:/bin', HOME: '/home/runner' },
       timeoutMs: 30_000,
       dryRun: true,
+      cwd: '/tmp',
+      argvWhitelist: [],
     }
     expect(spawn.command).toMatch(/openclaw$/)
     expect(spawn.args).toContain('--headless')
     expect(Object.keys(spawn.env).length).toBe(2)
     expect(spawn.dryRun).toBe(true)
+    expect(spawn.cwd).toBe('/tmp')
+    expect(spawn.argvWhitelist).toEqual([])
   })
 
   it('OpenclawRuntimeContract が spawn と runtime を集約する', () => {
@@ -42,6 +46,8 @@ describe('SubprocessSpawnContract (DEC-019-006 P-D 改 整合)', () => {
         env: {},
         timeoutMs: 1_000,
         dryRun: true,
+        cwd: '/tmp',
+        argvWhitelist: [],
       },
       runtime: new MockOpenclawRuntime(),
     }

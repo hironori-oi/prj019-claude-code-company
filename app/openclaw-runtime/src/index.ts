@@ -8,9 +8,14 @@ export {
   MockOpenclawRuntime,
   RealOpenclawRuntime,
   createOpenclawRuntime,
+  buildAllowedEnv,
+  buildSpawnContract,
+  defaultIsolatedCwd,
   type OpenclawRuntime,
   type SubprocessSpawnContract,
   type OpenclawRuntimeContract,
+  type BuildSpawnContractOptions,
+  type CreateOpenclawRuntimeOptions,
 } from './wrapper.js'
 
 export type {

@@ -5,6 +5,7 @@
  *   C-A-04 (Sumi/Asagi/Clawbridge 3 重監視 + 5h ローリング)
  *   G-V2-02 (レート自主上限 70%)
  *   G-V2-08 (401/403/429 連続検知 → kill switch)
+ *   G-04   (cost watchdog 3 段階閾値: warn / auto_stop / hard_fail) — Round 6 追加
  *   NG-3 予防 (連続稼働 12h)
  *
  * 機能:
@@ -12,6 +13,9 @@
  *   - 401/403/429 連続検知 → kill-switch トリガー
  *   - 12h 連続稼働超過 → kill-switch トリガー
  *   - 5h ローリング集計 (count / tokens / cost)
+ *   - cost watchdog (Round 6): cost-tracker と連携し $24 / $28.5 / $30 の
+ *     3 段階閾値で warn → auto_stop → hard_fail を発火。
+ *     Slack #monitor 通知 hook (notifySlackMonitor) は injectable。
  *
  * 永続化: ~/.clawbridge/usage-ledger.json (JSON / atomic write)
  *
@@ -26,6 +30,15 @@ import { USAGE_LEDGER_PATH, HARNESS_BOOT_PATH } from './paths.js'
 import { loadJson, saveJson } from './fs-store.js'
 import type { KillSwitch } from './kill-switch.js'
 import type { TimeSource } from './time-source.js'
+import {
+  classifyWatchdogTier,
+  computeWatchdogThresholds,
+  DEFAULT_LIMITS,
+  type BudgetLimits,
+  type CostTracker,
+  type WatchdogTier,
+  type WatchdogThreshold,
+} from './cost-tracker.js'
 
 export type UsageProvider =
   | 'anthropic_oauth'
@@ -60,6 +73,29 @@ export interface UsageAggregate {
   rateErrors: number // 429
 }
 
+/**
+ * Slack #monitor 通知 callback (Round 6 G-04)。
+ * 副作用 (HTTP post) は呼び出し側で実装。テストでは noop / spy を渡す。
+ */
+export type SlackMonitorNotify = (payload: {
+  tier: WatchdogTier
+  thresholdUsd: number
+  currentUsd: number
+  ratio: number
+  message: string
+}) => Promise<void> | void
+
+/**
+ * cost watchdog 状態 (Round 6 G-04)。
+ * - lastTier: 直近で発火した tier (重複通知抑止用)
+ * - autoStopped: auto_stop 段階で自走停止フラグが立っているか
+ */
+export interface WatchdogState {
+  lastTier: WatchdogTier | null
+  autoStopped: boolean
+  lastFiredAt: string | null
+}
+
 export interface UsageMonitorConfig {
   ledgerPath?: string
   bootPath?: string
@@ -80,6 +116,22 @@ export interface UsageMonitorConfig {
    * libfaketime 代替: 12h ルーフタイムや 60s 窓の決定論的テストを可能にする。
    */
   timeSource?: TimeSource
+  // ---- Round 6 G-04 cost watchdog ----
+  /**
+   * cost-tracker 注入 (Round 6 G-04)。指定時は cost watchdog 機能が有効化される。
+   * polling は startRuntimeWatch で interval 駆動。
+   */
+  costTracker?: CostTracker
+  /** watchdog 用 budget 上限 (default DEFAULT_LIMITS) */
+  watchdogLimits?: BudgetLimits
+  /** Slack #monitor 通知 callback (default: noop) */
+  notifySlackMonitor?: SlackMonitorNotify
+  /**
+   * runtime watch / cost watchdog の polling interval (ms)。
+   * Round 6: テスト時間短縮のため injectable に。
+   * default 60_000 (= 60s)。
+   */
+  watchIntervalMs?: number
 }
 
 export interface UsageMonitor {
@@ -94,6 +146,18 @@ export interface UsageMonitor {
   /** 連続稼働 watch を停止 */
   stopRuntimeWatch(): Promise<void>
   reset(): Promise<void>
+  // ---- Round 6 G-04 cost watchdog ----
+  /**
+   * 現在の cost watchdog 状態を取得 (Round 6 G-04)。
+   * `autoStopped=true` なら Open Claw 側は新規 loop 受付を止めるべき。
+   */
+  getWatchdogState(): WatchdogState
+  /**
+   * cost watchdog を 1 サイクル評価 (Round 6 G-04)。
+   * polling は startRuntimeWatch 内部で interval 駆動するが、テスト用に手動 step 可能。
+   * - cost-tracker 未注入 / costTracker 未指定の場合は no-op
+   */
+  checkWatchdog(): Promise<WatchdogTier | null>
 }
 
 export class FileUsageMonitor implements UsageMonitor {
@@ -104,6 +168,17 @@ export class FileUsageMonitor implements UsageMonitor {
   private readonly authAnomalyThreshold: number
   private readonly anomalyWindowMs: number
   private readonly now: () => Date
+
+  // Round 6 G-04 cost watchdog
+  private readonly costTracker: CostTracker | undefined
+  private readonly watchdogThresholds: readonly WatchdogThreshold[]
+  private readonly notifySlackMonitor: SlackMonitorNotify
+  private readonly watchIntervalMs: number
+  private watchdogState: WatchdogState = {
+    lastTier: null,
+    autoStopped: false,
+    lastFiredAt: null,
+  }
 
   private runtimeTimer: NodeJS.Timeout | null = null
 
@@ -122,6 +197,13 @@ export class FileUsageMonitor implements UsageMonitor {
     } else {
       this.now = opts.now ?? (() => new Date())
     }
+    // Round 6 G-04 cost watchdog
+    this.costTracker = opts.costTracker
+    this.watchdogThresholds = computeWatchdogThresholds(
+      opts.watchdogLimits ?? DEFAULT_LIMITS,
+    )
+    this.notifySlackMonitor = opts.notifySlackMonitor ?? (() => undefined)
+    this.watchIntervalMs = opts.watchIntervalMs ?? 60_000
   }
 
   private async load(): Promise<UsageLedger> {
@@ -204,7 +286,9 @@ export class FileUsageMonitor implements UsageMonitor {
     if (this.runtimeTimer) clearInterval(this.runtimeTimer)
     this.runtimeTimer = setInterval(() => {
       void this.checkRuntime()
-    }, 60_000)
+      // Round 6 G-04: cost watchdog も同 interval で評価
+      void this.checkWatchdog()
+    }, this.watchIntervalMs)
     this.runtimeTimer.unref?.()
   }
 
@@ -231,8 +315,80 @@ export class FileUsageMonitor implements UsageMonitor {
     }
   }
 
+  // ---- Round 6 G-04 cost watchdog ----
+
+  getWatchdogState(): WatchdogState {
+    return { ...this.watchdogState }
+  }
+
+  async checkWatchdog(): Promise<WatchdogTier | null> {
+    if (!this.costTracker) return null
+    const currentUsd = await this.costTracker.getDailyTotal()
+    const tier = classifyWatchdogTier(currentUsd, this.watchdogThresholds)
+    if (tier === null) return null
+
+    const tierOrder: Record<WatchdogTier, number> = {
+      warn: 1,
+      auto_stop: 2,
+      hard_fail: 3,
+    }
+    const lastOrder = this.watchdogState.lastTier ? tierOrder[this.watchdogState.lastTier] : 0
+    const currentOrder = tierOrder[tier]
+    // 既に同じ or より高い tier で発火済なら冪等 (重複通知抑止)
+    if (currentOrder <= lastOrder) {
+      return tier
+    }
+
+    const matched = this.watchdogThresholds.find((t) => t.tier === tier)
+    const thresholdUsd = matched?.thresholdUsd ?? 0
+    const ratio = matched?.ratio ?? 0
+    const message =
+      tier === 'warn'
+        ? `cost watchdog: warn tier reached $${currentUsd.toFixed(2)} >= $${thresholdUsd.toFixed(2)} (${(ratio * 100).toFixed(0)}%)`
+        : tier === 'auto_stop'
+          ? `cost watchdog: auto_stop tier reached $${currentUsd.toFixed(2)} >= $${thresholdUsd.toFixed(2)} (${(ratio * 100).toFixed(0)}%) — Open Claw 自走停止`
+          : `cost watchdog: hard_fail tier reached $${currentUsd.toFixed(2)} >= $${thresholdUsd.toFixed(2)} (${(ratio * 100).toFixed(0)}%) — kill-switch トリガー`
+
+    // Slack #monitor 通知 (best effort)
+    try {
+      await this.notifySlackMonitor({
+        tier,
+        thresholdUsd,
+        currentUsd,
+        ratio,
+        message,
+      })
+    } catch {
+      // 通知失敗は kill / auto_stop 動作を阻害しない
+    }
+
+    // tier 別アクション
+    if (tier === 'auto_stop') {
+      this.watchdogState.autoStopped = true
+    }
+    if (tier === 'hard_fail' && this.killSwitch) {
+      await this.killSwitch.trigger(message, {
+        source: 'budget',
+        details: {
+          watchdogTier: tier,
+          currentUsd,
+          thresholdUsd,
+          ratio,
+        },
+      })
+    }
+
+    this.watchdogState = {
+      lastTier: tier,
+      autoStopped: this.watchdogState.autoStopped || tier === 'auto_stop' || tier === 'hard_fail',
+      lastFiredAt: this.now().toISOString(),
+    }
+    return tier
+  }
+
   async reset(): Promise<void> {
     await this.save({ version: 1, records: [] })
+    this.watchdogState = { lastTier: null, autoStopped: false, lastFiredAt: null }
   }
 }
 

@@ -62,6 +62,41 @@ const TIER1_FIELDS: readonly Tier1Field[] = [
   { envVar: 'GITHUB_PAT_READ_ONLY',      vaultPath: 'op://prj019/github/pat_read_only',      rc: 'RC-2' },
 ] as const;
 
+/**
+ * Round 6 G-08 hotfix (CEO 2026-05-04): DEC-019-053 v15.2 整合スコープ。
+ *
+ * openclaw-monitor.yml workflow が実際に使う 7 fields のみを検証する scope。
+ * Supabase 2 fields は Phase 1 W3 DB 連携 workflow 追加時に登録予定 (RC-7) で、
+ * それまでは GitHub Actions Secrets 未登録 = 空文字 = missing で workflow が落ちる。
+ * `--scope=workflow` 指定時は Supabase 2 を除外して 7 fields のみ検証する。
+ */
+const WORKFLOW_SCOPE_FIELDS: ReadonlySet<string> = new Set([
+  'SLACK_WEBHOOK_HITL',
+  'SLACK_WEBHOOK_MONITOR',
+  'SLACK_WEBHOOK_DRILL',
+  'RESEND_API_KEY',
+  'OWNER_NOTIFY_EMAIL',
+  'DEV_NOTIFY_EMAIL',
+  'GITHUB_PAT_READ_ONLY',
+]);
+
+type Scope = 'all' | 'workflow';
+
+function parseScope(argv: readonly string[]): Scope {
+  for (const arg of argv) {
+    if (arg === '--scope=workflow') return 'workflow';
+    if (arg === '--scope=all') return 'all';
+  }
+  return 'all';
+}
+
+function fieldsForScope(scope: Scope): readonly Tier1Field[] {
+  if (scope === 'workflow') {
+    return TIER1_FIELDS.filter((f) => WORKFLOW_SCOPE_FIELDS.has(f.envVar));
+  }
+  return TIER1_FIELDS;
+}
+
 type Status = 'resolved' | 'unresolved' | 'missing';
 type LoadMode = 'op-run-resolved' | 'direct-dotfile' | 'direct-no-dotfile';
 
@@ -183,8 +218,11 @@ function pad(s: string, width: number): string {
   return s + ' '.repeat(width - s.length);
 }
 
-function checkTier1(env: Record<string, string | undefined>): CheckResult[] {
-  return TIER1_FIELDS.map((f) => {
+function checkTier1(
+  env: Record<string, string | undefined>,
+  scope: Scope = 'all',
+): CheckResult[] {
+  return fieldsForScope(scope).map((f) => {
     const c = classify(env[f.envVar]);
     const r: CheckResult = { envVar: f.envVar, status: c.status, rc: f.rc };
     if (c.length !== undefined) r.length = c.length;
@@ -250,14 +288,41 @@ function modeBanner(outcome: LoadOutcome): string {
   return `[mode] direct (no .env.local) — ${outcome.detail}`;
 }
 
-function main(): number {
+/**
+ * Round 6 G-08: CI mode (--ci flag)。
+ *
+ * GitHub Actions workflow openclaw-monitor.yml の Run check step 直前に preflight ステップとして
+ * 走らせる用途。env validation で 9 fields 全て resolved を確認し、いずれか未解決なら fail-fast。
+ *
+ * 通常モード (--ci 無し) は dev mode として、Vault 未投入でも動作するよう exit 1 で
+ * unresolved/missing を許容するが、CI mode では unresolved/missing は exit 2 で fail-fast。
+ *
+ * exit codes:
+ *   0  : all resolved (CI / dev 共通)
+ *   1  : unresolved/missing あり (dev mode のみ — workflow 続行可)
+ *   2  : CI mode で unresolved/missing 検出 → fail-fast
+ */
+function isCiMode(argv: readonly string[]): boolean {
+  return argv.includes('--ci');
+}
+
+function main(argv: readonly string[] = process.argv.slice(2)): number {
   const cwd = process.cwd();
+  const ci = isCiMode(argv);
+  const scope = parseScope(argv);
+  const fieldCount = fieldsForScope(scope).length;
   const outcome = loadEnv();
   // eslint-disable-next-line no-console
   console.error(modeBanner(outcome));
+  if (ci) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[mode] --ci enabled (G-08 / Round 6 fail-fast on unresolved) scope=${scope} fields=${fieldCount}`,
+    );
+  }
   // eslint-disable-next-line no-console
-  console.log(`Tier 1 resolution check (cwd=${cwd})`);
-  const results = checkTier1(outcome.effectiveEnv);
+  console.log(`Tier 1 resolution check (cwd=${cwd}, scope=${scope})`);
+  const results = checkTier1(outcome.effectiveEnv, scope);
   for (const r of results) {
     // eslint-disable-next-line no-console
     console.log(formatRow(r));
@@ -273,19 +338,45 @@ function main(): number {
     console.log(`Next action: ${next}`);
     // eslint-disable-next-line no-console
     console.log(`Pending RCs: ${s.pendingRcs.join(', ')}`);
+    if (ci) {
+      // eslint-disable-next-line no-console
+      console.error(`[ci] FAIL: ${s.unresolved + s.missing} field(s) not resolved. CI fail-fast.`);
+      return 2;
+    }
     return 1;
   }
   // eslint-disable-next-line no-console
-  console.log('All Tier 1 fields resolved. Live smoke is now safe to run.');
+  console.log(`All Tier 1 fields resolved (scope=${scope}, ${fieldCount} fields). Live smoke is now safe to run.`);
+  if (ci) {
+    // eslint-disable-next-line no-console
+    console.log(`[ci] PASS: ${fieldCount} fields all resolved (scope=${scope}). Proceeding to Run check.`);
+  }
   return 0;
 }
 
-const exitCode = main();
-process.exit(exitCode);
+// Round 6 G-08: import 時に process.exit が走るのを防ぐ。
+// 直接 `tsx scripts/preflight-env.ts` で起動された時のみ exit する。
+function isDirectInvocation(): boolean {
+  try {
+    const here = fileURLToPath(import.meta.url);
+    const argv1 = process.argv[1];
+    if (argv1 === undefined) return false;
+    // path 比較は OS 依存 (Windows は case insensitive のため lower-case 比較)
+    return here.toLowerCase() === argv1.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectInvocation()) {
+  const exitCode = main();
+  process.exit(exitCode);
+}
 
 // 内部 helpers をテスト容易性のため named export
 export {
   TIER1_FIELDS,
+  WORKFLOW_SCOPE_FIELDS,
   classify,
   checkTier1,
   formatRow,
@@ -294,5 +385,8 @@ export {
   parseDotEnv,
   isResolvedAlready,
   modeBanner,
+  isCiMode,
+  parseScope,
+  fieldsForScope,
 };
-export type { Tier1Field, Status, CheckResult, LoadMode, LoadOutcome };
+export type { Tier1Field, Status, CheckResult, LoadMode, LoadOutcome, Scope };

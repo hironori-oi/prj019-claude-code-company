@@ -2,7 +2,8 @@
  * kill-switch — 緊急停止スイッチ。
  *
  * 関連必須コントロール:
- *   G-02 (緊急停止) / G-V2-11 (BAN フォールバック検知 < 1 分 / 通知 < 5 分)
+ *   G-02 (緊急停止) / G-05 (subprocess kill チェーン) / G-06 (circuit-breaker open 連動)
+ *   G-V2-11 (BAN フォールバック検知 < 1 分 / 通知 < 5 分)
  *
  * 触発条件:
  *   - cost-tracker による予算超過
@@ -16,6 +17,12 @@
  *   - trigger 時、登録済 onTrigger ハンドラを順次実行 (各 5 秒 timeout)
  *   - すべてのハンドラ完了 or timeout 後 process.exit() を呼ぶ (Harness クラスが exit 制御)
  *   - 停止理由は kill-history.json に追記 (PostMortem 用)
+ *
+ * Round 6 拡張 (G-05/G-06):
+ *   - SubprocessKillTarget interface: openclaw-runtime の subprocess を SIGTERM → SIGKILL
+ *     fallback で停止する契約 (実装は openclaw-runtime 側)。
+ *   - registerSubprocessKill / registerCircuitBreakerOpen で kill チェーンを構成:
+ *     trigger 検知時 → circuit-breaker open → subprocess kill の順序で連鎖。
  *
  * Windows 11 primary 注意:
  *   - fs.watch は Windows でファイル名 case 違い等で取りこぼしが起きるため、
@@ -39,6 +46,36 @@ export interface KillRecord {
   meta?: KillTriggerMeta
 }
 
+/**
+ * subprocess kill 契約 (Round 6 G-05)。
+ * openclaw-runtime や claude-bridge が child_process を保持する場合、
+ * 本契約を実装した object を kill-switch に登録する。
+ *
+ * - signal('SIGTERM') を最初に試行
+ * - timeoutMs 経過しても alive() なら signal('SIGKILL') で強制終了
+ */
+export interface SubprocessKillTarget {
+  /** 登録名 (kill-history で使用) */
+  name: string
+  /** 子プロセスが alive か */
+  alive(): boolean
+  /** signal を送る (SIGTERM / SIGKILL) */
+  signal(sig: 'SIGTERM' | 'SIGKILL'): Promise<void> | void
+  /** SIGTERM → SIGKILL fallback の wait timeout (ms)。default 2000 */
+  gracePeriodMs?: number
+}
+
+/**
+ * circuit-breaker open 連動契約 (Round 6 G-06)。
+ * 任意の circuit-breaker を kill-switch に登録すると、trigger 検知時に
+ * 自動的に open 状態へ強制遷移する。
+ */
+export interface CircuitBreakerOpenTarget {
+  name: string
+  /** 強制 open 化 (cooldown は実装依存) */
+  forceOpen(reason?: string): void
+}
+
 export interface KillSwitch {
   arm(): Promise<void>
   disarm(): Promise<void>
@@ -48,6 +85,17 @@ export interface KillSwitch {
   onTrigger(handler: KillTriggerHandler): void
   /** STOP ファイルクリア (drill 後の再アーム時に使用) */
   clearSignal(): Promise<void>
+  // ---- Round 6 G-05/G-06 ----
+  /**
+   * subprocess kill target を登録 (G-05)。trigger 検知時 SIGTERM → SIGKILL fallback で停止。
+   */
+  registerSubprocessKill(target: SubprocessKillTarget): void
+  /**
+   * circuit-breaker open target を登録 (G-06)。trigger 検知時に open 状態へ強制遷移。
+   * 順序: circuit-breaker open → subprocess kill の連鎖を保つため、
+   *       本登録は subprocess kill より前に実行される。
+   */
+  registerCircuitBreakerOpen(target: CircuitBreakerOpenTarget): void
 }
 
 export type KillTriggerHandler = (reason: string, meta?: KillTriggerMeta) => Promise<void> | void
@@ -70,6 +118,10 @@ export class FileKillSwitch implements KillSwitch {
   private watcher: FSWatcher | null = null
   private pollTimer: NodeJS.Timeout | null = null
 
+  // Round 6 G-05/G-06
+  private readonly subprocessTargets: SubprocessKillTarget[] = []
+  private readonly circuitBreakerTargets: CircuitBreakerOpenTarget[] = []
+
   private readonly signalPath: string
   private readonly historyPath: string
   private readonly pollIntervalMs: number
@@ -82,6 +134,14 @@ export class FileKillSwitch implements KillSwitch {
     this.pollIntervalMs = opts.pollIntervalMs ?? 1000
     this.handlerTimeoutMs = opts.handlerTimeoutMs ?? 5000
     this.exitOnTrigger = opts.exitOnTrigger ?? false
+  }
+
+  registerSubprocessKill(target: SubprocessKillTarget): void {
+    this.subprocessTargets.push(target)
+  }
+
+  registerCircuitBreakerOpen(target: CircuitBreakerOpenTarget): void {
+    this.circuitBreakerTargets.push(target)
   }
 
   async arm(): Promise<void> {
@@ -162,6 +222,18 @@ export class FileKillSwitch implements KillSwitch {
       // ignore — 緊急停止中なので best effort
     }
 
+    // Round 6 G-06: circuit-breaker を先に open (新規 fire を即拒否)
+    for (const cb of this.circuitBreakerTargets) {
+      try {
+        cb.forceOpen(`kill-switch trigger: ${reason}`)
+      } catch {
+        // best effort
+      }
+    }
+
+    // Round 6 G-05: 登録 subprocess を SIGTERM → SIGKILL fallback で停止
+    await this.killAllSubprocesses()
+
     // ハンドラ順次実行 (各 timeout あり)
     for (const h of this.handlers) {
       try {
@@ -186,6 +258,33 @@ export class FileKillSwitch implements KillSwitch {
       setImmediate(() => {
         process.exit(1)
       })
+    }
+  }
+
+  /**
+   * Round 6 G-05: 登録された subprocess を SIGTERM → grace 待機 → SIGKILL fallback で停止。
+   * gracePeriodMs を超えても alive() の場合のみ SIGKILL に escalate する。
+   */
+  private async killAllSubprocesses(): Promise<void> {
+    for (const target of this.subprocessTargets) {
+      const grace = target.gracePeriodMs ?? 2000
+      try {
+        if (!target.alive()) continue
+        // SIGTERM
+        await target.signal('SIGTERM')
+        // grace 期間中は alive() を polling
+        const start = Date.now()
+        while (Date.now() - start < grace) {
+          if (!target.alive()) break
+          await new Promise((r) => setTimeout(r, Math.min(50, grace)))
+        }
+        if (target.alive()) {
+          // SIGKILL fallback
+          await target.signal('SIGKILL')
+        }
+      } catch {
+        // best effort
+      }
     }
   }
 

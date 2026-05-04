@@ -26,6 +26,8 @@
     "preflight:resolved": "op run --env-file=.env.local -- tsx scripts/preflight-env.ts",
     "_comment_preflight_vault": "v2.2 — `op item list` で Vault 構築進捗を可視化する mode vault。次に作るべき item を提示。",
     "preflight:vault": "tsx scripts/preflight-vault.ts",
+    "_comment_preflight_ci": "Round 6 G-08 / 議決-25 採択前提 前倒し — CI 用 preflight (env validation 9 fields 全て resolved 確認、未解決時 fail-fast)。",
+    "preflight:ci": "tsx scripts/preflight-env.ts --ci",
     "_comment_slack_smoke": "DEC-019-049 / v2.1 §2.2-2.3 — RC-3 完了後の 3 channel smoke。`--dry-run` で post なし、無印で live post。要 `op run --env-file=.env.local --` 前置。",
     "slack-smoke": "tsx scripts/slack-smoke.ts",
     "slack-smoke:dry": "tsx scripts/slack-smoke.ts --dry-run"

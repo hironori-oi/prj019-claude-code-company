@@ -117,6 +117,21 @@ export class CircuitBreaker {
     this.openedAt = undefined
   }
 
+  /**
+   * Round 6 G-06: kill-switch 連動で外部から強制 open 化する。
+   * cooldown はその時点から計測し、SubprocessKill チェーンの完了後 fire は CircuitOpenError で拒否される。
+   */
+  forceOpen(_reason?: string): void {
+    this.state = 'open'
+    this.openedAt = this.now()
+    this.consecutiveFailures = Math.max(this.consecutiveFailures, this.failureThreshold)
+  }
+
+  /** breaker 名を取得 (kill-switch 登録時の対象識別用) */
+  getName(): string {
+    return this.name
+  }
+
   private recordSuccess(): void {
     this.consecutiveFailures = 0
     if (this.state === 'half-open') {

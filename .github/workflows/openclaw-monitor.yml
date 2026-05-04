@@ -104,6 +104,30 @@ jobs:
             openclaw-monitor-state-
 
       # -----------------------------------------------------------------------
+      # Round 6 G-08 / 議決-25 採択前提 前倒し: preflight env validation
+      # -----------------------------------------------------------------------
+      # Run check の直前に preflight:ci で workflow scope 7 fields 全 resolved を確認。
+      # 未解決時は exit 2 で fail-fast し、Run check に進ませない (誤発火防止)。
+      # 副作用ゼロ (post / fetch なし、Vault state 確認のみ)。
+      #
+      # NOTE (CEO 2026-05-04 hotfix): DEC-019-053 v15.2 で Supabase 2 fields は
+      # Phase 1 W3 DB 連携 workflow 追加時 (RC-7) に登録される設計のため、現時点では
+      # `--scope=workflow` を渡し、本 workflow が実際に使う 7 fields のみを検証する。
+      # W3 で Supabase 登録後、必要なら scope=all に切り替えるか、専用 workflow に分離。
+      - name: Preflight env check (G-08, scope=workflow / 7 fields)
+        env:
+          # Run check と同じ Tier 1 真の secret を流し込む (検証専用、post なし)
+          SLACK_WEBHOOK_HITL: ${{ secrets.SLACK_WEBHOOK_HITL }}
+          SLACK_WEBHOOK_MONITOR: ${{ secrets.SLACK_WEBHOOK_MONITOR }}
+          SLACK_WEBHOOK_DRILL: ${{ secrets.SLACK_WEBHOOK_DRILL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          OWNER_NOTIFY_EMAIL: ${{ secrets.OWNER_NOTIFY_EMAIL }}
+          DEV_NOTIFY_EMAIL: ${{ secrets.DEV_NOTIFY_EMAIL }}
+          GITHUB_PAT_READ_ONLY: ${{ secrets.GH_PAT_READ_ONLY }}
+        # exit 2 (fail-fast) を確実に抜けるため continue-on-error: false (default)
+        run: pnpm exec tsx scripts/preflight-env.ts --ci --scope=workflow
+
+      # -----------------------------------------------------------------------
       # DEC-019-053 v15.2 Plan B: GitHub Actions Secrets 直接展開
       # -----------------------------------------------------------------------
       # 1Password Personal plan は Service Account 非対応のため、
