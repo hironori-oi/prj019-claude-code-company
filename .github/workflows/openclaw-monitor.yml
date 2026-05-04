@@ -28,9 +28,15 @@ name: openclaw-monitor
 # DEC-019-053 v15.2 / Plan A 採択 (2026-05-04):
 #   - 本 workflow は PRJ-019 専用 standalone repo `prj019-claude-code-company` の root に
 #     配置される (親 monorepo claude-code-company から detach)。
-#   - working-directory は repo root から見た相対パス `app/scripts/openclaw-monitor`。
 #   - 親 monorepo 内の旧 path `projects/PRJ-019/app/scripts/openclaw-monitor/.github/...`
 #     は廃止 (Plan A 移行で本ファイルが正規化された)。
+#
+# DEC-019-053 v15.2 / Plan A hotfix (2026-05-04 同日中):
+#   - 初回 run で `actions/setup-node@v4` が `cache-dependency-path` を解決できず失敗。
+#     原因: scripts/openclaw-monitor が pnpm workspace 未登録 + 独自 lockfile 不在。
+#   - 修正: app/pnpm-workspace.yaml に `scripts/openclaw-monitor` を正式メンバー追加、
+#     workflow の working-directory を `app/` に統一、`pnpm --filter` で monitor を起動。
+#   - cache-dependency-path は workspace 共有 lockfile `app/pnpm-lock.yaml` を指す。
 
 on:
   schedule:
@@ -59,9 +65,12 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # working-directory は pnpm workspace root (app/) に設定。
+    # pnpm-workspace.yaml に scripts/openclaw-monitor が正式登録されているため
+    # `pnpm --filter @prj-019/openclaw-monitor run <mode>` でターゲット実行。
     defaults:
       run:
-        working-directory: app/scripts/openclaw-monitor
+        working-directory: app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,14 +87,17 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          cache-dependency-path: 'app/scripts/openclaw-monitor/pnpm-lock.yaml'
+          # repo root から見た workspace lockfile 実体パス
+          cache-dependency-path: 'app/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile=false
+        # workspace 全体を install (--filter のために dev deps 含めて必須)
+        run: pnpm install --no-frozen-lockfile
 
       - name: Restore monitor state cache
         uses: actions/cache@v4
         with:
+          # state.json は repo root から見た monitor パッケージ内
           path: app/scripts/openclaw-monitor/state.json
           key: openclaw-monitor-state-${{ github.run_id }}
           restore-keys: |
@@ -122,7 +134,8 @@ jobs:
           SLACK_CHANNEL_HITL: '#hitl'
           SLACK_CHANNEL_MONITOR: '#monitor'
           SLACK_CHANNEL_DRILL: '#drill'
-        run: pnpm run ${{ inputs.mode || 'check' }}
+        # workspace root (app/) から --filter で monitor パッケージ scripts を実行
+        run: pnpm --filter @prj-019/openclaw-monitor run ${{ inputs.mode || 'check' }}
 
       - name: Upload state artifact
         if: always()

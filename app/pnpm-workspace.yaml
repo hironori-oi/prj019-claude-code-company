@@ -7,3 +7,6 @@ packages:
   - 'audit'
   - 'notify'
   - 'web'
+  # CI workflow openclaw-monitor.yml が --filter で参照する monitor パッケージ
+  # (DEC-019-053 v15.2 / Plan A 移行で workspace 正式メンバー化、2026-05-04)
+  - 'scripts/openclaw-monitor'
