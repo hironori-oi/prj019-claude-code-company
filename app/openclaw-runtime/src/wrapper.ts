@@ -7,11 +7,34 @@
  *     示されておらず (R-019-12)、本件は連携プラグイン (Enderfga/openclaw-claude-code v2.14.1)
  *     を中心に parts only 利用方針。詳細: ./upstream-notes.md
  *   - subprocess spawn による分離は claude-bridge と同じ pattern を採用予定 (W1)。
+ *   - DEC-019-006 P-D 改 整合: 子プロセス spawn 契約を SubprocessSpawnContract に集約。
+ *   - DEC-019-051 施策-1 整合: factory で mock-claude スタブと差し替え可能 shape。
  *
  * 関連必須コントロール:
  *   G-V2-04 / G-V2-11 / G-07
  */
 import type { LoopResult, LoopStatus, OpenclawConfig } from './types.js'
+
+/**
+ * 子プロセス spawn 契約 (DEC-019-006 P-D 改 整合、W1 で実装)。
+ *
+ * Real 実装は `child_process.spawn` を本契約で抽象化し、
+ * テスト時には mock-claude / stub spawner に差し替え可能とする (DEC-019-051 施策-1)。
+ *
+ * 注意: env は allow-list で厳格化 (G-07 / G-V2-11)。
+ */
+export interface SubprocessSpawnContract {
+  /** 実行ファイル絶対パス (init 時の OpenclawConfig.binaryPath を解決済み) */
+  command: string
+  /** CLI 引数 (例: ['agent', '--headless', '--config', path]) */
+  args: readonly string[]
+  /** allow-list 後の env (空なら inherit ではなく empty で起動) */
+  env: Readonly<Record<string, string>>
+  /** タイムアウト (ms)、loopTimeoutMs と一致させる */
+  timeoutMs: number
+  /** dryRun=true の場合 spawn せず固定値を返すフックを許可 */
+  dryRun: boolean
+}
 
 /**
  * OpenClaw OSS ラッパの公開 interface。
@@ -166,4 +189,36 @@ export class RealOpenclawRuntime implements OpenclawRuntime {
   getStatus(): LoopStatus {
     throw new Error('RealOpenclawRuntime: not implemented')
   }
+}
+
+/**
+ * Factory: 既定で Mock を返す。
+ *
+ * W0 (5/2-5/18) は env `CLAWBRIDGE_OPENCLAW_RUNTIME` 未設定 / 'mock' なら MockOpenclawRuntime、
+ * 'real' を明示指定された場合のみ RealOpenclawRuntime を返す (W0 では即 throw)。
+ *
+ * mock-claude スタブと統合可能 (DEC-019-051 施策-1):
+ *   - テスト経路は本 factory を経由し、Real 実装が landed しても
+ *     CLAWBRIDGE_OPENCLAW_RUNTIME=mock で副作用無しに mock 経路を強制可能。
+ */
+export function createOpenclawRuntime(
+  mode?: 'mock' | 'real',
+): OpenclawRuntime {
+  const resolved =
+    mode ??
+    (process.env['CLAWBRIDGE_OPENCLAW_RUNTIME'] === 'real' ? 'real' : 'mock')
+  if (resolved === 'real') {
+    return new RealOpenclawRuntime()
+  }
+  return new MockOpenclawRuntime()
+}
+
+/**
+ * 型レベル検証用ヘルパ (Vitest type assertion で利用)。
+ * 任意の OpenclawRuntime 実装に SubprocessSpawnContract から派生する init/runLoop が
+ * 存在することを契約として明示する。
+ */
+export type OpenclawRuntimeContract = {
+  spawn: SubprocessSpawnContract
+  runtime: OpenclawRuntime
 }

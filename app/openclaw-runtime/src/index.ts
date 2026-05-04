@@ -7,7 +7,10 @@
 export {
   MockOpenclawRuntime,
   RealOpenclawRuntime,
+  createOpenclawRuntime,
   type OpenclawRuntime,
+  type SubprocessSpawnContract,
+  type OpenclawRuntimeContract,
 } from './wrapper.js'
 
 export type {
