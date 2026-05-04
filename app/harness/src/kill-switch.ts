@@ -288,6 +288,23 @@ export class FileKillSwitch implements KillSwitch {
     }
   }
 
+  /**
+   * Round 7 G-03': process tree kill。
+   * `parentPid` 配下の全子孫プロセスを列挙し、SIGTERM を一斉送信、
+   * 5 秒 grace を待って残存プロセスへ SIGKILL を送る。
+   * Windows / Linux / macOS で挙動を分岐する。
+   *
+   * 注: 内部的には `enumerateProcessTree` / `signalProcess` を `deps` から
+   * 注入できる設計とし、テスト時は mock を差し替える (Windows でも実 spawn 不要)。
+   */
+  async killProcessTree(
+    parentPid: number,
+    deps: KillProcessTreeDeps = realKillProcessTreeDeps,
+    opts: { gracePeriodMs?: number } = {},
+  ): Promise<KillProcessTreeResult> {
+    return killProcessTree(parentPid, deps, opts)
+  }
+
   async clearSignal(): Promise<void> {
     try {
       await fs.unlink(this.signalPath)
@@ -311,4 +328,215 @@ export class FileKillSwitch implements KillSwitch {
     history.records.push(record)
     await saveJson(this.historyPath, history)
   }
+}
+
+// ============================================================================
+// Round 7 G-03': process tree kill
+// ============================================================================
+
+/**
+ * 注入可能な OS 依存層。
+ * - enumerateTree(pid): pid 配下の子孫 pid 一覧 (parent を含む) を列挙する。
+ * - signal(pid, sig): 単一 pid に SIGTERM/SIGKILL 相当を送る。
+ *
+ * Windows: enumerate=`wmic`/`Get-CimInstance Win32_Process` 相当、signal=`taskkill /F /PID`
+ * Linux/macOS: enumerate=`ps -o pid=,ppid= -e`、signal=`process.kill(pid, sig)`
+ *
+ * テストでは本 interface を mock 実装に差し替えるため、現環境で実 spawn を行わず
+ * 単体検証可能。実 OS 連携は `realKillProcessTreeDeps` を default として export。
+ */
+export interface KillProcessTreeDeps {
+  enumerateTree(parentPid: number): Promise<number[]>
+  signal(pid: number, sig: 'SIGTERM' | 'SIGKILL'): Promise<void> | void
+  isAlive(pid: number): boolean | Promise<boolean>
+  /** test 用 sleep */
+  sleep?(ms: number): Promise<void>
+  /** test 用 platform 上書き (default process.platform) */
+  platform?: NodeJS.Platform
+}
+
+export interface KillProcessTreeResult {
+  pids: number[]
+  sigtermSent: number[]
+  sigkillSent: number[]
+  platform: NodeJS.Platform
+}
+
+const defaultSleepMs = (ms: number): Promise<void> =>
+  new Promise((r) => setTimeout(r, ms))
+
+/**
+ * 「全列挙 → SIGTERM 一斉 → grace → 残存に SIGKILL」を実装。
+ * platform 分岐は deps 側で行う (Windows / Linux / macOS)。
+ */
+export async function killProcessTree(
+  parentPid: number,
+  deps: KillProcessTreeDeps,
+  opts: { gracePeriodMs?: number } = {},
+): Promise<KillProcessTreeResult> {
+  const grace = opts.gracePeriodMs ?? 5_000
+  const sleep = deps.sleep ?? defaultSleepMs
+  const platform = deps.platform ?? process.platform
+
+  const pids = await deps.enumerateTree(parentPid)
+  const sigtermSent: number[] = []
+  for (const pid of pids) {
+    try {
+      await deps.signal(pid, 'SIGTERM')
+      sigtermSent.push(pid)
+    } catch {
+      // 既に死んでいる等は無視
+    }
+  }
+
+  // grace 期間 alive 監視
+  const start = Date.now()
+  while (Date.now() - start < grace) {
+    let anyAlive = false
+    for (const pid of pids) {
+      if (await deps.isAlive(pid)) {
+        anyAlive = true
+        break
+      }
+    }
+    if (!anyAlive) {
+      return { pids, sigtermSent, sigkillSent: [], platform }
+    }
+    await sleep(Math.min(50, grace))
+  }
+
+  // 残存に SIGKILL escalate
+  const sigkillSent: number[] = []
+  for (const pid of pids) {
+    if (await deps.isAlive(pid)) {
+      try {
+        await deps.signal(pid, 'SIGKILL')
+        sigkillSent.push(pid)
+      } catch {
+        // ignore
+      }
+    }
+  }
+  return { pids, sigtermSent, sigkillSent, platform }
+}
+
+/**
+ * 実 OS 連携の deps (default)。`execFile` ベースで shell injection を回避し、
+ * pid (number) と固定文字列引数のみで構成する。
+ *
+ * W0 段階では unit test では mock deps を渡す前提で、本 default は
+ * 実環境統合 (W1+) でのみ使用する。
+ */
+import { execFileSync } from 'node:child_process'
+
+export const realKillProcessTreeDeps: KillProcessTreeDeps = {
+  async enumerateTree(parentPid: number): Promise<number[]> {
+    const platform = process.platform
+    if (platform === 'win32') {
+      try {
+        const out = execFileSync(
+          'wmic',
+          ['process', 'get', 'ProcessId,ParentProcessId', '/format:csv'],
+          { encoding: 'utf-8' },
+        )
+        return collectDescendants(parsePsLikeOutput(out, 'csv'), parentPid)
+      } catch {
+        return [parentPid]
+      }
+    }
+    try {
+      const out = execFileSync('ps', ['-e', '-o', 'pid=,ppid='], {
+        encoding: 'utf-8',
+      })
+      return collectDescendants(parsePsLikeOutput(out, 'unix'), parentPid)
+    } catch {
+      return [parentPid]
+    }
+  },
+  async signal(pid: number, sig: 'SIGTERM' | 'SIGKILL'): Promise<void> {
+    if (process.platform === 'win32') {
+      try {
+        const args = sig === 'SIGKILL'
+          ? ['/PID', String(pid), '/F']
+          : ['/PID', String(pid)]
+        execFileSync('taskkill', args, { stdio: 'ignore' })
+      } catch {
+        // ignore
+      }
+      return
+    }
+    try {
+      process.kill(pid, sig)
+    } catch {
+      // ignore (already dead)
+    }
+  },
+  isAlive(pid: number): boolean {
+    if (process.platform === 'win32') {
+      try {
+        const out = execFileSync(
+          'tasklist',
+          ['/FI', `PID eq ${pid}`, '/NH', '/FO', 'CSV'],
+          { encoding: 'utf-8' },
+        )
+        return out.includes(`"${pid}"`)
+      } catch {
+        return false
+      }
+    }
+    try {
+      // signal 0 は存在チェック (送信せず権限のみ確認)
+      process.kill(pid, 0)
+      return true
+    } catch {
+      return false
+    }
+  },
+}
+
+/** ps / wmic の出力をパースして {pid, ppid}[] を返す。 */
+function parsePsLikeOutput(
+  out: string,
+  format: 'unix' | 'csv',
+): { pid: number; ppid: number }[] {
+  const rows: { pid: number; ppid: number }[] = []
+  const lines = out.split(/\r?\n/)
+  for (const raw of lines) {
+    const line = raw.trim()
+    if (line.length === 0) continue
+    if (format === 'csv') {
+      // CSV header: Node,ParentProcessId,ProcessId
+      const parts = line.split(',')
+      if (parts.length < 3) continue
+      const ppid = Number(parts[1])
+      const pid = Number(parts[2])
+      if (Number.isFinite(pid) && Number.isFinite(ppid)) rows.push({ pid, ppid })
+      continue
+    }
+    // unix: 例 "12345 12000"
+    const m = /(\d+)\s+(\d+)/.exec(line)
+    if (!m) continue
+    const pid = Number(m[1])
+    const ppid = Number(m[2])
+    if (Number.isFinite(pid) && Number.isFinite(ppid)) rows.push({ pid, ppid })
+  }
+  return rows
+}
+
+function collectDescendants(
+  rows: { pid: number; ppid: number }[],
+  root: number,
+): number[] {
+  const out = new Set<number>([root])
+  let added = true
+  while (added) {
+    added = false
+    for (const r of rows) {
+      if (out.has(r.ppid) && !out.has(r.pid)) {
+        out.add(r.pid)
+        added = true
+      }
+    }
+  }
+  return [...out]
 }

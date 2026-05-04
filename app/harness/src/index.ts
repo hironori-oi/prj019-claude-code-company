@@ -21,12 +21,16 @@ export {
 
 export {
   FileKillSwitch,
+  killProcessTree,
+  realKillProcessTreeDeps,
   type KillSwitch,
   type KillTriggerHandler,
   type KillTriggerMeta,
   type KillRecord,
   type SubprocessKillTarget,
   type CircuitBreakerOpenTarget,
+  type KillProcessTreeDeps,
+  type KillProcessTreeResult,
 } from './kill-switch.js'
 
 export {
@@ -41,6 +45,29 @@ export {
   type HitlRejectionReason,
   type TosGrayReviewPayloadType,
 } from './hitl-gate.js'
+
+export {
+  createHitlEnforcer,
+  type HitlEnforcer,
+  type HitlEnforcerOptions,
+  type EnforceBeforeSpawnInput,
+  type EnforceBeforeSpawnResult,
+} from './hitl-enforcer.js'
+
+export {
+  executeScenario,
+  banDrillScenario1,
+  banDrillScenario2,
+  banDrillScenario3,
+  banDrillScenarios,
+  type BanDrillScenario,
+  type BanDrillStep,
+  type BanDrillContext,
+  type BanDrillRun,
+  type BanDrillStepRun,
+  type DrillStepOutcome,
+  type ExecuteScenarioOptions,
+} from './ban-drill.js'
 
 export {
   CircuitBreaker,

@@ -11,11 +11,18 @@ export {
   buildAllowedEnv,
   buildSpawnContract,
   defaultIsolatedCwd,
+  enforceSpawnTimeout,
+  DEFAULT_SPAWN_TIMEOUT_MS,
+  DEFAULT_TIMEOUT_GRACE_MS,
   type OpenclawRuntime,
   type SubprocessSpawnContract,
   type OpenclawRuntimeContract,
   type BuildSpawnContractOptions,
   type CreateOpenclawRuntimeOptions,
+  type EnforceSpawnTimeoutOptions,
+  type EnforceSpawnTimeoutResult,
+  type TimeoutTarget,
+  type TimeoutCircuitBreaker,
 } from './wrapper.js'
 
 export type {

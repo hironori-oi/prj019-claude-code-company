@@ -2,13 +2,21 @@
   "name": "@clawbridge/audit",
   "version": "0.1.0",
   "private": true,
-  "description": "Append-only audit log layer (W0 stub)",
+  "description": "Append-only audit log layer with SHA-256 hash chain + 90 day rotation (G-10)",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
-    "build": "echo 'audit: W0 stub, no build'",
-    "test": "echo 'audit: W0 stub, no tests'",
-    "lint": "echo 'audit: W0 stub'",
-    "typecheck": "echo 'audit: W0 stub, no tsconfig yet'"
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "echo 'audit: lint TBD'",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

@@ -11,6 +11,7 @@ export default defineConfig({
       '@clawbridge/harness': resolve(__dirname, 'harness/src/index.ts'),
       '@clawbridge/claude-bridge': resolve(__dirname, 'claude-bridge/src/index.ts'),
       '@clawbridge/openclaw-runtime': resolve(__dirname, 'openclaw-runtime/src/index.ts'),
+      '@clawbridge/audit': resolve(__dirname, 'audit/src/index.ts'),
       // Next.js web package の "@/*" エイリアス (tsconfig.json の paths と整合)
       // T2 (HITL templates) の vitest テストが @/types/hitl 等を解決できるようにする
       '@': resolve(__dirname, 'web/src'),

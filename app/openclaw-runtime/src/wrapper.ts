@@ -73,7 +73,19 @@ export function buildAllowedEnv(
  *     使わないことで副作用ゼロを保証する。
  *   - env は既に存在 (allow-list 後)、cwd / argv も whitelist 引数として
  *     SubprocessSpawnContract が一元管理する。
+ *
+ * Round 7 拡張 (G-02):
+ *   - timeoutMs はもはや必須 (default 600,000 = 10 分)。Real 実装は本値を
+ *     超えた場合 SIGTERM → 5 秒 grace → SIGKILL fallback で停止し、
+ *     circuit-breaker open 連鎖を発火する責務を負う。
+ *   - DEFAULT_SPAWN_TIMEOUT_MS / DEFAULT_TIMEOUT_GRACE_MS を export し、
+ *     orchestrator / claude-bridge と整合させる。
  */
+/** Round 7 G-02: spawn 既定 timeout (10 分) */
+export const DEFAULT_SPAWN_TIMEOUT_MS = 600_000
+/** Round 7 G-02: SIGTERM → SIGKILL fallback の grace 期間 (5 秒) */
+export const DEFAULT_TIMEOUT_GRACE_MS = 5_000
+
 export interface SubprocessSpawnContract {
   /** 実行ファイル絶対パス (init 時の OpenclawConfig.binaryPath を解決済み) */
   command: string
@@ -81,8 +93,17 @@ export interface SubprocessSpawnContract {
   args: readonly string[]
   /** allow-list 後の env (空なら inherit ではなく empty で起動) */
   env: Readonly<Record<string, string>>
-  /** タイムアウト (ms)、loopTimeoutMs と一致させる */
+  /**
+   * (Round 7 G-02) タイムアウト (ms)、必須引数。default 600,000 (10 分)。
+   * Real 実装は超過時 SIGTERM → 5 秒 grace → SIGKILL に escalate し、
+   * circuit-breaker open 連鎖を発火する。
+   */
   timeoutMs: number
+  /**
+   * (Round 7 G-02) SIGTERM 後 SIGKILL に切り替えるまでの grace (ms)、必須。
+   * default 5_000。
+   */
+  timeoutGraceMs: number
   /** dryRun=true の場合 spawn せず固定値を返すフックを許可 */
   dryRun: boolean
   /**
@@ -114,7 +135,10 @@ export interface BuildSpawnContractOptions {
   command: string
   args?: readonly string[]
   envAllowList: readonly string[]
-  timeoutMs: number
+  /** Round 7 G-02: 未指定なら DEFAULT_SPAWN_TIMEOUT_MS (10 分)。 */
+  timeoutMs?: number
+  /** Round 7 G-02: 未指定なら DEFAULT_TIMEOUT_GRACE_MS (5 秒)。 */
+  timeoutGraceMs?: number
   dryRun?: boolean
   cwd?: string
   argvWhitelist?: readonly string[]
@@ -129,11 +153,93 @@ export function buildSpawnContract(
     command: opts.command,
     args: Object.freeze([...(opts.args ?? [])]),
     env: buildAllowedEnv(opts.envAllowList, opts.envSource ?? process.env),
-    timeoutMs: opts.timeoutMs,
+    timeoutMs: opts.timeoutMs ?? DEFAULT_SPAWN_TIMEOUT_MS,
+    timeoutGraceMs: opts.timeoutGraceMs ?? DEFAULT_TIMEOUT_GRACE_MS,
     dryRun: opts.dryRun ?? true,
     cwd: opts.cwd ?? defaultIsolatedCwd(),
     argvWhitelist: Object.freeze([...(opts.argvWhitelist ?? [])]),
   })
+}
+
+/**
+ * Round 7 G-02: timeout enforcement の純関数 helper。
+ *
+ * 実 spawn を抽象化した契約 (alive() + signal()) を受け取り、
+ * timeoutMs 経過で SIGTERM → grace 待機 → SIGKILL fallback を実施し、
+ * 完了後 circuit-breaker (任意) を forceOpen 連鎖する。
+ *
+ * Real 実装の child_process.spawn を直接ここで扱わないのは、
+ * テストで mock spawn を差し込めるよう契約のみ受け取る設計のため。
+ */
+export interface TimeoutTarget {
+  alive(): boolean
+  signal(sig: 'SIGTERM' | 'SIGKILL'): Promise<void> | void
+}
+export interface TimeoutCircuitBreaker {
+  forceOpen(reason?: string): void
+}
+export interface EnforceSpawnTimeoutOptions {
+  contract: SubprocessSpawnContract
+  target: TimeoutTarget
+  circuitBreaker?: TimeoutCircuitBreaker
+  /** test 用 sleep 注入 */
+  sleep?: (ms: number) => Promise<void>
+}
+export interface EnforceSpawnTimeoutResult {
+  /** 'completed' = timeout 内に自然終了 / 'sigterm' = SIGTERM のみで停止 / 'sigkill' = SIGKILL fallback まで escalate */
+  outcome: 'completed' | 'sigterm' | 'sigkill'
+  signalsSent: ('SIGTERM' | 'SIGKILL')[]
+  circuitOpened: boolean
+}
+
+const defaultSleep = (ms: number): Promise<void> =>
+  new Promise((r) => setTimeout(r, ms))
+
+export async function enforceSpawnTimeout(
+  opts: EnforceSpawnTimeoutOptions,
+): Promise<EnforceSpawnTimeoutResult> {
+  const { contract, target, circuitBreaker } = opts
+  const sleep = opts.sleep ?? defaultSleep
+  const signalsSent: ('SIGTERM' | 'SIGKILL')[] = []
+
+  // timeout まで sleep。途中で alive=false になったら早抜け。
+  const start = Date.now()
+  while (Date.now() - start < contract.timeoutMs) {
+    if (!target.alive()) {
+      return { outcome: 'completed', signalsSent, circuitOpened: false }
+    }
+    await sleep(Math.min(50, contract.timeoutMs))
+  }
+  if (!target.alive()) {
+    return { outcome: 'completed', signalsSent, circuitOpened: false }
+  }
+
+  // timeout 経過 → SIGTERM → grace → 必要なら SIGKILL
+  await target.signal('SIGTERM')
+  signalsSent.push('SIGTERM')
+  const graceStart = Date.now()
+  while (Date.now() - graceStart < contract.timeoutGraceMs) {
+    if (!target.alive()) break
+    await sleep(Math.min(50, contract.timeoutGraceMs))
+  }
+  let outcome: 'sigterm' | 'sigkill' = 'sigterm'
+  if (target.alive()) {
+    await target.signal('SIGKILL')
+    signalsSent.push('SIGKILL')
+    outcome = 'sigkill'
+  }
+  let circuitOpened = false
+  if (circuitBreaker) {
+    try {
+      circuitBreaker.forceOpen(
+        `spawn-timeout: ${contract.command} after ${contract.timeoutMs}ms`,
+      )
+      circuitOpened = true
+    } catch {
+      // best effort
+    }
+  }
+  return { outcome, signalsSent, circuitOpened }
 }
 
 /**
