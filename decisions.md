@@ -962,3 +962,272 @@
 - fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
 
 ---
+
+## DEC-019-075 (起案 / status: DRAFT / 起案者: PM-P / 起案日: 2026-05-05 / レビュー期限: 2026-05-19 (Round 24 採決想定 / 6/20 Phase 1 完遂宣言前))
+
+**タイトル**: Phase 1 W4 完遂宣言 + 17 日 path 4 段達成宣言
+
+**status 注意**: 本議決は **DRAFT** であり、Round 24（5/12-5/19）採決想定（6/20 Phase 1 完遂期限の 32 日前確定）。Round 23 進行中は措置案として参照のみ可。確定値（W4 完成第 3 弾 / harness 800+ 到達 / openclaw 410+ 到達 / 統合 e2e fully wired）は Round 23 完遂着地時点で update する。
+
+**(1) background**:
+- DEC-019-073（PM-N / Round 21 W3→W4 移行宣言）+ DEC-019-074（PM-O / Round 22 W4 完成第 1+2 弾）の自然継承議決。
+- Round 22 完遂着地で 17 日 path **W4 完成第 1 弾 + 第 2 弾達成**（Dev-JJ production e2e 拡張 561 行 10 tests / Dev-KK file-breach stress/chaos 393 行 9 tests / Sec-Q longrun stability 275 行 5 tests）+ harness 771→795 PASS（+24）+ openclaw 394 維持。
+- Owner formal「Round 23 9 並列 GO」directive trigger（5/5 受領）+ Owner formal「最速で進めよ」continued。
+- Round 23 想定: W4 完成第 3 弾（残 production wiring + DI container + 統合 e2e fully wired）+ ARCH-01 物理 migrate（Dev-JJ 案 A path alias = 2.5h）= **6/20 Phase 1 完遂宣言の formal 化準備完了**。
+
+**(2) context**:
+- 17 日 path = Phase 1 W1（5/9 kickoff 確定 / R17）→ W2（cross-control invariants 28 件確立 / R18）→ W3（orchestrator 接続 65 tests + e2e 7ctrl / R19-20）→ W4 着手 4/4 task（R21）→ **W4 完成第 1+2 弾（R22）+ W4 完成第 3 弾（R23 想定）+ Phase 1 完遂宣言（R24 統合採決）**。
+- 17 日 path = R17（5/9） から R24（5/19）= 7 round 完了 = **3 round 前倒し** vs Phase 1 完遂期限 6/20。
+- W4 完成第 3 弾 = production wiring 残作業 + DI container 完成 + 統合 e2e fully wired + harness 800+ 到達 + openclaw 410+ 到達。
+
+**(3) alternatives**:
+- 代替案 A（Round 24 採決のみ = DEC-074 と統合）: 4 件まとめ採決（074 + 075 + 076 + 077）+ 議論時間集約 → 採用候補
+- 代替案 B（Round 25 採決 = 6/12 D-7 本 rehearsal 結果反映後）: M-3 / M-7 完全評価可能だが、6/20 期限 8 日前 = 期限圧迫リスク → 却下推奨
+- 代替案 C（Round 24 単独採決 = DEC-074 確定後）: DEC-074 与件継承で議論明瞭 → 採用候補
+- 代替案 D（Round 23 即時採決）: W4 完成第 3 弾未達のため早すぎ → 却下推奨
+
+**(4) decision（DRAFT 採択 6 軸）**:
+
+① **17 日 path 4 段達成宣言（W1→W2→W3→W4 完遂）**
+- W1 完成（DEC-019-067 由来）+ W2 完成（DEC-019-068）+ W3 完成（DEC-019-070 ②）+ **W4 完成（本議決 ①）** = 4 段全達成
+- Round 17 (5/9) → Round 24 (5/19) = 7 round / 10 日（5/9-5/19 path）= 17 日 path 計画より 3 round 前倒し vs 6/20 期限
+
+② **harness 800+ PASS 達成宣言**
+- Round 22 完遂 795 → Round 23 完遂着地 800+（W4 完成第 3 弾 production wiring tests +5-15 想定）→ 達成判定
+- W3 完成（720）→ W4 完成第 1+2 弾（795）→ W4 完成第 3 弾（800+）= +80 PASS（11% 増）
+
+③ **openclaw-runtime 410+ PASS 達成宣言**
+- Round 22 完遂 394 → Round 23 完遂着地 410+（本番依存注入 + DI container tests +16 想定）→ 達成判定
+- W2 完成後 5 round 維持（394）→ W4 完成第 3 弾で +16 = 410 到達
+
+④ **統合 e2e fully wired tests 全 PASS 達成宣言**
+- Round 22 = production e2e 拡張 561 行 10 tests（Dev-JJ）+ stress/chaos 393 行 9 tests（Dev-KK）+ longrun stability 275 行 5 tests（Sec-Q）= 24 tests
+- Round 23 = 残 production wiring tests + DI container tests = +5-15 tests 想定 = 統合 e2e fully wired 完遂
+
+⑤ **regression 0 維持達成宣言**
+- W1/W2/W3 既存 tests 全 PASS 維持（base 720）+ Round 22 +24（W4 第 1+2 弾）+ Round 23 +5-15（W4 第 3 弾）= regression 0
+- DEC-019-074 §(6) M-6 regression 0 観点を Phase 1 全期間で達成
+
+⑥ **Phase 1 完遂宣言 + Phase 2 W5 着手 trigger 成立**
+- 6/20 Phase 1 完遂期限の 32 日前（5/19 採決想定）に formal 完遂宣言
+- Phase 2 W5 着手 trigger = (a) harness 800+ + openclaw 410+ + 統合 e2e fully wired / (b) DEC-019-076 ARCH-01 必達クローズ完遂 / (c) DEC-019-077 OWN-AUTO default 化議決完遂 / (d) Owner formal 承認
+
+**(5) rationale（DRAFT 採用根拠 7 件）**:
+- (a) Owner formal「Round 23 9 並列 GO」directive 受領（5/5）+ Owner formal「最速で進めよ」directive 継続 = Phase 1 加速 trajectory 確定
+- (b) Round 22 完遂着地で W4 完成第 1+2 弾達成 = 17 日 path 4 段中 4 段着手 + 完成 6/10 進度
+- (c) harness +24 / openclaw 維持 / regression 0 の 3 軸同時達成（Round 22）= W4 完成第 3 弾の前提条件確証
+- (d) DEC-019-074 §(6) measurable 7 件 中 5 件達成（M-1 部分達成 / M-2 部分達成 / M-4 GO 確定 / M-5 達成 / M-6 達成）= Round 23 で M-1 / M-2 完成評価可能
+- (e) Sec 連続 8 round baseline ESTABLISHED（Round 22）= W4 本番 wiring の Sec 基盤整備済 + 9.99M pair 衝突 0 確証
+- (f) ARCH-01 解消経路確定（Dev-JJ 案 A = 2.5h / 議決不要 / regression 0）= Phase 1 完遂前の必達クローズ可能
+- (g) 6/20 Phase 1 完遂期限まで 46 日 → Round 24 採決時点で 32 日 = 32 日余裕で formal 化可能
+
+**(6) measurable success criteria（M-1〜M-6）**:
+- (M-1) **harness 800+ PASS 維持**: Round 23 完遂着地で 800+ 到達 + Round 24 採決時点で 800+ 維持 → 達成 / 部分達成 / 未達
+- (M-2) **openclaw-runtime 410+ PASS 維持**: 同上 → 達成 / 部分達成 / 未達
+- (M-3) **17 日 path 4 段達成 evidence**: W1/W2/W3/W4 完成 evidence 文書群（DEC-067 ② / DEC-068 / DEC-070 ② / 本議決 ①）trace → 達成 / 未達
+- (M-4) **統合 e2e fully wired tests 全 PASS**: Round 23 完遂着地時点で本番依存版 全 PASS → 達成 / 未達
+- (M-5) **regression 0 維持**: W1/W2/W3/W4 全期間 regression 0 → 達成 / 未達
+- (M-6) **Phase 2 W5 着手 trigger 4 条件成立**: (a) harness/openclaw/e2e + (b) ARCH-01 + (c) OWN-AUTO + (d) Owner 承認 → 達成 / 部分達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- DEC-019-076（ARCH-01 = DEC-019-041 Phase B 必達クローズ宣言）= Round 24 採決想定、本 DEC-075 ⑥ Phase 2 W5 着手 trigger 条件 (b) 成立用
+- DEC-019-077（Owner 拘束 76% 圧縮 default 化議決）= Round 24 採決想定、本 DEC-075 ⑥ Phase 2 W5 着手 trigger 条件 (c) 成立用
+- DEC-019-078（Phase 2 W5 着手 timeline 確定）= Round 25 採決想定、本 DEC-075 完遂後の自然継承
+- DEC-019-074 採決（Round 24 統合採決）= 本 DEC-075 と並走、4 件まとめ採決推奨
+
+**(8) verification（Round 24 採決時 or Round 23 完遂時）**:
+- V-1: W4 完成 evidence = Round 23 完遂 commit hash + harness 800+ + openclaw 410+ + 統合 e2e fully wired 全 PASS
+- V-2: 17 日 path 4 段 evidence = DEC-067 / 068 / 070 / 本議決の trace 連鎖
+- V-3: regression 0 evidence = W1-W4 全 tests log + harness baseline trace
+- V-4: Phase 2 W5 着手 trigger 4 条件 evidence = (a) tests / (b) ARCH-01 / (c) OWN-AUTO / (d) Owner 承認文書
+- V-5: 6/20 Phase 1 完遂期限と Round 24 採決の整合 = 32 日余裕確認
+- V-6: CEO 経由 Owner 統合報告 v24+ で formal 採択
+
+**制約遵守**:
+- API 消費: $0（PM-P は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 末尾追記のみ）
+- 絵文字: 0 / tests 影響: 0（baseline harness 795 + openclaw-runtime 394 維持）/ 既存 DEC 改変: 0（DEC-019-001〜074 すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 23 進行中は status DRAFT 固定、Round 24 採決時に status: confirmed / rejected / revised へ遷移
+- relative imports fallback pattern 維持（ARCH-01 = DEC-019-076 で Round 24 必達クローズ予定）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+
+---
+
+## DEC-019-076 (起案 / status: DRAFT / 起案者: PM-P / 起案日: 2026-05-05 / レビュー期限: 2026-05-19 (Round 24 採決想定 / DEC-019-041 Phase B 必達クローズ宣言))
+
+**タイトル**: ARCH-01 解消 = DEC-019-041 Phase B 必達クローズ宣言（path alias 物理 migrate 完遂）
+
+**status 注意**: 本議決は **DRAFT** であり、Round 24（5/12-5/19）採決想定（DEC-019-041 Phase B 候補必達クローズの formal 化）。Round 23 進行中は措置案として参照のみ可。確定値（path alias 物理 migrate 完遂 / regression 0 確認 / DEC-019-041 Phase B status closed 切替）は Round 23 完遂着地時点で update する。
+
+**(1) background**:
+- DEC-019-041（Phase B 候補 = workspace alias 課題 = ARCH-01）= relative imports fallback pattern で運用継続中、物理解消は Phase 2 着手前必達。
+- DEC-019-074 §(4) ④（Round 22 / PM-O）= ARCH-01 解消可否評価で **GO 確定**（Dev-JJ 案 A 推奨 / 案 B C 却下）。
+- Dev-JJ 三択評価（326 行）: 案 A = tsconfig path alias 化（推奨 / 2.5h / 議決不要 / regression 0 想定）/ 案 B = pnpm workspaces 完全活用（6.5h / 循環依存承認議決必要）/ 案 C = Nx 導入（12-16h / スコープ過大 / 不採用）。
+- Round 23 想定: Dev-JJ 案 A 物理 migrate 実行（2.5h / Dev-MM + Dev-NN 担当）+ regression 0 確認 + relative imports fallback 並存維持確認。
+
+**(2) context**:
+- ARCH-01 = workspace alias 不安定 → relative imports fallback で運用 → Phase 2 W5（cross-package 拡張）着手前に物理解消必須。
+- DEC-019-041 Phase A = relative imports fallback 確立済（Round 13 期間内）/ Phase B = workspace alias 物理化 = 本議決で必達クローズ。
+- 物理 migrate 内訳: tsconfig.json paths セクションに `@/*` `@core/*` `@harness/*` 等 4-6 alias 追加 + import 文置換（relative path → alias）+ test 全 PASS 確認。
+- 並存可能性: Dev-JJ 評価で「relative imports fallback と path alias は技術的に並存可能」確認 = 既存 import の段階移行可能。
+
+**(3) alternatives**:
+- 代替案 A（Round 23 で物理 migrate 実行 + Round 24 必達クローズ宣言）: Dev-JJ 案 A path alias 化 / 2.5h / 議決不要 / regression 0 想定 → 採用候補
+- 代替案 B（Phase 2 W5 着手前まで HOLD）: relative imports fallback 継続だが、Phase 2 着手時点で必達 = round 圧縮リスク → 却下推奨
+- 代替案 C（DEFER = Phase 2 完遂後評価）: Phase 2 中の cross-package 課題悪化リスク → 却下推奨
+- 代替案 D（案 B pnpm workspaces 完全活用）: 6.5h + 循環依存承認議決必要 = 議決負荷増 → 却下推奨
+
+**(4) decision（DRAFT 採択 5 軸）**:
+
+① **DEC-019-041 Phase B 必達クローズ宣言**
+- DEC-019-041 status = Phase A confirmed / Phase B candidate（relative imports fallback で運用）→ Phase B closed（path alias 物理 migrate 完遂）
+- 必達クローズ trigger: Round 23 完遂着地で path alias 物理 migrate evidence + regression 0 確認
+
+② **path alias 物理 migrate 完遂宣言（Dev-JJ 案 A 採用）**
+- tsconfig.json paths セクション拡張 = 4-6 alias 追加（@/* @core/* @harness/* 等）
+- import 文置換 = relative path → alias（段階移行 / 既存 fallback 並存維持）
+- 物理 migrate 工数 = 2.5h（Dev-JJ 評価 / Dev-MM + Dev-NN 担当）
+- 議決不要 = 既存 SOP（DEC-019-041）範囲内の物理執行
+
+③ **regression 0 維持達成宣言**
+- harness 795 → 800+（Round 23 完遂着地）= path alias 物理 migrate 後の test 全 PASS 確認
+- openclaw 394 維持 = 同上
+- W1/W2/W3/W4 既存 tests 全 PASS 維持
+
+④ **relative imports fallback pattern 並存維持宣言**
+- path alias 物理 migrate 後も relative imports fallback pattern は技術的に並存可能（Dev-JJ 評価）
+- 段階移行: 全 import の即時置換は不要、新規 import は alias、既存 import は順次置換
+- DEC-019-041 Phase A baseline 維持 + Phase B（alias）追加 = 双方有効
+
+⑤ **Phase 2 W5 着手 trigger 条件 (b) 成立宣言**
+- DEC-019-075 ⑥ Phase 2 W5 着手 trigger 4 条件中の (b) = ARCH-01 必達クローズ完遂
+- 本議決 ① 採決完遂 = (b) 条件成立 = Phase 2 着手 ready 化
+
+**(5) rationale（DRAFT 採用根拠 7 件）**:
+- (a) DEC-019-074 §(4) ④ = ARCH-01 解消可否評価 GO 確定 = Round 22 で評価完了
+- (b) Dev-JJ 三択評価 326 行 = 案 A 推奨（2.5h / 議決不要 / regression 0）= 工数最小 + リスク最小
+- (c) DEC-019-041 Phase B 候補 status の自然継承 = 既存 SOP 範囲内
+- (d) 案 B（6.5h + 循環依存議決）/ 案 C（12-16h / Nx 過大）却下 = Phase 1 完遂直前の議決負荷回避
+- (e) relative imports fallback 並存維持 = backward compat 完全保証
+- (f) Phase 2 W5（cross-package 拡張）着手前必達 = roadmap 圧縮回避
+- (g) 6/20 Phase 1 完遂期限まで 46 日（5/5 起案時点）= Round 23 物理 migrate 2.5h は 1 round 内消化可能
+
+**(6) measurable success criteria（M-1〜M-5）**:
+- (M-1) **path alias 物理 migrate 完遂 evidence**: tsconfig.json paths セクション diff + import 文置換 commit hash → 達成 / 未達
+- (M-2) **harness 800+ PASS 維持**: 物理 migrate 後 regression 0 確認 → 達成 / 未達
+- (M-3) **openclaw-runtime 394 維持**: 物理 migrate 後 regression 0 確認 → 達成 / 未達
+- (M-4) **relative imports fallback 並存確認**: 既存 import / 新規 import 双方 PASS → 達成 / 未達
+- (M-5) **DEC-019-041 status 切替**: Phase B candidate → closed → 達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- Dev-MM + Dev-NN 担当（Round 23 第 1 波）= path alias 物理 migrate 2.5h 実行
+- DEC-019-075（Phase 1 完遂宣言）= 本 DEC-076 ⑤ Phase 2 W5 着手 trigger 条件 (b) 成立で連動
+- DEC-019-077（OWN-AUTO default 化）= 本 DEC-076 と独立議決
+- DEC-019-078（Phase 2 W5 着手 timeline 確定）= Round 25 採決想定、本 DEC-076 完遂後の自然継承
+
+**(8) verification（Round 24 採決時 or Round 23 完遂時）**:
+- V-1: path alias 物理 migrate evidence = tsconfig.json paths diff + import 文 commit hash trace
+- V-2: regression 0 evidence = Round 23 完遂時 harness 800+ / openclaw 394+ / 全 tests log
+- V-3: relative imports fallback 並存 evidence = 双方 import pattern の test PASS log
+- V-4: DEC-019-041 status 遷移 evidence = decisions.md DEC-019-041 status update（Phase B closed）
+- V-5: Phase 2 W5 着手 trigger 条件 (b) 成立 evidence = DEC-019-075 ⑥ trace
+- V-6: CEO 経由 Owner 統合報告 v24+ で formal 採択
+
+**制約遵守**:
+- API 消費: $0（PM-P は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 末尾追記のみ）
+- 絵文字: 0 / tests 影響: 0（baseline harness 795 + openclaw-runtime 394 維持予定）/ 既存 DEC 改変: 0（DEC-019-001〜075 すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 23 進行中は status DRAFT 固定、Round 24 採決時に status: confirmed / rejected / revised へ遷移
+- relative imports fallback pattern 維持並存（本 DEC-076 ④ で技術的並存性を明示）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+
+---
+
+## DEC-019-077 (起案 / status: DRAFT / 起案者: PM-P / 起案日: 2026-05-05 / レビュー期限: 2026-05-19 (Round 24 採決想定 / OWN-AUTO PoC 完遂後の default flow 化議決))
+
+**タイトル**: Owner 拘束 76% 圧縮 default 化議決（OWN-AUTO 自動化 PoC 完遂後の default flow 化）
+
+**status 注意**: 本議決は **DRAFT** であり、Round 24（5/12-5/19）採決想定（OWN-AUTO PoC 完遂後の default flow 化議決）。Round 23 進行中は措置案として参照のみ可。確定値（PoC 完遂 evidence / 80→19 min 76% 圧縮実証 / default flow 切替判定）は Round 23 完遂着地時点で update する。
+
+**(1) background**:
+- DEC-019-074 §(4) ④（Round 22 / PM-O）+ Dev-KK OWN-AUTO spec 357 行 = OWN-PRE 7 sub-card 自動化分類（A/B/C）確立。
+- 圧縮実績: OWN-PRE-01 80-87% / 02 80-87% / 03 20%（お名前.com API 不在で C 維持）/ 04 80-87% / 05 80-87% / 06 **93%（最大 / SQL 1 発で全 RLS 検証）** / 07 60%（B 分類 / backup confirm 残）= 計 80→19 min = **76% 圧縮**。
+- Round 23 想定: Web-Ops-J 担当（Round 23 引継 ⑥）= OWN-AUTO PoC 実装（Dev-KK spec → 物理 implementation）+ 19 min 完遂時間実測 + default flow 切替判定。
+- Auth 共有時の追加圧縮余地 = 12-15 min（OWN-PRE-01/02/04/05 の auth 共有による削減）。
+
+**(2) context**:
+- DEC-019-073（W3→W4 移行宣言）+ DEC-019-074（W4 完成第 1+2 弾）= W4 完成 path 上で Owner 拘束圧縮が並走必達 task。
+- Owner formal「丁寧に」directive = Owner 体験品質も重視 = 80 min → 19 min 圧縮は「丁寧」の同義（短時間で完遂 = 拘束最小化）。
+- 公開当日 Owner 実拘束 = 11 min（Marketing-P launch day v3.0）= OWN-AUTO 19 min と整合（公開前運用設定 19 min + launch day 11 min = 計 30 min Owner 拘束）。
+- default flow 化 = 全 launch / re-launch / 案件公開で OWN-AUTO を default 採用、OWN-PRE 80 min は manual fallback として維持。
+
+**(3) alternatives**:
+- 代替案 A（PoC 完遂後 default 化議決 = Round 24 採決）: Web-Ops-J Round 23 PoC 完遂 → Round 24 default 化議決 = 自然 path → 採用候補
+- 代替案 B（PoC skip + spec 段階で default 化議決）: 実証なしの default 化 = リスク高 → 却下推奨
+- 代替案 C（PoC 完遂後 manual fallback のみで運用継続 = default 化保留）: 76% 圧縮実績の活用機会損失 → 却下推奨
+- 代替案 D（Auth 共有版 PoC = 12-15 min 達成後 default 化）: Round 23 + Round 24 で連続 PoC = 工数増 → 却下推奨（DEC-019-079 候補で Round 25 検討）
+
+**(4) decision（DRAFT 採択 5 軸）**:
+
+① **OWN-AUTO PoC 完遂宣言**
+- Web-Ops-J 担当（Round 23 第 2 波）= Dev-KK spec 357 行を物理 implementation
+- PoC 範囲 = 7 sub-card OWN-PRE-01〜07 自動化（A/B/C 分類別）
+- 完遂 trigger = 80→19 min 76% 圧縮実機実測 + 既存 OWN-PRE 80 min との比較 evidence
+
+② **80→19 min 76% 圧縮実証宣言**
+- 実機実測値 = 19 min ± 2 min（Dev-KK spec 想定範囲内）
+- sub-card 別 圧縮率 evidence = OWN-PRE-06 = 1 min（93% / SQL 1 発 RLS）/ OWN-PRE-01/02/04/05 = 各 1.5-3 min（80-87%）/ OWN-PRE-03 = 8 min（C 維持 / 20%）/ OWN-PRE-07 = 2 min（B 分類 / 60%）
+
+③ **default flow 化議決**
+- 全 launch / re-launch / 案件公開で OWN-AUTO を default 採用
+- OWN-PRE 80 min manual fallback として維持（Auth 失効 / API 障害時）
+- 切替 trigger = 本議決 ③ 採決完遂 + Owner formal 承認
+
+④ **manual fallback 維持宣言**
+- OWN-PRE-03（お名前.com API 不在 / C 分類）は manual fallback 必須維持
+- OWN-PRE-07（B 分類 / backup confirm）は Owner 確認 step 維持
+- Auth 失効時 / API 障害時 = OWN-PRE 80 min 全 manual fallback 起動可能
+
+⑤ **Auth 共有版 12-15 min 達成 trigger（次段階）**
+- 本議決 ③ default 化完遂後、Auth 共有版 PoC 着手判定 = DEC-019-079 候補（Round 25 採決想定）
+- 12-15 min 達成 = OWN-PRE-01/02/04/05 の auth 共有による削減（19 → 12-15 min = 追加 4-7 min 圧縮）
+- 本議決範囲外（次段階）
+
+**(5) rationale（DRAFT 採用根拠 7 件）**:
+- (a) DEC-019-074 §(4) ④ + Dev-KK spec 357 行 = OWN-AUTO 76% 圧縮実証 evidence 確立
+- (b) Owner formal「丁寧に」directive = 拘束最小化（80→19 min）と整合
+- (c) Owner formal「最速で進めよ」directive = 自動化 default 化と整合
+- (d) launch day v3.0 11 min 拘束（Marketing-P）+ OWN-AUTO 19 min = 計 30 min 拘束で公開完遂可能
+- (e) OWN-PRE-06 RLS 検証 93% 圧縮（SQL 1 発で全 RLS 検証）= max 圧縮 evidence
+- (f) manual fallback 維持 = backward compat 完全保証 + 障害時運用継続性確保
+- (g) Auth 共有版 12-15 min 余地 = 次段階拡張 path 確保（DEC-019-079 候補）
+
+**(6) measurable success criteria（M-1〜M-5）**:
+- (M-1) **OWN-AUTO PoC 完遂 evidence**: Web-Ops-J Round 23 PoC 物理 implementation + 19 min 実機実測 → 達成 / 未達
+- (M-2) **80→19 min 76% 圧縮実証**: sub-card 別 圧縮率 evidence + 計 19 min ± 2 min → 達成 / 部分達成 / 未達
+- (M-3) **default flow 切替完遂**: 全 launch / re-launch / 案件公開での OWN-AUTO default 採用 → 達成 / 未達
+- (M-4) **manual fallback 維持確認**: OWN-PRE 80 min manual fallback 起動可能 evidence → 達成 / 未達
+- (M-5) **Phase 2 W5 着手 trigger 条件 (c) 成立**: DEC-019-075 ⑥ Phase 2 W5 着手 trigger 4 条件中の (c) = OWN-AUTO default 化議決完遂 → 達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- Web-Ops-J 担当（Round 23 第 2 波）= OWN-AUTO PoC 物理 implementation
+- DEC-019-075（Phase 1 完遂宣言）= 本 DEC-077 ⑤ Phase 2 W5 着手 trigger 条件 (c) 成立で連動
+- DEC-019-076（ARCH-01 必達クローズ）= 本 DEC-077 と独立議決
+- DEC-019-079（Auth 共有版 12-15 min 達成議決）= Round 25 採決想定、本 DEC-077 完遂後の次段階拡張
+- DEC-019-080（Phase 2 案件公開での OWN-AUTO 標準採用）= Round 25-26 採決想定、本 DEC-077 default 化完遂後の Phase 2 適用議決
+
+**(8) verification（Round 24 採決時 or Round 23 完遂時）**:
+- V-1: OWN-AUTO PoC 物理 implementation evidence = Web-Ops-J Round 23 deliverable trace
+- V-2: 80→19 min 76% 圧縮実機実測 evidence = sub-card 別 圧縮率 log + 計時間集計
+- V-3: default flow 切替 evidence = 全 launch / re-launch / 案件公開 SOP 文書改訂
+- V-4: manual fallback 維持 evidence = OWN-PRE 80 min runsheet 維持確認
+- V-5: Phase 2 W5 着手 trigger 条件 (c) 成立 evidence = DEC-019-075 ⑥ trace
+- V-6: CEO 経由 Owner 統合報告 v24+ で formal 採択
+
+**制約遵守**:
+- API 消費: $0（PM-P は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 末尾追記のみ）
+- 絵文字: 0 / tests 影響: 0（baseline harness 795 + openclaw-runtime 394 維持）/ 既存 DEC 改変: 0（DEC-019-001〜076 すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 23 進行中は status DRAFT 固定、Round 24 採決時に status: confirmed / rejected / revised へ遷移
+- relative imports fallback pattern 維持（ARCH-01 = DEC-019-076 で並走議決）
+- manual fallback（OWN-PRE 80 min）維持 = backward compat 完全保証
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+
+---

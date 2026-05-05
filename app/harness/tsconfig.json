@@ -1,14 +1,24 @@
 {
   "_meta": {
-    "rolloutPhase": "A (warn)",
+    "rolloutPhase": "A (warn) → ARCH-01 Phase 1 dev/staging migrate (Round 23 Dev-MM)",
     "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
-    "issue": "ARCH-01 (DEC-019-041)"
+    "issue": "ARCH-01 (DEC-019-041)",
+    "archPhase1": {
+      "since": "Round 23 Dev-MM (2026-05-05)",
+      "scope": "test files 1-2 個のみ alias 化 (議決不要 / regression 0 維持)",
+      "spec": "Dev-JJ R22 case A 推奨経路 = `@clawbridge/openclaw-runtime/*` paths 追加",
+      "production_rollout": "Phase 2 (Round 23 後半 Dev-NN 引継 = main code 全移行)"
+    }
   },
   "extends": "../tsconfig.legacy-relax.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": false
+    "composite": false,
+    "baseUrl": "./src",
+    "paths": {
+      "@clawbridge/openclaw-runtime/*": ["../../openclaw-runtime/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts"]

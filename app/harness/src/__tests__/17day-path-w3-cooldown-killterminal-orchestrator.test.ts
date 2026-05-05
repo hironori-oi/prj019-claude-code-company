@@ -39,12 +39,16 @@
  */
 import { describe, it, expect } from 'vitest'
 
+// Round 23 Dev-MM: ARCH-01 Phase 1 dev/staging migrate (DEC-019-041 / Dev-JJ R22 案 A).
+// 旧 `../../../openclaw-runtime/src/controls/...` (cross-rootDir relative imports) →
+// 新 `@clawbridge/openclaw-runtime/controls/...` (tsconfig paths + vitest resolve.alias).
+// Phase 1 段階 = test file 1-2 個のみ alias 化 (議決不要 / regression 0 維持).
 import {
   CooldownClockSkewError,
   type CooldownClock,
   type CooldownInput,
-} from '../../../openclaw-runtime/src/controls/p-ui-02-cooldown-modal.js'
-import type { KillInput } from '../../../openclaw-runtime/src/controls/p-ui-04-kill-switch-propagation.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-02-cooldown-modal.js'
+import type { KillInput } from '@clawbridge/openclaw-runtime/controls/p-ui-04-kill-switch-propagation.js'
 
 import {
   buildCooldownPolicy,

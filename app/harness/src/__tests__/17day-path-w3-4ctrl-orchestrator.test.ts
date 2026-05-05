@@ -22,32 +22,35 @@
  */
 import { describe, it, expect } from 'vitest'
 
+// Round 23 Dev-MM: ARCH-01 Phase 1 dev/staging migrate (DEC-019-041 / Dev-JJ R22 案 A).
+// 旧 `../../../openclaw-runtime/src/controls/...` → 新 `@clawbridge/openclaw-runtime/controls/...`.
+// Phase 1 段階 = test file 1-2 個のみ alias 化 (議決不要 / regression 0 維持).
 import {
   propagateKill,
   createKillTerminalSink,
   type KillInput,
   type ProcessKiller,
   type KillTerminalSink,
-} from '../../../openclaw-runtime/src/controls/p-ui-04-kill-switch-propagation.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-04-kill-switch-propagation.js'
 import {
   evaluateAndAct,
   type RollbackExecutor,
   type KillSwitchTrigger,
   type PostRollbackNotifier,
-} from '../../../openclaw-runtime/src/controls/p-ui-05-anomaly-rollback.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-05-anomaly-rollback.js'
 import {
   runRlsChecklist,
   createRlsAuditTrail,
   type RlsCase,
   type RlsExecutor,
   type RlsAuditTrail,
-} from '../../../openclaw-runtime/src/controls/p-ui-09-rls-checklist.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-09-rls-checklist.js'
 import {
   requestPermissionApproval,
   type OwnerNotifier,
   type PermissionApprover,
   type PermissionAuditSink,
-} from '../../../openclaw-runtime/src/controls/hitl-10-permission-change.js'
+} from '@clawbridge/openclaw-runtime/controls/hitl-10-permission-change.js'
 
 import {
   createW3OrchestratorContext,
