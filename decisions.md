@@ -1465,3 +1465,128 @@ DEC-019-076 Round 24 採決時の Dev-PP 推奨採択軸:
 
 ---
 
+## DEC-019-079 (起案 / status: DRAFT / 起案者: PM-R / 起案日: 2026-05-05 / レビュー期限: 2026-05-26 (Round 25 採決想定 / Phase 2 W5 着手宣言 + ARCH-01 Phase B-2 supersede 議決))
+
+**タイトル**: Phase 2 W5 着手宣言（6/3 火）+ ARCH-01 Phase B-2 supersede 議決（DEC-019-041 partial-resolved → resolved 経路 = composite project references 経由）
+
+**status 注意**: 本議決は **DRAFT** であり、Round 25（5/26-6/2）採決想定（DEC-019-078 と統合採決 pattern B 推奨 = 5/26 火 09:00-11:00 JST 105 min）。Phase 2 W5 着手 6/3（火）直前の自然継承議決として、DEC-019-078 と連鎖議決構造を形成。ARCH-01 = DEC-019-041 partial-resolved → resolved 経路 = composite project references を formal 化。
+
+**(1) background**:
+- DEC-019-078（PM-Q / Round 24 / Round 24 完遂着地宣言 + Phase 1→Phase 2 移行宣言）の自然継承議決。
+- Round 24 完遂着地時点（CEO 統合報告 v25 / 進捗 100% 維持 / Phase 1 完遂前倒し達成見込確証）= harness 804→816 PASS（+12）/ openclaw 394 維持 / W4 完成第 4 弾達成 / ARCH-01 Phase 2 main code 完遂 + 重要発見（TS6059 paths alias 仕様外）/ Sec 連続 10 round baseline ULTRA-EXTENDED / INDEX-v13 130 entries / 議決構造 40 件 + DEC-078 起案 = 41 件。
+- Owner formal「Round 24 9 並列 GO」directive 順守継続中、Round 25 directive も継承想定。
+- Phase 2 W5 着手 = 2026-06-03（火）= Phase 1 完遂期限 6/20 の 17 日前余裕確保。
+- ARCH-01 Phase 2 main code alias 化完遂後の重要発見 = TS6059 5 件は paths alias 仕様外で解消不可、formal 解消経路は Phase B-2 = pnpm workspaces composite project references のみ。
+
+**(2) context**:
+- Round 25 想定 17 日 = 5/19-6/9 期間で Phase 2 W5 着手準備完成 + DEC-078 採決完遂 + DEC-079（本議決）採決完遂 + Phase B-2 feasibility 評価書策定 + composite refs 配線。
+- Phase 2 W5 着手第 1 弾 = cross-orchestrator 統合 e2e + cross-package 拡張第 1 弾（Dev-RR/SS 担当 / Round 25 引継 6 項目候補 ②）。
+- ARCH-01 Phase B-2 supersede = DEC-019-041 status partial-resolved → resolved 経路の formal 化 = pnpm workspaces composite project references 採用（feasibility 評価 + tsconfig composite 化 + references 配線 + vitest 互換性検証 = 9-11h）。
+- Phase 2 W5 着手 trigger 4 条件成立確認: (a) tests = harness 816 + openclaw 410+ 達成見込 + e2e fully wired / (b) ARCH-01 = DEC-019-076 採決完遂 + DEC-019-079 supersede 議決 / (c) OWN-AUTO = DEC-019-077 採決完遂 / (d) Owner 承認 = DEC-078 採決時の Owner formal 承認継承
+
+**(3) alternatives**:
+- 代替案 A（DEC-078 と統合採決 = pattern B）: Round 25 5/26 採決日に DEC-078 + DEC-079 = 2 件まとめ採決 / 105 min（議論延長想定 / Owner 拘束 0 分） → 採用候補
+- 代替案 B（DEC-078 単独採決 + DEC-079 別日採決 = pattern A）: 5/26 DEC-078 単独 90 min + 6/2 DEC-079 単独 90 min = 2 日採決 → 却下推奨（採決負荷増 / Phase 2 W5 着手 6/3 直前圧迫）
+- 代替案 C（Phase 2 W5 着手後採決 = Round 26）: 6/3 Phase 2 W5 着手後の振り返り型議決だが、ARCH-01 supersede の formal 化が後ろ倒し → 却下推奨（Phase 2 W5 着手時の supersede 状態未確定）
+- 代替案 D（議決不要 = 自然移行）: Phase 2 W5 着手 + ARCH-01 supersede は formal 化必要（dashboard / progress / DEC-041 status 反映）= 議決必須 → 却下推奨
+
+**(4) decision（DRAFT 採択 6 軸）**:
+
+① **Phase 2 W5 着手宣言（2026-06-03 火）**
+- Round 24 完遂着地時点で Phase 2 W5 着手 trigger 4 条件成立 = (a) tests / (b) ARCH-01 / (c) OWN-AUTO / (d) Owner 承認
+- 着手日 = 2026-06-03（火）= Phase 1 完遂期限 6/20 の 17 日前余裕
+- Phase 2 完遂期限（W8 終端）= 6/20（Phase 1 完遂期限と並行運用）= 17 日 path（W5 → W8）
+- Phase 2 W5 着手第 1 弾 = cross-orchestrator 統合 e2e + cross-package 拡張第 1 弾
+
+② **ARCH-01 Phase B-2 supersede 議決 = composite project references 経路 formal 化**
+- DEC-019-041 status partial-resolved → resolved 経路 = pnpm workspaces composite project references 採用
+- 重要発見の formal 化: TS6059 5 件は paths alias 仕様外、TypeScript 仕様で paths alias は module name resolution のみ alias 化、解決後の物理 file の rootDir 検査は実 path で実行
+- 採用根拠: harness + openclaw-runtime tsconfig `composite: true` 化 + `references` 配線 + `tsc --build` 経路確認 + vitest 互換性 + 51 test file regression 0 検証 = 9-11h
+- DEC-076 sub-issue close 動議書面（decisions.md L1234-1342）の自然継承
+
+③ **DEC-019-041 status 遷移 formal 化**
+- Round 24 時点: confirmed → partial-resolved（runtime layer 完遂 / strict layer 残）
+- Round 25 採決時: partial-resolved → resolved（Phase B-2 採用議決完遂）
+- Round 26 以降: resolved → superseded（Phase B-2 物理化完遂時）
+
+④ **Phase 2 W5 着手第 1 弾の具体化 = cross-orchestrator 統合 e2e + cross-package 拡張**
+- cross-orchestrator 統合 e2e = orchestrator 間の統合 lifecycle テスト（DEC-019-075 ⑥ ② Phase 2 W5 第 1 弾）
+- cross-package 拡張第 1 弾 = openclaw-runtime + harness 間の package 跨ぎ tests（W4 4 段累計 42 tests を基盤に拡張）
+- 担当 Dev-RR/SS（Round 25 引継 6 項目候補 ②）/ 工数想定 = 8-12h（W5 第 1 弾）
+
+⑤ **議決構造 41 → 42 件 + DRAFT 構造再整理**
+- Round 24 着地時点累計: **41 件**（DEC-019-001〜078）
+- Round 25 完遂時想定: **42 件**（DEC-019-001〜079 / DEC-019-079 起案 = 本議決）
+- 5/19 統合採決完遂時: 40 件 confirmed（DEC-074-077 confirmed 切替）+ DRAFT 1 件（DEC-078）+ DRAFT 1 件（DEC-079）
+- 5/26 統合採決完遂時想定: 42 件全 confirmed（DEC-078 + DEC-079 confirmed 切替）= PRJ-019 議決構造 absolute 確証
+
+⑥ **Round 26 引継 6 項目候補確定**
+- ① INDEX-v15 起票（140+ → 150+ entries / Round 25 由来反映 = Phase 2 W5 着手第 1 弾 + DEC-078 + DEC-079 confirmed + ARCH-01 Phase B-2 物理化準備 + 連続 11 round + 6/11 D-8 + 6/12 D-7 完遂 + OG production 完遂）= Knowledge-U 担当
+- ② Phase 2 W5 着手第 2 弾 = cross-orchestrator 統合 e2e 拡張 + cross-package 第 2 弾 = Dev-TT/UU 担当
+- ③ DEC-019-080 起案候補（Phase 2 W5 完成宣言 + cross-package 統合 e2e 達成）= PM-S 担当
+- ④ T-5 物理化第 1 弾（連続 12 round milestone trigger）+ Sec yml v3 起票候補 = Sec-U 担当
+- ⑤ ARCH-01 Phase B-2 物理化第 1 弾 = composite + references 配線 + harness/openclaw-runtime tsconfig 拡張 = Dev-VV 担当
+- ⑥ launch day v3.3-delta-candidate 策定（confidence 90→92-94% 想定）+ Marketing-T 担当
+
+**(5) rationale（DRAFT 採用根拠 8 件）**:
+- (a) Owner formal「Round 24 9 並列 GO」directive 受領（5/5）+ Owner formal「最速で進めよ」directive 継続 = Phase 2 W5 加速 trajectory 確定 + Round 25 directive 継承想定
+- (b) Round 24 完遂着地で 12 軸成立（harness 804→816 + W4 第 4 弾 + ARCH-01 Phase 2 main code 完遂 + 重要発見 + Sec ULTRA-EXTENDED + INDEX-v13 + DEC-078 起案 + Phase 1 完遂判定 Y 無条件 + Marketing 90% confidence + Owner ack card 18 件 + Owner 拘束 4-6 min + Round 25 GO YES 無条件）
+- (c) Phase 2 W5 着手 trigger 4 条件成立見込（DEC-078 採決完遂時）= 6/3 着手 ready 化 = Phase 2 17 日 path（W5 → W8）+ Phase 2 完遂期限 6/20 余裕確保
+- (d) ARCH-01 Phase B-2 supersede 議決 = Dev-PP R24 重要発見の formal 化 + DEC-019-041 partial-resolved → resolved 経路明示 + composite project references 採用根拠（TypeScript 仕様準拠 + 9-11h 工数想定）
+- (e) DEC-076 sub-issue close 動議書面（decisions.md L1234-1342）= ARCH-01 Phase B-2 supersede の前提条件 = 自然継承
+- (f) DEC-078 + DEC-079 統合採決 pattern B 推奨 = 5/26 採決日 105 min（議論延長想定）/ Owner 拘束 0 分 / 議決負荷集約
+- (g) Round 26 連続 12 round milestone（T-5 物理化 trigger）= Round 25 連続 11 round 達成 → Round 26 連続 12 round 達成見込 = SOP 構造的収束確証 + Phase 2 W5 着手と並行進行
+- (h) PM-R Task 1 verification（DEC-019-078 6 軸 47 観点 OK 45 / 部分達成 2 / Y 強化）= DEC-078 採決推奨完備 + DEC-079 起案連鎖確証
+
+**(6) measurable success criteria（M-1〜M-7）**:
+- (M-1) **Phase 2 W5 着手 GO 達成**: 2026-06-03（火）着手 timeline 確定 + trigger 4 条件成立 → 達成 / 部分達成 / 未達
+- (M-2) **ARCH-01 Phase B-2 supersede 議決完遂**: DEC-019-041 status partial-resolved → resolved 切替 + composite project references 採用根拠 formal 化 → 達成 / 未達
+- (M-3) **Phase 2 W5 第 1 弾 cross-orchestrator e2e 着手**: cross-orchestrator 統合 e2e + cross-package 拡張第 1 弾 task dispatch → 達成 / 部分達成 / 未達
+- (M-4) **議決構造 42 件達成**: Round 25 完遂時 DEC-019-001〜079 累計 42 件（DRAFT 0 件 = DEC-078 + DEC-079 confirmed 切替）→ 達成 / 未達
+- (M-5) **TypeScript 仕様準拠 evidence**: TS6059 5 件 paths alias 仕様外 formal 化 + composite refs 採用根拠（9-11h）evidence → 達成 / 未達
+- (M-6) **Round 26 引継 6 項目候補確定**: INDEX-v15 / Phase 2 W5 第 2 弾 / DEC-080 起案候補 / T-5 物理化第 1 弾 / Phase B-2 物理化第 1 弾 / launch v3.3-delta → 達成 / 未達
+- (M-7) **regression 0 維持達成**: Phase 1 全期間 + Round 24 + Round 25 全期間 regression 0 維持 → 達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- DEC-019-080（Phase 2 W5 完成宣言 + cross-package 統合 e2e 達成）= Round 27-28 採決想定、Phase 2 W5 完遂後の自然継承
+- DEC-019-081（Phase 2 W6 着手宣言 + Phase B-2 物理化完遂宣言）= Round 28-29 採決想定、ARCH-01 Phase B-2 物理化完遂後
+- DEC-019-082（Phase 2 完遂宣言 + Phase 3 着手 trigger）= Round 30-32 採決想定、6/20 Phase 2 完遂期限直前
+- INDEX-v15 起票（140+ → 150+ entries）= Round 26 採決後 Knowledge-U 担当
+- Round 25 統合採決（DEC-019-078 + DEC-019-079 = 2 件まとめ採決 pattern B）= 5/26（火）09:00-11:00 JST 105 min（議論延長想定）/ Owner 拘束 0 分
+
+**(8) verification（Round 25 採決時 or Round 25 完遂時）**:
+- V-1: Phase 2 W5 着手 trigger 4 条件成立 evidence = (a) tests = harness 816 + openclaw 410+ + e2e fully wired / (b) ARCH-01 = DEC-076 + DEC-079 / (c) OWN-AUTO = DEC-077 / (d) Owner 承認 = DEC-078 統合採決時の formal 承認継承
+- V-2: ARCH-01 Phase B-2 supersede evidence = DEC-019-041 status partial-resolved → resolved 切替確認 + composite project references 採用根拠（TypeScript 仕様準拠 + 9-11h 工数想定）formal 化
+- V-3: Phase 2 W5 第 1 弾 dispatch evidence = cross-orchestrator 統合 e2e + cross-package 拡張第 1 弾 task 起票 + Dev-RR/SS dispatch
+- V-4: 議決構造 42 件達成 evidence = decisions.md DEC-019-001〜079 物理化 + DEC-078 + DEC-079 confirmed 切替確認 + DRAFT 0 件達成
+- V-5: TypeScript 仕様準拠 evidence = TS6059 5 件 paths alias 仕様外 formal 化 + composite refs 採用根拠 trace（Dev-PP R24 重要発見 + Phase B-2 feasibility 評価書）
+- V-6: Round 26 引継 6 項目候補確定 evidence = 本書 §(6) 6 項目 + Round 26 第 1 波 dispatch 設計の基盤確立
+- V-7: 連続 11 round baseline 達成 evidence = sec-stagger-compression-baseline-11round.json（Round 25 Sec-T 起票想定）+ trigger 4/4 全 PASS 維持
+- V-8: CEO 経由 Owner 統合報告 v26（Round 25 完遂着地時）で formal 採択
+
+**Round 26 引継候補（6 項目）**:
+- ① INDEX-v15 起票（140+ → 150+ entries / Round 25 由来反映）= Knowledge-U 担当
+- ② Phase 2 W5 着手第 2 弾 = cross-orchestrator 統合 e2e 拡張 + cross-package 第 2 弾 = Dev-TT/UU 担当
+- ③ DEC-019-080 起案候補（Phase 2 W5 完成宣言）= PM-S 担当
+- ④ T-5 物理化第 1 弾（連続 12 round milestone trigger）= Sec-U 担当
+- ⑤ ARCH-01 Phase B-2 物理化第 1 弾 = composite + references 配線 = Dev-VV 担当
+- ⑥ launch day v3.3-delta-candidate 策定（90% → 92-94%）= Marketing-T 担当
+
+**議決 trajectory（41 → 42 件 update）**:
+- Round 24 完遂時点累計: **41 件**（DEC-019-001〜078、DRAFT 9 件 = DEC-070-078）
+- Round 25 統合採決完遂時点想定: **41 件**（DEC-074-078 confirmed 切替 + DEC-067-070 採択 = DRAFT 1 件 = DEC-079）
+- Round 25 着地時点予定: **42 件**（+ DEC-019-079 DRAFT 起案 = 本議決）
+- Round 25 5/26 統合採決完遂時想定: **42 件**（DEC-078 + DEC-079 confirmed 切替 = DRAFT 0 件達成）
+
+**制約遵守**:
+- API 消費: $0（PM-R は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 末尾追記 + reports/ 新規のみ）
+- 絵文字: 0 / tests 影響: 0（baseline harness 816 + openclaw-runtime 394 維持）/ 既存 DEC 改変: 0（DEC-019-001〜078 + Dev-PP sub-issue close 動議すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 25 進行中は status DRAFT 固定、Round 25 5/26 採決時 or Round 25 完遂時に status: confirmed / rejected / revised へ遷移
+- composite project references 採用前提: pnpm workspaces 移行（DEC-019-041 案 B）+ harness/openclaw-runtime tsconfig 拡張 + vitest 互換性検証 = 9-11h 工数想定
+- relative imports fallback pattern 維持並存（ARCH-01 Phase B-2 物理化完遂時 superseded 経路維持）
+- manual fallback（OWN-PRE 80 min）維持（DEC-019-077 で並走議決、backward compat 完全保証）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 22 件目 = Round 25 連続 11 round 達成見込）
+
+---
+

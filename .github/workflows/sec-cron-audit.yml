@@ -1,0 +1,87 @@
+# sec-cron-audit — PRJ-019 Round 25 第 1 波 Sec-T 物理化 (Info 3 物理化版).
+#
+# 出典: projects/PRJ-019/reports/sec-r-r23-yml-info-3-resolution.md (R23 Sec-R / 322 行 patch spec §4).
+# 連動 DEC: DEC-019-025 (background dispatch / SOP 21 件目候補) / DEC-019-049 / DEC-019-066 軸-③ / DEC-019-068.
+# 連動: R23 R-INFO-3 spec / R24 R-INFO-3 引継 / R25 物理化 (sec-cron-conflict-audit.sh +75 行).
+#
+# 目的:
+#   1. repo 内 全 yml の cron schedule を抽出し衝突 path を read-only audit する.
+#   2. 衝突検知時 fail-soft (exit 1 / continue-on-error) で warning 通知のみ. main merge ブロックなし.
+#   3. 日次 02:10 UTC = 11:10 JST. v1 (02:00) / v2 (02:05) と 5 min ずらし衝突回避 (cascade 整合).
+#   4. v1 sec-hardening.yml (291 行 / md5 eaff4e5a) absolute 無改変 / v2 sec-hardening-v2.yml absolute 無改変.
+#
+# 副作用 0 / API $0 / 絵文字 0:
+#   - GitHub Actions free tier. 外部 API call なし. checkout + audit script 実行 + artifact upload のみ.
+#   - audit script 自体 read-only (git diff / find / grep / awk / sort のみ / file write は log only).
+#   - permissions: contents: read のみ (書込権限 0 で副作用 0 を yml level で担保).
+#
+# 引継 (R26 想定):
+#   - R26 連続 12 round milestone で formal 採否 + lock file 機構 spec 化 (R-INFO-3-LOCK).
+#   - 衝突 0 件継続なら audit を週次 (Sun 02:10) に降格、衝突発生時のみ日次に復帰の動的 schedule を検討.
+
+name: sec-cron-audit
+
+on:
+  # PR 起票・更新時に main merge 前 cron 衝突 audit (fail-soft / warning only).
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.yml'
+      - '**/*.yaml'
+  # main 直接 push の post-mortem audit.
+  push:
+    branches: [main]
+    paths:
+      - '**/*.yml'
+      - '**/*.yaml'
+  # 日次 02:10 UTC = 11:10 JST. v1 (02:00) / v2 (02:05) と 5 min ずらし衝突回避.
+  schedule:
+    - cron: '10 2 * * *'
+  # 手動 trigger 用 (debug / 5/26 review 時の集計用).
+  workflow_dispatch:
+
+permissions:
+  # checkout のみ. 書き込み権限は付与せず副作用 0 を yml level で担保.
+  contents: read
+
+env:
+  ROUND: ${{ github.run_id }}
+  V2_AUDIT_ROOT: projects/PRJ-019/reports/_sec-automation/v2
+
+jobs:
+  # ==========================================================================
+  # Job 1: sec-cron-conflict-audit — 全 yml の cron schedule 衝突 read-only audit.
+  #   - exit 0 = PASS (衝突なし)
+  #   - exit 1 = WARN (衝突あり / fail-soft / continue-on-error で merge 許可)
+  # ==========================================================================
+  sec-cron-conflict-audit:
+    name: Sec / cron conflict audit (read-only / fail-soft)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (full history for全 yml 走査)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prepare audit dir
+        run: mkdir -p ${{ env.V2_AUDIT_ROOT }}
+
+      - name: Run sec-cron-conflict-audit.sh (read-only audit)
+        # exit code:
+        #   0 = PASS (cron 衝突 0 件)
+        #   1 = WARN (cron 衝突 検知 / fail-soft で merge 許可 / Slack 通知のみ)
+        continue-on-error: true
+        run: |
+          AUDIT_PATH="${{ env.V2_AUDIT_ROOT }}/cron-conflict-audit-${{ github.run_id }}-$(date +%s).log"
+          bash projects/PRJ-019/scripts/sec-cron-conflict-audit.sh \
+            --audit-log-path="${AUDIT_PATH}"
+
+      - name: Upload cron-conflict-audit log artifact (90 日 retention / 5/26 review 集計対象)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-cron-conflict-audit-log-${{ github.run_id }}
+          path: |
+            projects/PRJ-019/reports/_sec-automation/cron-conflict-audit-*.log
+            projects/PRJ-019/reports/_sec-automation/v2/cron-conflict-audit-*.log
+          retention-days: 90
