@@ -113,3 +113,74 @@ export default function DashboardPage() {
     </main>
   );
 }
+
+/**
+ * R32 Dev-PPP append-only mode='live' switch (line 1-113 absolute 不変).
+ *
+ * Wires getKpiSnapshot() to the live monitoring pipeline (Dev-OOO R32
+ * monitoring/kpi-collector.ts) when the env-gate is satisfied. Default
+ * remains 'dry-run' for any non-PROD env, ensuring R31 behaviour is
+ * preserved by default.
+ *
+ * Constraints (R32 Dev-PPP):
+ *   - env-gate: only OPENCLAW_ENV='prod' && OPENCLAW_KPI_LIVE='1' enables live.
+ *   - mock injection only — no fetch / no real API call ($0).
+ *   - shadcn/ui Card 正式置換は live snapshot を受け取る LiveKpiCard で実現
+ *     (mock div の line 53-63 KpiCard は dry-run 時の互換シムとして残置).
+ */
+
+interface KpiCollectorLike {
+  collectSnapshot: () => KpiSnapshot;
+}
+
+let liveCollector: KpiCollectorLike | null = null;
+
+export function __setLiveCollectorForTest(c: KpiCollectorLike | null): void {
+  liveCollector = c;
+}
+
+function isLiveModeEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.OPENCLAW_ENV === 'prod' && env.OPENCLAW_KPI_LIVE === '1';
+}
+
+export function getKpiSnapshotLive(
+  env: NodeJS.ProcessEnv = process.env
+): KpiSnapshot {
+  if (!isLiveModeEnabled(env)) {
+    return MOCK_SNAPSHOT;
+  }
+  if (!liveCollector) {
+    // env-gate satisfied but no collector injected — fall back safely
+    return { ...MOCK_SNAPSHOT, custom_signal: 'live env-gate ON / collector pending' };
+  }
+  const live = liveCollector.collectSnapshot();
+  return { ...live, mode: 'live' };
+}
+
+interface ShadcnCardProps {
+  label: string;
+  value: string;
+  hint?: string;
+}
+
+// shadcn/ui Card 正式置換 (R32: 同等 Tailwind class set + Card semantics)
+export function LiveKpiCard({ label, value, hint }: ShadcnCardProps) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className="rounded-xl border border-slate-200 bg-card p-4 text-card-foreground shadow"
+    >
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+export const __r32_internal__ = {
+  isLiveModeEnabled,
+  getKpiSnapshotLive,
+};
