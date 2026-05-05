@@ -228,7 +228,11 @@ export function toKnowledgeEntry(
   const sourcePrj = asString(fm['source_prj'])
   const createdAt =
     asString(fm['created_at']) ?? asString(fm['last_validated']) ?? '2026-01-01'
-  const tags = asStringArray(fm['tags']) ?? []
+  // R30 Dev-III forward-only fix: ke-01-schema の CommonFrontmatter.tags は
+  // z.array(z.string()) (mutable string[]) を要求するが、asStringArray 戻り値は
+  // ReadonlyArray<string>。spread copy で mutable 配列に変換し、zod schema 整合させる。
+  const tagsReadonly = asStringArray(fm['tags']) ?? []
+  const tags: string[] = [...tagsReadonly]
   const category = asString(fm['category']) ?? 'general'
   const qualityScore = pickQualityScore(fm)
 
@@ -256,13 +260,19 @@ export function toKnowledgeEntry(
       applies_when: appliesWhen,
     }
   } else if (kind === 'decision') {
+    // R30 Dev-III forward-only fix: ke-01-schema の DecisionFrontmatter.alternatives は
+    // z.array(z.string()) (mutable string[]) を要求するが、asStringArray 戻り値は
+    // ReadonlyArray<string>。spread copy で mutable 配列に変換、zod schema 整合させる。
+    const alternativesReadonly =
+      asStringArray(fm['alternatives']) ??
+      asStringArray(fm['source_decisions']) ??
+      (['n/a'] as ReadonlyArray<string>)
+    const alternatives: string[] = [...alternativesReadonly]
     frontmatter = {
       ...common,
       kind: 'decision',
       context: asString(fm['context']) ?? 'auto-loaded from frontmatter',
-      alternatives:
-        asStringArray(fm['alternatives']) ??
-        asStringArray(fm['source_decisions']) ?? ['n/a'],
+      alternatives,
       rationale: asString(fm['rationale']) ?? 'see body',
     }
   } else {

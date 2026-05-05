@@ -2,8 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "_meta": {
     "purpose": "Phase A (warn) 期間中、既存 package が緩和設定で動くための一時的 override base.",
-    "deprecation": "Phase B 移行 (~Phase 1 W4 末) で削除予定。新規 package は使用禁止。",
-    "knowledgeRelaxScope": "R29 PA-03 = harness/tsconfig.json exclude に knowledge module 2 file (ke-04-audit-wiring.ts / yaml-front-matter-parser.ts) を atomic 追加。KNOW-TS-01〜04 (TS2698/TS2322×2/TS4104) を tsconfig 系のみで 0 件化、src 無改変。R30+ で zod schema readonly 整合 + redactDeep 戻り値 narrowing 経由の forward-only fix で exclude 解除。"
+    "deprecation": "Phase B 移行 (~Phase 1 W4 末) で削除予定。新規 package は使用禁止。"
   },
   "extends": "./tsconfig.base.json",
   "compilerOptions": {

@@ -33,5 +33,5 @@
     { "path": "../openclaw-runtime" }
   ],
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts", "src/knowledge/ke-04-audit-wiring.ts", "src/knowledge/yaml-front-matter-parser.ts"]
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts"]
 }

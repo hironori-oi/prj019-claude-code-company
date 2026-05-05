@@ -84,7 +84,17 @@ export function wrapAuditStoreWithRedaction(
   ): Promise<{ result: AuditAppendResult; hits: number }> {
     const hits: PiiHit[] = []
     const redactedPayload = redactDeep(event.payload, hits, { skip, keepLastN })
-    const finalPayload: Record<string, unknown> = { ...redactedPayload }
+    // R30 Dev-III forward-only fix: redactDeep 戻り値は unknown のため、object spread 前に
+    // narrow する。event.payload が plain object であることは AuditEventInput 契約で保証され、
+    // redactDeep は plain object → plain object (Record<string, unknown>) を返す再帰実装
+    // (line 162-171 参照) のため、type guard で安全に narrow できる。
+    const redactedRecord: Record<string, unknown> =
+      redactedPayload !== null &&
+      typeof redactedPayload === 'object' &&
+      !Array.isArray(redactedPayload)
+        ? (redactedPayload as Record<string, unknown>)
+        : {}
+    const finalPayload: Record<string, unknown> = { ...redactedRecord }
     if (attachSummary && hits.length > 0) {
       finalPayload['_pii_redacted'] = {
         hit_count: hits.length,

@@ -77,6 +77,12 @@
       "index_version": "v16",
       "knowledge_entries_added": 14,
       "source": "INDEX-v16.md (R28 Sec-W + R28 第 1 波 9 並列着地時 / R27 INDEX-v15 154 entries → R28 INDEX-v16 168 entries / R27 154 から +14 entries 観測値 / dashboard line 3 prepend update R28 confirmed / append-only / R29 Sec-X 追記時点で確定値固定)"
+    },
+    {
+      "round": 29,
+      "index_version": "v17",
+      "knowledge_entries_added": 15,
+      "source": "INDEX-v17.md (R29 Knowledge-X + R29 9 並列着地時 / R28 INDEX-v16 168 entries → R29 INDEX-v17 183 entries / R28 168 から +15 entries 観測値 / patterns 82→90 +8 / decisions 31→34 +3 / pitfalls 36→38 +2 / playbooks 19→21 +2 / dashboard line 3 prepend update R29 confirmed / append-only / R30 Sec-Y 追記時点で確定値固定)"
     }
   ],
   "moving_averages": {
@@ -87,15 +93,17 @@
     "R22_R25": {"sum": 40, "average": 10.0, "level": "INFO"},
     "R23_R26": {"sum": 40, "average": 10.0, "level": "INFO"},
     "R24_R27": {"sum": 39, "average": 9.75, "level": "WARN"},
-    "R25_R28": {"sum": 43, "average": 10.75, "level": "INFO"}
+    "R25_R28": {"sum": 43, "average": 10.75, "level": "INFO"},
+    "R26_R29": {"sum": 48, "average": 12.0, "level": "INFO", "ceo_strategic_view_average": 13.25, "ceo_strategic_view_note": "CEO レポート §4.6 では R26-R29 4 round MA を 13.25 件/round と評価 / round_history append-only 原則による厳密計算値 = 12.0 (R26 10 + R27 9 + R28 14 + R29 15 = 48 / 4) / CEO 評価値は INDEX-v17 内訳 patterns +8 を含む拡張観測値で +5 件補正 / 両者とも INFO level (>= 10.0) で結論不変 / strategic_view 値は report 用 / round_history からの厳密値は monitor 運用 base 値"}
   },
   "current_evaluation": {
-    "evaluation_window": "R25_R28",
-    "moving_average": 10.75,
+    "evaluation_window": "R26_R29",
+    "moving_average": 12.0,
+    "ceo_strategic_view_moving_average": 13.25,
     "level": "INFO",
-    "level_rationale": "10.75 >= 10.0 = INFO level. R23 Sec-R PASS 閾値 8.0 件/round を 2.75 件上回り余裕拡大 (R24_R27 9.75 から +1.0 改善 / R28 +14 件 INDEX-v16 反映による). exit 0 / gate PASS / log only. R29 Sec-X 追記評価 = monitor 運用第 1 round dry-run 第 1 回実行記録の base 値.",
-    "evaluation_round": 29,
-    "evaluator": "Sec-X"
+    "level_rationale": "12.0 >= 10.0 = INFO level (round_history 厳密計算値). CEO 戦略視点 13.25 件/round (INDEX-v17 patterns +8 拡張観測値補正) も INFO level で結論不変. R23 Sec-R PASS 閾値 8.0 件/round を厳密値で 4.0 件 / 戦略視点で 5.25 件上回り余裕拡大 (R25_R28 10.75 から +1.25 / +2.5 改善 / R29 +15 件 INDEX-v17 反映による). exit 0 / gate PASS / log only. R30 Sec-Y 追記評価 = monitor 運用第 2 round dry-run 第 2 回実行記録の base 値.",
+    "evaluation_round": 30,
+    "evaluator": "Sec-Y"
   },
   "spec_lineage": {
     "R23_candidate": "projects/PRJ-019/reports/sec-r-r23-trigger-5-candidate-spec.md (242 行 / 4 候補比較 + 最有力 1 件 spec 化)",
@@ -105,18 +113,20 @@
     "R27_implementation": "projects/PRJ-019/scripts/sec-trigger-5-knowledge-rate.sh + 本 baseline JSON (IMPL 2/3 / R27 起票)",
     "R28_yml_integration": "projects/PRJ-019/.github/workflows/sec-hardening-v3.yml (IMPL 3/3 / R28 Sec-W 完遂 / 377 行 / 6 件目 sec-trigger-5-knowledge-rate job 統合 / 4 段 cascade 11:15 JST = 02:15 UTC)",
     "R29_DEC_v2_confirmed": "projects/PRJ-019/decisions.md DEC-019-068 v2 (R29 Sec-X / 2026-05-06 09:20-09:40 JST CEO 主催 80 min session 内 25 min / CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権 / 議決対象 5 件全承認 / DEC-068 v1 → v2 supersede 関係明文化 v1 status 行のみ書換)",
-    "R29_monitor_first_round": "projects/PRJ-019/reports/sec-x-r29-monitor-first-round.md (R29 Sec-X / sec-hardening-v3.yml cron 11:15 JST 第 1 回 dry-run / 実機 cron 不要 / bash script smoke ma=10.75 INFO 確認 / R28 +14 entries 反映後の current_evaluation 更新)"
+    "R29_monitor_first_round": "projects/PRJ-019/reports/sec-x-r29-monitor-first-round.md (R29 Sec-X / sec-hardening-v3.yml cron 11:15 JST 第 1 回 dry-run / 実機 cron 不要 / bash script smoke ma=10.75 INFO 確認 / R28 +14 entries 反映後の current_evaluation 更新)",
+    "R30_monitor_second_round": "projects/PRJ-019/reports/sec-y-r30-monitor-second-round.md (R30 Sec-Y / sec-hardening-v3.yml cron 11:15 JST 第 2 回 dry-run / 実機 cron 不要 / bash script smoke ma=12.0 (round_history 厳密値) / 13.25 (CEO strategic view) INFO 確認 / R29 +15 entries INDEX-v17 反映後の R26_R29 4 round MA / 5 経路全 PASS / R28 smoke 結果と完全一致 / 機能再現性 PASS)",
+    "R30_baseline_16round": "projects/PRJ-019/runsheets/sec-stagger-compression-baseline-16round.json (R30 Sec-Y / v1.7 → v1.8 / 連続 16 round + ULTRA-EXTENDED 11 round 目達成 / 13 file md5 1 byte 不変厳守継承)"
   },
   "metadata": {
     "created_at": "2026-05-05",
     "created_by": "Sec-V (Round 27 第 1 波)",
     "updated_at": "2026-05-06",
-    "updated_by": "Sec-X (Round 29 / round_history append-only / R28 entry 追記 = INDEX-v16 +14 entries 反映 + moving_averages に R25_R28 1 windows 追加 + current_evaluation を R24_R27 → R25_R28 に rolling forward = WARN → INFO 改善 + R29_DEC_v2_confirmed + R29_monitor_first_round 2 spec_lineage 追加 / R28 Sec-W v1.1 update を base 維持)",
-    "schema_version": "v1.2",
-    "schema_change_from_v1_1": "round_history に R28 entry 1 件 append (append-only / +14 entries / INDEX-v16 反映) / moving_averages に R25_R28 1 windows 追加 / current_evaluation を R24_R27 → R25_R28 に rolling forward (9.75 WARN → 10.75 INFO 改善) / spec_lineage に R29_DEC_v2_confirmed + R29_monitor_first_round 2 field 追加 / metadata.updated_by を Sec-X に更新",
-    "next_update_round": 30,
-    "update_owner": "Sec-Y (Round 30 想定 / monitor 運用第 2 round + R29 entries 確定値追記 + sec-audit-aggregate T-5 level 分布集計反映確認)",
+    "updated_by": "Sec-Y (Round 30 / round_history append-only / R29 entry 追記 = INDEX-v17 +15 entries 反映 + moving_averages に R26_R29 1 windows 追加 + current_evaluation を R25_R28 → R26_R29 に rolling forward = INFO 維持改善 + R30_monitor_second_round + R30_baseline_16round 2 spec_lineage 追加 / R29 Sec-X v1.2 update を base 維持)",
+    "schema_version": "v1.3",
+    "schema_change_from_v1_2": "round_history に R29 entry 1 件 append (append-only / +15 entries / INDEX-v17 反映) / moving_averages に R26_R29 1 windows 追加 (CEO strategic view 13.25 注記併記 / 厳密値 12.0) / current_evaluation を R25_R28 → R26_R29 に rolling forward (10.75 INFO → 12.0 INFO 維持改善) / spec_lineage に R30_monitor_second_round + R30_baseline_16round 2 field 追加 / metadata.updated_by を Sec-Y に更新",
+    "next_update_round": 31,
+    "update_owner": "Sec-Z (Round 31 想定 / monitor 運用第 3 round + R30 entries 確定値追記 + 実機 artifact 生成確認 + sec-audit-aggregate T-5 level 分布集計累積反映確認)",
     "DEC_link": ["DEC-019-025", "DEC-019-033", "DEC-019-066", "DEC-019-068", "DEC-019-068-v2"],
-    "consumed_by": "projects/PRJ-019/scripts/sec-trigger-5-knowledge-rate.sh (R27 Sec-V IMPL 2/3) + projects/PRJ-019/.github/workflows/sec-hardening-v3.yml (R28 Sec-W IMPL 3/3 / R29 Sec-X dry-run 第 1 回実行記録)"
+    "consumed_by": "projects/PRJ-019/scripts/sec-trigger-5-knowledge-rate.sh (R27 Sec-V IMPL 2/3) + projects/PRJ-019/.github/workflows/sec-hardening-v3.yml (R28 Sec-W IMPL 3/3 / R29 Sec-X dry-run 第 1 回 / R30 Sec-Y dry-run 第 2 回実行記録)"
   }
 }

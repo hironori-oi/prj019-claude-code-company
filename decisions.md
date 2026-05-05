@@ -2073,3 +2073,105 @@ PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確
 - 議決数: 46 → 47（+1 / DEC-068 v2 = 47 件目）
 
 ---
+
+## DEC-019-084 (status: DRAFT / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-084 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: GTC-7 spec 248 行 (R29 Web-Ops-P) + OWN-W5-PROD-ACK card spec)
+
+**タイトル**: GTC-7 (stage 3 production rollout cutover) 完遂宣言
+
+**背景**: R29 Web-Ops-P GTC-6 GREEN 達成（stage 1+2 25/25 PASS / preview deploy + staging deploy + soak 完遂 / rollback trigger 5/7 採用 / GTC-7 spec 248 行起票完遂）。Owner directive「日付決め打ちなし / 完成次第即時 GO」採用により、stage 3 起動条件 = (a) GTC-6 GREEN（達成）+ (b) OWN-W5-PROD-ACK 取得（Owner 1 min 4 step push）+ (c) Web-Ops-Q rollout cutover 物理化完遂、の 3 軸 AND 成立で R30 内に GTC-7 GREEN 到達見込。本議決は GTC-7 完遂宣言を formal 化し、GTC-8 mid-check（confidence 99% lock）trigger 起動の正式根拠とする。
+
+**決定事項候補（5 件）**:
+- ① GTC-7 completion criteria（5 軸 AND）: (1) stage 3 production rollout cutover 物理化完遂 (2) OWN-W5-PROD-ACK 取得 (3) preview/staging soak 24h 結果保持 (4) rollback trigger 5/7 採用継承 (5) Web-Ops-Q completion report 起票
+- ② GTC-7 GREEN 判定主体: Review-V（R30 軸 6）+ CEO + Web-Ops-Q の 3 者 AND 判定（R29 Review-U 88/88 採点フレーム継承）
+- ③ trigger 起動連動: GTC-7 GREEN 直後に GTC-8 (mid-check / Marketing-X) 起動、Owner 拘束 0 分自走判定
+- ④ rollback 条件継承: GTC-6 stage 1+2 で採用済 5/7 trigger を stage 3 でも継承（HG-* 観点）
+- ⑤ 公開時期 date-free 化継承: 当初 6/19 calendar lock を解除済（DEC-068 v2 準拠 / 完成次第即時 GO）
+
+**根拠（rationale）**:
+- (R-1) R29 Web-Ops-P GTC-6 GREEN evidence 完備（stage 1+2 25/25 PASS 物理証拠）
+- (R-2) GTC-7 spec 248 行 = 5 軸 AND 完成判定式 + 88 観点採点 + cutover sequence 物理化 spec
+- (R-3) Owner directive 適合（calendar lock 不要 / 完成次第即時 GO）
+- (R-4) Review-U R29 56/56 観点 OK（即時 GO 方針 7 軸全 LOW risk）
+- (R-5) DRAFT 0 件 3rd 達成（R29 着地）から 4th path 形成と整合（R30 起案 → R31 採決 atomic pattern）
+
+**投票方針（R31 採決見込）**:
+- 採決方式: CEO 主催 R31 atomic 1 round session（DEC-084+085+086 統合採決 pattern / DEC-080+081 R29 統合採決継承）
+- 採決ライン: CEO + PM-X + Sec-Y 3 者最低（緊急採決基準成立）
+- 賛成見込: 3-0-0（R30 GTC-7 GREEN 物理達成済前提）
+- 採決時刻見込: R31 session 内 15-20 min（DEC-084 単体 / DEC-080 と同等粒度）
+- 投票結果記入欄: confirmed 時に本 status 行物理書換
+
+**連動議決**:
+- 同 round 連動: DEC-085（GTC-11 D-Day immediate trigger formal 化）+ DEC-086（ARCH-01 fully-resolved formal 遷移）
+- 上流継承: DEC-080+081+082+083 confirmed + DEC-068 v2 confirmed
+- 下流: GTC-8 mid-check → GTC-9 D-7 → GTC-10 D-1 → GTC-11 D-Day immediate trigger（DEC-085 連動）
+
+---
+
+## DEC-019-085 (status: DRAFT / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-085 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: GTC-11 flow 完成 (R29 Review-U 11 段階 + 88 観点採点 + AND 判定式 + 5 min CEO 単独 ack trigger + date-free 化))
+
+**タイトル**: GTC-11 D-Day immediate trigger formal 化（5 min CEO 単独 ack + 88 観点採点判定式）
+
+**背景**: R29 Review-U が GTC-11 flow を完成（11 段階 + 88 観点採点 + AND 判定式 + 5 min CEO 単独 ack trigger + date-free 化 = 公開実行 trigger の最終段）。Owner directive「日付決め打ちなし / 完成次第即時 GO」のもと、D-Day immediate trigger は calendar lock を解除した完成次第即時公開実行 path として設計。本議決は GTC-11 trigger 起動の formal 採用基準（88 観点採点合格 = AND 判定式 PASS + CEO 5 min 単独 ack）を formal 化し、Owner D-Day 立会 4-6 min path を確定する。
+
+**決定事項候補（5 件）**:
+- ① GTC-11 trigger 起動条件 formal 化（4 軸 AND）: (1) GTC-7 〜 GTC-10 全 GREEN（前段 4 trigger 完遂）(2) 88/88 観点採点合格（Review-V 主導）(3) CEO 5 min 単独 ack 完遂 (4) Owner D-Day 立会 4-6 min（任意 / DEC-068 v2 timing 厳守）
+- ② 88 観点採点フレーム formal 採用: R29 Review-U 起票の 11 段階 × 8 軸 = 88 観点を D-Day immediate trigger 採点 base として正式採用
+- ③ CEO 単独 ack 5 min path: 緊急採決基準（議長単独 ack）の D-Day 適用条件 = 88/88 観点 OK + Critical 0 + Major 0 + Minor 0（R29 Review-U trajectory verdict 継承）
+- ④ rollback path 維持: D-Day 公開実行後の 1week monitoring SOP（DEC-083 base）+ rollback trigger 5/7 継承
+- ⑤ post-public T+24h post-mortem 起動 trigger: GTC-11 GREEN 達成 24h 後に Marketing-X が post-mortem template（R29 Dev-FFF 90 行）起動
+
+**根拠（rationale）**:
+- (R-1) R29 Review-U 56/56 観点 OK（即時 GO 方針 7 軸全 LOW risk）
+- (R-2) R20-R29 monotonic-improving 10 round 連続 absolute clean（trajectory verdict 完成）
+- (R-3) GTC-11 flow 完成 = 11 段階 + 88 観点 + AND 判定式 + 5 min CEO 単独 ack trigger + date-free 化（spec 物理化済）
+- (R-4) 緊急採決基準（議長 + 起案部門代表 + 監査 = 3 者）の D-Day 拡張版として CEO 単独 ack 5 min は妥当（Owner 立会 4-6 min は任意 trigger）
+- (R-5) DEC-068 v2 confirmed（GTC-3）+ DEC-080+081+082+083 confirmed = D-Day trigger 起動の上流条件全成立
+
+**投票方針（R31 採決見込）**:
+- 採決方式: CEO 主催 R31 atomic 1 round session（DEC-084+085+086 統合採決 pattern）
+- 採決ライン: CEO + PM-X + Sec-Y 3 者最低（緊急採決基準成立）
+- 賛成見込: 3-0-0（R30 GTC-7 GREEN 達成 + GTC-8 mid-check 完遂 + 88 観点採点 readiness 達成済前提）
+- 採決時刻見込: R31 session 内 15-20 min（DEC-085 単体）
+- 投票結果記入欄: confirmed 時に本 status 行物理書換
+
+**連動議決**:
+- 同 round 連動: DEC-084（GTC-7 完遂宣言）+ DEC-086（ARCH-01 fully-resolved formal 遷移）
+- 上流継承: DEC-068 v2 + DEC-080+081+082+083+084 confirmed
+- 下流: D-Day immediate trigger 起動 → Owner 立会 4-6 min（任意）→ 公開実行 → T+24h post-mortem → confidence 100% lock
+
+---
+
+## DEC-019-086 (status: DRAFT / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-086 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: R29 Dev-GGG GTC-5 GREEN (PA-01-03 atomic 物理化完遂 / TS errors 4→0 / build time -55%〜-90% / DEC-019-041 fully-resolved 技術達成))
+
+**タイトル**: ARCH-01 fully-resolved formal 遷移宣言 = DEC-019-041 close 動議
+
+**背景**: DEC-019-041（ARCH-01: harness/tsconfig 系 TS6059 解消 + Phase B-3 fully-resolved 達成）は R26 Dev-WW Phase B-2 着地（TS6059 5→0 / 工数 53% 短縮 / partial-resolved → resolved-evidence-ready）→ R27 Dev-AAA + R28 Dev-DDD spec 詳細化 → R29 Dev-GGG 物理化完遂（harness/tsconfig.json `exclude` array 2 entry 追加 + tsconfig.legacy-relax.json `_meta.knowledgeRelaxScope` 1 field 追加 = 計 3-4 行 / 2 file 物理化 / TS errors 4→0 / DEC-019-041 fully-resolved 技術達成）。本議決は ARCH-01 fully-resolved formal 遷移を formal 化し、DEC-019-041 status 行を `resolved-evidence-ready` → `fully-resolved` に正式書換する close 動議。R30 Dev-III が forward-only fix（exclude 解除 / src 改変 OK 条件下で 0.5-1.0h）を着地させた前提で R31 採決成立見込。
+
+**決定事項候補（5 件）**:
+- ① DEC-019-041 status 遷移: `resolved-evidence-ready (R26 Dev-WW)` → `fully-resolved (R31 confirmed / Dev-III forward-only fix 完遂base / R29 Dev-GGG 技術達成 base)`
+- ② close 動議: DEC-019-041 の Phase B-3 PA-01-03 atomic spec を formal 完遂宣言（status close 化）
+- ③ R30 Dev-III forward-only fix 完遂条件: (a) harness/tsconfig.json exclude 解除（R29 Dev-GGG 追加 2 entry）(b) tsconfig.legacy-relax.json _meta.knowledgeRelaxScope 1 field 整理 (c) src 改変条件下で TS errors 0 件継続 (d) build time delta 維持（tsc --build dry -86% / incremental -90% / --noEmit -55%）
+- ④ harness 902 PASS + openclaw-runtime 394 PASS 継承条件: forward-only fix 後も regression 0 件
+- ⑤ TS6059 0 件継承: R29 着地値（0 件）を R31 採決完遂時点でも維持
+
+**根拠（rationale）**:
+- (R-1) R29 Dev-GGG GTC-5 GREEN 達成（PA-01-03 atomic 物理化 / TS errors 4→0 / DEC-019-041 fully-resolved 技術到達）
+- (R-2) build time delta 全項目高速化（tsc --build dry -86% / incremental -90% / --noEmit -55%）= measurable success criteria 全成立
+- (R-3) R30 Dev-III forward-only fix path 整合（exclude 解除 + src 改変 OK 条件 / 工数 0.5-1.0h）
+- (R-4) DEC-019-041 起案以降の lineage 完遂（R26 Dev-WW Phase B-2 → R27 Dev-AAA + R28 Dev-DDD spec → R29 Dev-GGG 物理化）
+- (R-5) ARCH-01 fully-resolved 達成は Phase 2 完遂宣言（DEC-082）+ Phase 3 production GA 入口条件（DEC-083）の上流条件成立 = 全体 readiness 完成
+
+**投票方針（R31 採決見込）**:
+- 採決方式: CEO 主催 R31 atomic 1 round session（DEC-084+085+086 統合採決 pattern）
+- 採決ライン: CEO + PM-X + Sec-Y 3 者最低（緊急採決基準成立）
+- 賛成見込: 3-0-0（R30 Dev-III forward-only fix 完遂 + harness 902 PASS 継承 + TS6059 0 件継承達成済前提）
+- 採決時刻見込: R31 session 内 15-20 min（DEC-086 単体）
+- 投票結果記入欄: confirmed 時に DEC-019-041 status 行 + 本議決 status 行を atomic 物理書換
+
+**連動議決**:
+- 同 round 連動: DEC-084（GTC-7 完遂宣言）+ DEC-085（GTC-11 D-Day immediate trigger formal 化）
+- 上流継承: DEC-019-041（ARCH-01 起案 / R26 Dev-WW Phase B-2 着地）+ DEC-068 v2（trigger 5/5 baseline）
+- 下流: ARCH-01 fully-resolved 後の Phase 3 production GA 移行（DEC-083 GA 入口条件成立 + GTC-7 完遂宣言 連動）+ knowledge INDEX patterns/ 化（R30+ Knowledge-Y 引継）
+
+---
