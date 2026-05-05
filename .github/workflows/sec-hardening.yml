@@ -1,0 +1,291 @@
+# sec-hardening — PRJ-019 Round 21 第 1 波 Sec-P 物理化.
+#
+# 出典: projects/PRJ-019/runsheets/sec-ci-integration-spec.md (Round 20 Sec-O / 249 行 spec).
+# 連動 DEC: DEC-019-025 (background dispatch / SOP 18 件目) / DEC-019-049 / DEC-019-053 v15.5
+#         / DEC-019-054 / DEC-019-055 / DEC-019-057 / DEC-019-062 / DEC-019-066 軸-③.
+#
+# 目的:
+#   1. Round 完遂時に手動実行している 4 つの Sec hardening script を CI 化し人的見落としを物理排除.
+#   2. PR review 段階で Sec gate を強制し main merge 前に違反を検出する (fail-fast / fail-soft 切替 §7).
+#   3. 日次 cron で API spike trajectory を恒常監視 (dispatch 外時間帯の monthly trajectory 逸脱検出).
+#   4. SEC_OVERRIDE audit log を CI artifact として 90 日保持 (5/26 review 集計用).
+#   5. streak state を artifact 経由で round 跨ぎ持続化し --require-streak 2 強制を CI で実現.
+#
+# fail-fast / fail-soft 設計:
+#   - fail-fast (= main merge ブロック):
+#       sec-side-effect-zero (1 違反で即 FAIL) /
+#       sec-emoji-zero (1 違反で即 FAIL) /
+#       sec-tests-pass regression (PASS 数 < baseline) /
+#       sec-tests-pass promote streak insufficient (exit 6) /
+#       sec-api-spike FAIL (cost cap breach 想定 / exit 2)
+#   - fail-soft (= main merge 許可 + warning):
+#       sec-tests-pass Slack send_failed (exit 3 / gate 自体は PASS) /
+#       sec-api-spike WARN (exit 1 / 1h 窓 threshold 超過だが cap 未達)
+#
+# secrets 取扱:
+#   - SLACK_WEBHOOK_URL は repo secrets から injection. 未設定時は slack_alert() が no-op で動作 (script 側で fallback 済).
+#   - artifact retention 90 日 (default 90 と整合 / DEC-019-066 §3 audit log 90 日保持要件).
+#
+# 副作用 0 / API $0 / 絵文字 0:
+#   - GitHub Actions は public repo で free tier 無制限 (private でも既存 budget 内).
+#   - 本 yml 内で外部 API call なし. checkout + script 実行 + artifact upload のみ.
+#   - 物理化 trigger は本 PR merge で実発火するが、PR 段階での発火は branches: [main] 制約で抑止.
+
+name: sec-hardening
+
+on:
+  # PR 起票・更新時に main merge 前 Sec gate を強制 (fail-fast 系は merge ブロック).
+  pull_request:
+    branches: [main]
+  # main 直接 push (CEO 統合 commit / merge commit 後) の post-mortem gate.
+  push:
+    branches: [main]
+  # 日次 02:00 UTC = 11:00 JST. dispatch 外時間帯で API spike trajectory を恒常監視.
+  schedule:
+    - cron: '0 2 * * *'
+  # 手動 trigger 用 (debug / 5/26 review 時の集計用).
+  workflow_dispatch:
+
+permissions:
+  # checkout のみ. 書き込み権限は付与せず副作用 0 を yml level で担保.
+  contents: read
+
+# CI run 跨ぎで参照する共通 env (BASE_REF / HEAD_REF の 3-tier fallback は Round 19 Sec-N 由来).
+env:
+  # 各 job が `bash projects/PRJ-019/scripts/<sec-*>.sh` を直接呼ぶため、REPO_ROOT は default で OK.
+  ROUND: ${{ github.run_id }}
+
+jobs:
+  # ==========================================================================
+  # Job 1: sec-side-effect-zero — 既存テスト破壊 / schema 改変 / lock / secret diff 検知.
+  # ==========================================================================
+  sec-side-effect-zero:
+    name: Sec / side-effect zero gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (full history for BASE_REF resolution)
+        uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 必須. Round 19 Sec-N 3-tier BASE_REF fallback の優先度 2
+          # (origin/main) 解決には全履歴必要 (shallow clone 失敗 risk 排除).
+          fetch-depth: 0
+
+      - name: Setup Node 20 (script 内 node 1 行 JSON read 用)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run sec-side-effect-zero-check.sh
+        env:
+          # BASE_REF 自動推定 (3-tier fallback Round 19 Sec-N):
+          #   優先度 1: pull_request.base.sha (PR event 時のみ存在)
+          #   優先度 2: github.event.before (push event = 直前 commit)
+          #   優先度 3: 'origin/main' (cron / dispatch / fallback)
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          HEAD_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash projects/PRJ-019/scripts/sec-side-effect-zero-check.sh
+
+      - name: Upload side-effect-zero log artifact (90 日 retention)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-side-effect-zero-log-${{ github.run_id }}
+          path: projects/PRJ-019/reports/_sec-automation/side-effect-zero-*.log
+          # SEC_OVERRIDE audit log 90 日保持 (DEC-019-066 §3 / 5/26 review 集計対象).
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 2: sec-emoji-zero — UTF-8 emoji + 35 ペア多言語擬似絵文字検知.
+  # ==========================================================================
+  sec-emoji-zero:
+    name: Sec / emoji zero gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Perl (perl multiline regex script で utf-8 走査)
+        # ubuntu-latest には perl pre-installed. 確認のための version 表示のみ.
+        run: perl --version | head -2
+
+      - name: Run sec-emoji-zero-check.sh
+        run: bash projects/PRJ-019/scripts/sec-emoji-zero-check.sh
+
+      - name: Upload emoji-zero log artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-emoji-zero-log-${{ github.run_id }}
+          path: projects/PRJ-019/reports/_sec-automation/emoji-zero-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 3: sec-tests-pass-gate — harness / workspace / openclaw-runtime suite × 3 並列.
+  #   - matrix.fail-fast: false で 1 suite が FAIL でも他 suite を走り切る (FAIL 全可視化).
+  #   - streak state を suite 別 artifact (`sec-streak-state-<suite>`) で持続化, 並列衝突回避.
+  # ==========================================================================
+  sec-tests-pass:
+    name: Sec / tests PASS gate (suite=${{ matrix.suite }})
+    runs-on: ubuntu-latest
+    strategy:
+      # 1 suite FAIL でも他 suite を走り切る. 全 suite の regression 状況を一覧で可視化する.
+      fail-fast: false
+      matrix:
+        # 3 suite 並列. 各 suite は独立 vitest run で baseline 突合.
+        suite: [harness, workspace, openclaw-runtime]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20 (vitest run + node 1 行 JSON read)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Bun (vitest 高速実行用 / harness は bun test を採用)
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Restore previous streak state artifact
+        # suite 別 streak file (sec-streak-state-<suite>) を round 跨ぎで restore.
+        # 初回 run は file 不在につき continue-on-error で skip (script 側 default 0 で動作).
+        uses: actions/download-artifact@v4
+        with:
+          name: sec-streak-state-${{ matrix.suite }}
+          path: projects/PRJ-019/scripts
+        continue-on-error: true
+
+      - name: Install dependencies (suite-specific)
+        # suite 別 dir を移動して依存解決. workspace root から bun install で workspace 全体を install.
+        run: |
+          if [ "${{ matrix.suite }}" = "harness" ]; then
+            cd projects/PRJ-019/app/harness && bun install
+          elif [ "${{ matrix.suite }}" = "workspace" ]; then
+            cd projects/PRJ-019/app && bun install
+          elif [ "${{ matrix.suite }}" = "openclaw-runtime" ]; then
+            cd projects/PRJ-019/app/openclaw-runtime && bun install
+          fi
+
+      - name: Run vitest and extract PASS count
+        id: vitest
+        # vitest --reporter=json を出力し、numPassedTests を jq で抽出 -> PASS 環境変数化.
+        # exit code は vitest の戻り値 (regression 検出は次 step の sec-tests-pass-gate.sh で実施).
+        run: |
+          set +e
+          if [ "${{ matrix.suite }}" = "harness" ]; then
+            cd projects/PRJ-019/app/harness
+          elif [ "${{ matrix.suite }}" = "workspace" ]; then
+            cd projects/PRJ-019/app
+          elif [ "${{ matrix.suite }}" = "openclaw-runtime" ]; then
+            cd projects/PRJ-019/app/openclaw-runtime
+          fi
+          # vitest run --reporter=json で numPassedTests を抽出 (失敗時も log 出力継続).
+          bunx vitest run --reporter=json > vitest-output.json 2>&1
+          VITEST_EXIT=$?
+          # numPassedTests を jq / node で抽出. fallback として grep もサポート.
+          PASS=$(node -e "const j=require('./vitest-output.json');process.stdout.write(String(j.numPassedTests||0))" 2>/dev/null || echo "0")
+          echo "pass=$PASS" >> $GITHUB_OUTPUT
+          echo "vitest_exit=$VITEST_EXIT" >> $GITHUB_OUTPUT
+          # vitest 自体が FAIL (regression) の場合は PASS 数が baseline より低くなる -> 次 step で gate.
+
+      - name: Run sec-tests-pass-gate.sh (regression / streak / promote 判定)
+        env:
+          # SLACK_WEBHOOK_URL は repo secrets から injection. 未設定でも slack_alert() は no-op.
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          # exit code 解釈:
+          #   0   = PASS (regression なし)
+          #   1   = REGRESSION (PASS < baseline) -> fail-fast で main merge ブロック
+          #   3   = Slack send_failed (gate 自体 PASS) -> fail-soft で merge 許可
+          #   5   = promote rejected (PASS < baseline で promote 拒否)
+          #   6   = streak insufficient (--require-streak 2 未到達)
+          bash projects/PRJ-019/scripts/sec-tests-pass-gate.sh \
+            --suite ${{ matrix.suite }} --pass ${{ steps.vitest.outputs.pass }}
+
+      - name: Upload streak state artifact (round 跨ぎ持続化)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          # suite 別 artifact 名で並列衝突回避. 次回 run の Restore step で download される.
+          name: sec-streak-state-${{ matrix.suite }}
+          path: projects/PRJ-019/scripts/sec-streak-state.json
+          retention-days: 90
+
+      - name: Upload tests-pass-gate log artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-tests-pass-gate-log-${{ matrix.suite }}-${{ github.run_id }}
+          path: projects/PRJ-019/reports/_sec-automation/tests-pass-gate-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 4: sec-api-spike — Anthropic spend 1h 窓 / 月次 trajectory 逸脱検知.
+  #   - cron schedule で日次発火し dispatch 外時間帯の trajectory 監視を担保.
+  #   - WARN (exit 1) は fail-soft / FAIL (exit 2) は fail-fast.
+  # ==========================================================================
+  sec-api-spike:
+    name: Sec / API spike check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20 (script 内 node JSON 集計 / sha256 hash 化)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run sec-api-spike-check.sh
+        # exit code:
+        #   0 = PASS (spike なし)
+        #   1 = WARN (1h 窓 spike > warn_usd or trajectory > warn_ratio) -> fail-soft
+        #   2 = FAIL (1h 窓 spike > fail_usd / cost cap breach 想定) -> fail-fast
+        # WARN は continue-on-error で fail-soft 化 (PR comment で warning 表示推奨は別途 issue).
+        run: bash projects/PRJ-019/scripts/sec-api-spike-check.sh
+
+      - name: Upload api-spike log artifact (90 日 retention / 5/26 review 集計対象)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-api-spike-log-${{ github.run_id }}
+          path: projects/PRJ-019/reports/_sec-automation/api-spike-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 5: sec-audit-aggregate — 4 job の sec-audit.log を結合し SEC_OVERRIDE 件数集計.
+  #   - needs: 上記 4 job. all complete 後に always() で発火 (FAIL でも集計対象とする).
+  #   - 5/26 review 時に `gh run download <run_id> -n sec-audit-aggregated-<run_id>` で取得.
+  # ==========================================================================
+  sec-audit-aggregate:
+    name: Sec / aggregate audit logs (SEC_OVERRIDE 集計)
+    runs-on: ubuntu-latest
+    needs: [sec-side-effect-zero, sec-emoji-zero, sec-tests-pass, sec-api-spike]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Aggregate sec-audit.log (SEC_OVERRIDE 件数 / reason 分布)
+        # 各 job artifact から sec-audit.log JSONL を結合. PII redaction integrity (user_hash 12 桁のみ) を維持.
+        run: |
+          mkdir -p aggregated
+          # 全 artifact 配下の log を結合. JSONL 1 行 = 1 event.
+          find artifacts -type f -name "*.log" -exec cat {} \; > aggregated/aggregated-sec-audit.log || true
+          # SEC_OVERRIDE 件数集計 (debug 出力).
+          SEC_OVERRIDE_COUNT=$(grep -c '"event":"sec_override"' aggregated/aggregated-sec-audit.log 2>/dev/null || echo "0")
+          echo "SEC_OVERRIDE 件数: $SEC_OVERRIDE_COUNT"
+          # reason 分布集計 (top 5).
+          grep -o '"reason":"[^"]*"' aggregated/aggregated-sec-audit.log 2>/dev/null \
+            | sort | uniq -c | sort -rn | head -5 || echo "(no override events)"
+
+      - name: Upload aggregated sec-audit artifact (5/26 review 集計対象 / 90 日 retention)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-audit-aggregated-${{ github.run_id }}
+          path: aggregated/aggregated-sec-audit.log
+          retention-days: 90

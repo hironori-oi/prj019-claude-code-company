@@ -166,6 +166,32 @@ export {
   type KillLatchObserver,
 } from './17day-path-w3-orchestrator.js'
 
+// Round 21 Dev-GG: 17 day path W4 — OpenClaw runtime bridge (production lifecycle wiring).
+// Dev-BB createW3OrchestratorContext() は test factory として historical baseline 維持。
+export {
+  bindBridgeToLifecycle,
+  createOpenClawRuntimeBridge,
+  type BridgeLifecycleHandle,
+  type BridgePhase,
+  type OpenClawRuntimeBridge,
+  type OpenClawRuntimeBridgeOptions,
+} from './openclaw-runtime-bridge.js'
+
+// Round 21 Dev-GG: 17 day path W4 — File-based BreachCounter persistence.
+// Dev-EE in-memory createBreachCounter() は無改変 (別 file factory として共存)。
+export {
+  adaptFileBreachCounterAsPort,
+  createFileBreachCounter,
+  flushPendingBreachAppends,
+  DEFAULT_BREACH_COUNTER_PATH,
+  type BreachCounterPort,
+  type BreachPersistencePort,
+  type BreachRecord,
+  type BreachState,
+  type FileBreachCounter,
+  type FileBreachCounterOptions,
+} from './file-breach-counter.js'
+
 // Round 19 Dev-AA: 17 day path W3 — OpenClaw orchestrator (C-OC-03 / C-OC-04 / P-UI-02 接続).
 // control-agnostic / port-injection で openclaw-runtime に依存しない設計。
 export {

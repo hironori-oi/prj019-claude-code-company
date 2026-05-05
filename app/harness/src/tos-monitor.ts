@@ -356,6 +356,58 @@ export interface TosMonitorOptions {
  *     boot 時刻を再設定 (false-positive 抑止)。
  *   - 既存 evaluate() の API は不変。recordHeartbeat() は opt-in (呼ばなければ従来動作)。
  */
+/**
+ * Round 21 Sec-P 拡張 (Sec-O R20 spec `sec-o-r20-continuous-run-detector-extension-spec.md` §5).
+ *
+ * ContinuousRunDetector の verification hash 完全一致桁数を 8 / 10 桁切替で指定する option。
+ *
+ *   - 8 (default): 既存の 32bit / 8 桁 hex 一致 (50k/100k/500k baseline 維持 / backward compat).
+ *   - 10        : 40bit / 10 桁 hex 一致 (1M scale で偽陽性確率 256x 低減 / per-pair 1/4M -> 1/1B).
+ *
+ * 本 option は **verification hash の桁拡張のみ** を制御し、detector の評価ロジック
+ * (evaluate / recordHeartbeat / markBoot) は無改変。8 桁系列との binary compat を完全独立
+ * させるため、10 桁経路は mulberry32 を **2 回 call** して 40bit hash を構築する設計
+ * (Sec-O R20 spec §2 案 A 採用)。
+ */
+export type ContinuousRunMatchDigits = 8 | 10
+
+/**
+ * Round 21 Sec-P 拡張: ContinuousRunDetector option 拡張型。
+ * 後方互換のため optional / default は既存挙動 (matchDigits=8) を維持する。
+ */
+export interface ContinuousRunDetectorOptions {
+  /** verification hash 桁数 (default 8 = 既存 32bit). 10 で 40bit hash に拡張. */
+  matchDigits?: ContinuousRunMatchDigits
+}
+
+/**
+ * Round 21 Sec-P 拡張: 40bit hash 計算 helper (Sec-O R20 spec §2 案 A 採用).
+ *
+ * mulberry32 を 2 回 call して 40bit hash を構築する純関数。
+ *   - 1 回目: 上位 8bit (0 〜 255 の整数として hi << 32 で配置)
+ *   - 2 回目: 下位 32bit (0 〜 4_294_967_295 の整数として lo として配置)
+ *   - 戻り値: hi | lo の bigint (40bit / 0 〜 1_099_511_627_775)
+ *
+ * 8 桁系列との binary compat 喪失は意図的設計 (差分 330M+ で完全独立)。
+ * 1M 専用 seed (例: 0xcafebabe) で吸収する前提なので、既存 50k/100k/500k seed (0xdeadbeef 等)
+ * とは別トラフィック系列で運用される。
+ */
+export function continuousRunHash40bit(rand: () => number): bigint {
+  const hi = BigInt(Math.floor(rand() * 0x100)) << 32n
+  const lo = BigInt(Math.floor(rand() * 0x100000000))
+  return hi | lo
+}
+
+/**
+ * Round 21 Sec-P 拡張: 32bit hash 計算 helper (8 桁 / 既存 backward compat path).
+ *
+ * mulberry32 を 1 回 call して 32bit hash を返す純関数 (= 既存挙動と等価)。
+ * 戻り値は number (0 〜 4_294_967_295) で BigInt overhead を発生させない。
+ */
+export function continuousRunHash32bit(rand: () => number): number {
+  return Math.floor(rand() * 0x100000000) >>> 0
+}
+
 export class ContinuousRunDetector {
   private bootAtMs: number | null = null
   private readonly gate: ConfirmGate
@@ -363,15 +415,52 @@ export class ContinuousRunDetector {
   private accumulatedSleepMs = 0
   /** sleep gap 検出閾値 (ms)。これを超える heartbeat 間隔は OS suspend と判定。 */
   private readonly sleepGapMs: number
+  /**
+   * Round 21 Sec-P 拡張: verification hash 桁数 option (default 8 = 既存挙動).
+   * 8: 32bit / 1 mulberry32 call / Number 比較 (backward compat 保証)
+   * 10: 40bit / 2 mulberry32 call / BigInt 比較 (1M scale 偽陽性 256x 低減)
+   */
+  private readonly matchDigits: ContinuousRunMatchDigits
 
   constructor(
     private readonly limitMs: number,
     confirmCount: number,
     private readonly now: () => number,
     sleepGapMs: number = 5 * 60 * 1000,
+    // Round 21 Sec-P 追加: option 化 (default 8 = 既存挙動 / 50k/100k/500k 既存 test 無改変保証).
+    options: ContinuousRunDetectorOptions = {},
   ) {
     this.gate = new ConfirmGate(confirmCount)
     this.sleepGapMs = sleepGapMs
+    // matchDigits 未指定時は既存挙動 (8 桁) と完全一致. 10 桁は明示指定時のみ有効.
+    this.matchDigits = options.matchDigits ?? 8
+  }
+
+  /**
+   * Round 21 Sec-P 追加: verification hash 桁数 getter (test / instrumentation 用).
+   * production code は本 getter を参照しない (option 内部状態確認のみ).
+   */
+  get matchDigitsValue(): ContinuousRunMatchDigits {
+    return this.matchDigits
+  }
+
+  /**
+   * Round 21 Sec-P 追加: verification hash 計算 (test での 3 経路一致 verify 用).
+   *
+   *   - matchDigits=8  (default): mulberry32 1 回 call -> 32bit number 返却 (既存挙動).
+   *   - matchDigits=10           : mulberry32 2 回 call -> 40bit bigint 返却 (Sec-O R20 §2 案 A).
+   *
+   * 戻り値の型は number | bigint で polymorphic. test 側で typeof 分岐 OR 比較演算子で
+   * `===` 直接比較可能 (BigInt 同士 / number 同士の比較は exact match).
+   *
+   * 本 method は detector の状態を変えず (pure relative to detector state) rand DI のみ消費する.
+   * recordHeartbeat / evaluate などの既存 method の挙動には一切影響しない (副作用 0).
+   */
+  computeVerificationHash(rand: () => number): number | bigint {
+    if (this.matchDigits === 10) {
+      return continuousRunHash40bit(rand)
+    }
+    return continuousRunHash32bit(rand)
   }
 
   /** boot 時刻を記録 (運用開始時に呼ぶ) */
