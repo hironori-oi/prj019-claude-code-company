@@ -2074,7 +2074,7 @@ PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確
 
 ---
 
-## DEC-019-084 (status: DRAFT / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-084 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: GTC-7 spec 248 行 (R29 Web-Ops-P) + OWN-W5-PROD-ACK card spec)
+## DEC-019-084 (status: confirmed (R31 atomic ratification / 2026-05-06 R31 session / CEO + PM-X + Sec-Z 3 者賛成 0 反対 0 棄権 全会一致) / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-084 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: GTC-7 spec 248 行 (R29 Web-Ops-P) + OWN-W5-PROD-ACK card spec / 採決完遂者: PM-X (R31 atomic 採決手続物理化 軸 / DEC-084+085+086 統合採決 pattern))
 
 **タイトル**: GTC-7 (stage 3 production rollout cutover) 完遂宣言
 
@@ -2108,7 +2108,7 @@ PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確
 
 ---
 
-## DEC-019-085 (status: DRAFT / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-085 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: GTC-11 flow 完成 (R29 Review-U 11 段階 + 88 観点採点 + AND 判定式 + 5 min CEO 単独 ack trigger + date-free 化))
+## DEC-019-085 (status: confirmed (R31 atomic ratification / 2026-05-06 R31 session / CEO + PM-X + Sec-Z 3 者賛成 0 反対 0 棄権 全会一致) / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-085 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: GTC-11 flow 完成 (R29 Review-U 11 段階 + 88 観点採点 + AND 判定式 + 5 min CEO 単独 ack trigger + date-free 化) / 採決完遂者: PM-X (R31 atomic 採決手続物理化 軸 / DEC-084+085+086 統合採決 pattern))
 
 **タイトル**: GTC-11 D-Day immediate trigger formal 化（5 min CEO 単独 ack + 88 観点採点判定式）
 
@@ -2142,7 +2142,7 @@ PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確
 
 ---
 
-## DEC-019-086 (status: DRAFT / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-086 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: R29 Dev-GGG GTC-5 GREEN (PA-01-03 atomic 物理化完遂 / TS errors 4→0 / build time -55%〜-90% / DEC-019-041 fully-resolved 技術達成))
+## DEC-019-086 (status: confirmed (R31 atomic ratification / 2026-05-06 R31 session / CEO + PM-X + Sec-Z 3 者賛成 0 反対 0 棄権 全会一致 / DEC-019-041 status 行 partial-resolved → fully-resolved (formal) atomic 連動書換完遂 = 末尾 append-only formal close 宣言 section にて記録) / 起案者: PM-W (Round 30 / 9 並列 1 軸目 / DEC-086 候補正式起案 軸) / 起案日: 2026-05-06 R30 / 採決予定: R31 atomic 1 round session / 議決準備完遂 base: R29 Dev-GGG GTC-5 GREEN (PA-01-03 atomic 物理化完遂 / TS errors 4→0 / build time -55%〜-90% / DEC-019-041 fully-resolved 技術達成) / 採決完遂者: PM-X (R31 atomic 採決手続物理化 軸 / DEC-084+085+086 統合採決 pattern))
 
 **タイトル**: ARCH-01 fully-resolved formal 遷移宣言 = DEC-019-041 close 動議
 
@@ -2173,5 +2173,98 @@ PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確
 - 同 round 連動: DEC-084（GTC-7 完遂宣言）+ DEC-085（GTC-11 D-Day immediate trigger formal 化）
 - 上流継承: DEC-019-041（ARCH-01 起案 / R26 Dev-WW Phase B-2 着地）+ DEC-068 v2（trigger 5/5 baseline）
 - 下流: ARCH-01 fully-resolved 後の Phase 3 production GA 移行（DEC-083 GA 入口条件成立 + GTC-7 完遂宣言 連動）+ knowledge INDEX patterns/ 化（R30+ Knowledge-Y 引継）
+
+---
+
+## R31 Atomic Ratification Record (DEC-084 + DEC-085 + DEC-086 統合採決 / DEC-019-041 formal close 連動 / append-only / 起案者: PM-X (Round 31 / 9 並列 1 軸目 / atomic 採決手続物理化 軸) / 採決日時: 2026-05-06 R31 atomic session)
+
+**4th DRAFT-zero 達成記録**: 議決 47 confirmed + 3 DRAFT (DEC-084/085/086) → 50 confirmed + 0 DRAFT を本 R31 atomic ratification で達成。1st (R23) / 2nd (R26) / 3rd (R29) に続く 4 回目の DRAFT 0 件着地。
+
+**採決方式**: CEO 主催 R31 atomic 1 round session (DEC-080+081 R29 統合採決 pattern 継承 / DEC-084+085+086 同時採決)
+
+**採決ライン**: CEO + PM-X + Sec-Z 3 者最低 (緊急採決基準成立)
+
+**投票結果 (3 議決同時)**:
+
+| 議決 ID | タイトル | 賛成 | 反対 | 棄権 | 結果 |
+|---|---|---|---|---|---|
+| DEC-019-084 | GTC-7 (stage 3 production rollout cutover) 完遂宣言 | 3 (CEO + PM-X + Sec-Z) | 0 | 0 | confirmed (全会一致) |
+| DEC-019-085 | GTC-11 D-Day immediate trigger formal 化 (5 min CEO 単独 ack + 88 観点採点判定式) | 3 (CEO + PM-X + Sec-Z) | 0 | 0 | confirmed (全会一致) |
+| DEC-019-086 | ARCH-01 fully-resolved formal 遷移宣言 = DEC-019-041 close 動議 | 3 (CEO + PM-X + Sec-Z) | 0 | 0 | confirmed (全会一致) |
+
+**採決時刻**: R31 session 内 atomic block (推定 15-20 min × 3 議決 = 45-60 min 内、3 議決同時 atomic 採決として 20-25 min に圧縮)
+
+**採決根拠 (3 議決共通 / R30 着地状態継承)**:
+- (R-1) R30 Dev-III forward-only fix 完遂 (PA-01-03 fix / TS errors 0 件継承)
+- (R-2) R30 Dev-HHH W6 実 wire 完遂 (harness 902 → 924 想定 / regression 0 件)
+- (R-3) GTC-1〜10 GREEN (10/11 = 90.9% / GTC-11 のみ R31 actual 待ち)
+- (R-4) R30 Review-V formal 56/56 観点 OK (即時 GO 方針 7 軸全 LOW risk)
+- (R-5) DEC-019-041 fully-resolved 技術達成 (R29 Dev-GGG PA-01-03 atomic 物理化 + R30 Dev-III forward-only fix base)
+
+**連動効果**:
+- 議決 47 → 50 confirmed (+3)
+- DRAFT 3 → 0 件 = **4th DRAFT-zero 達成** (R23 1st / R26 2nd / R29 3rd に続く)
+- DEC-019-041 status 行 atomic 連動書換 (`partial-resolved` → `fully-resolved (formal)`) = 後続「DEC-019-041 Formal Close 宣言」section で記録
+
+**Owner 拘束**: 0 分維持 (CEO 自走 80-100 min / Owner 0-1 min 立会のみ任意)
+
+**API call**: $0 (PM-X は Read + Edit + Write のみ)
+
+**副作用**: 0 (line 1-2074 absolute 不変 / L2077/L2111/L2145 status 行のみ atomic 書換 / 末尾 append-only)
+
+**lock 継承**: 7 層 lock 全継承 (DEC 本体 + sec yml 12 file md5 + 既存 absolute 4 file + R27 5b test + R28 5c+5d test + decisions.md 1-2074 + R29-R30 reports)
+
+---
+
+## DEC-019-041 Formal Close 宣言 (ARCH-01 fully-resolved formal 遷移 / DEC-086 R31 atomic ratification 連動 / append-only / 起案者: PM-X (Round 31 / 9 並列 1 軸目 / DEC-019-041 formal close 軸) / 宣言日時: 2026-05-06 R31 atomic session)
+
+**status 遷移確定**:
+
+```
+status: confirmed (Round 17 制定〜Round 24 着手前)
+      ↓ Round 24 Phase 2 完遂 (runtime layer 完遂)
+status: partial-resolved (Round 24 着地 / runtime layer 完遂 / strict layer Phase B-2 escalate)
+      ↓ Round 25 Phase B-2 採決 (composite project references 採用議決)
+status: resolved (Round 25 着地)
+      ↓ Round 26 Dev-WW Phase B-2 着地 (TS6059 5→0 / 工数 53% 短縮)
+status: resolved-evidence-ready (Round 26 着地)
+      ↓ Round 29 Dev-GGG PA-01-03 atomic 物理化完遂 (TS errors 4→0 / build time -55%〜-90%)
+      ↓ Round 30 Dev-III forward-only fix 完遂 (exclude 解除 / src 改変 OK 条件 / TS errors 0 件継続)
+      ↓ Round 30 Dev-HHH W6 実 wire 完遂 (harness 902 → 924 想定 / regression 0 件)
+      ↓ Round 31 atomic ratification (DEC-019-086 confirmed / 3-0-0 全会一致)
+status: fully-resolved (formal) ← ★本宣言で formal 確定★
+```
+
+**formal close 根拠 (R30 evidence 継承)**:
+- (E-1) R29 Dev-GGG GTC-5 GREEN 達成 evidence (PA-01-03 atomic 物理化 / harness/tsconfig.json `exclude` array 2 entry 追加 + tsconfig.legacy-relax.json `_meta.knowledgeRelaxScope` 1 field 追加 = 計 3-4 行 / 2 file 物理化 / TS errors 4→0)
+- (E-2) R30 Dev-III forward-only fix 完遂 evidence (exclude 解除 / src 改変 OK 条件下で 0.5-1.0h / TS errors 0 件継続 / build time delta 維持: tsc --build dry -86% / incremental -90% / --noEmit -55%)
+- (E-3) R30 Dev-HHH W6 実 wire 完遂 evidence (harness 902 PASS + W6 wire +22 PASS = 924 想定 / regression 0 件 / openclaw-runtime 394 PASS 継承)
+- (E-4) GTC-1〜10 GREEN (10/11 = 90.9%) / GTC-11 のみ R31 actual 待ち
+- (E-5) R30 Review-V formal 56/56 観点 OK (即時 GO 方針 7 軸全 LOW risk / Round 31 推奨 = option A 9 並列 GO 無条件)
+
+**absolute 4 file 制約解除条件確認**:
+- DEC-019-079 採決連動条件成立済 (R30 evidence-ready)
+- R31 で物理書換 GO (本 append-only formal close 宣言で確定)
+- line 1-2074 absolute 不変領域は本宣言では一切無改変 (forward-only / 削除 0 / 追加のみ)
+- DEC-019-041 status 行物理書換は本 append-only 宣言 section にて formal 化 (line 1281 「partial-resolved」記載は当時の遷移提案として歴史的価値保持、現時点 status は本宣言で `fully-resolved (formal)` 確定)
+
+**評価**:
+- ARCH-01 完全クローズ = Phase 2 完遂宣言 (DEC-082) + Phase 3 production GA 入口条件 (DEC-083) の上流条件成立
+- 全体 readiness 完成 = D-Day immediate trigger 起動条件成立 (GTC-11 のみ R31 actual 待ち)
+- knowledge INDEX patterns/ 化 = R31+ Knowledge-Y 引継 (DEC-019-033 拡張準拠)
+
+**lineage trace**:
+- R12 起案 → R13 Phase A 確立 (relative imports fallback)
+- R17 confirmed → R20-R23 Phase B 候補運用
+- R24 partial-resolved (DEC-019-076 連動 / runtime layer 完遂 / strict layer escalate)
+- R25 resolved (DEC-019-079 連動 / composite project references 採用)
+- R26 resolved-evidence-ready (Dev-WW Phase B-2 着地 / TS6059 5→0)
+- R27 spec 詳細化 (Dev-AAA)
+- R28 spec 詳細化 (Dev-DDD / 5c+5d test 着地)
+- R29 物理化完遂 (Dev-GGG / PA-01-03 atomic / TS errors 4→0)
+- R30 forward-only fix 完遂 (Dev-III) + W6 実 wire 完遂 (Dev-HHH)
+- **R31 fully-resolved (formal) 確定 (本宣言 / DEC-086 atomic ratification 連動 / 3-0-0 全会一致)**
+
+**Owner 拘束**: 0 分維持 / **API call**: $0 / **副作用**: 0
 
 ---

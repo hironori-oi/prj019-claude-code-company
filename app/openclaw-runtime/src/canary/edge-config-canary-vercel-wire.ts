@@ -133,3 +133,69 @@ function buildEdgeConfigUrl(opts: VercelEdgeConfigWireOptions): string {
   const base = `https://api.vercel.com/v1/edge-config/${opts.edgeConfigId}/items`
   return opts.vercelTeamId ? `${base}?teamId=${opts.vercelTeamId}` : base
 }
+
+/* -------------------------------------------------------------------------- */
+/* R31 Dev-KKK append-only — mode='live' switch + GTC-7 Owner ACK env-gate    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * R31 mode-live switch — env-gated guard for actual `live` mode activation.
+ *
+ * 設計:
+ *   - 既存 `createVercelEdgeConfigWriter` の振る舞いは absolute 不変 (R30 dry-run path 維持)。
+ *   - 本 helper は `mode='live'` 要求時に `env.VERCEL_PROD === 'true'` AND
+ *     `env.OWN_W5_PROD_ACK === 'received'` の二重 gate を強制し、満たさない場合は
+ *     dry-run に自動 downgrade する (実 API call 0 件厳守継承)。
+ *   - GTC-7 Owner ACK 連動: OWN-W5-PROD-ACK marker 受領 (`OWN_W5_PROD_ACK=received`) で
+ *     初めて live が真に発火する。
+ *
+ * 連動: DEC-019-080 / DEC-019-081 / runsheets/w6a-production-rollout-sop.md §3.4 /
+ *       R30 Dev-HHH 引継 / GTC-7 trigger spec
+ */
+export type ModeLiveEnv = {
+  VERCEL_PROD?: string
+  OWN_W5_PROD_ACK?: string
+}
+
+export type ResolvedMode = {
+  /** 解決後の実効 mode */
+  effective: WireMode
+  /** 要求 mode と実効 mode が異なる場合に理由を記録 */
+  downgradeReason?: 'env-not-prod' | 'owner-ack-pending'
+}
+
+/**
+ * 要求 mode を env-gate で解決する pure 関数 (副作用 0)。
+ * - 'mock' / 'dry-run' は env 無関係に通過。
+ * - 'live' は VERCEL_PROD='true' AND OWN_W5_PROD_ACK='received' で初めて維持。
+ * - gate 不通過時は 'dry-run' に自動 downgrade + reason 付与。
+ */
+export function resolveModeWithEnv(
+  requested: WireMode,
+  env: ModeLiveEnv,
+): ResolvedMode {
+  if (requested !== 'live') return { effective: requested }
+  if (env.VERCEL_PROD !== 'true') {
+    return { effective: 'dry-run', downgradeReason: 'env-not-prod' }
+  }
+  if (env.OWN_W5_PROD_ACK !== 'received') {
+    return { effective: 'dry-run', downgradeReason: 'owner-ack-pending' }
+  }
+  return { effective: 'live' }
+}
+
+/**
+ * R31 entry — mode='live' を env-gate 付きで安全に factory 化する wrapper。
+ * 既存 `createVercelEdgeConfigWriter` を呼び出すのみで R30 mtime 不変領域を変えない。
+ */
+export function createVercelEdgeConfigWriterWithEnvGate(
+  options: VercelEdgeConfigWireOptions,
+  env: ModeLiveEnv,
+): { writer: EdgeConfigWriter; resolved: ResolvedMode } {
+  const resolved = resolveModeWithEnv(options.mode, env)
+  const writer = createVercelEdgeConfigWriter({
+    ...options,
+    mode: resolved.effective,
+  })
+  return { writer, resolved }
+}

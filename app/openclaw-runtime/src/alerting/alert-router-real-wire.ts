@@ -189,3 +189,53 @@ function mapPagerDutySeverity(s: AlertInput['severity']): string {
   if (s === 'critical') return 'error'
   return 'warning'
 }
+
+/* -------------------------------------------------------------------------- */
+/* R31 Dev-KKK append-only — mode='live' switch + GTC-7 Owner ACK env-gate    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * R31 mode-live switch for alert dispatcher — env-gated guard for live mode.
+ *
+ * 設計:
+ *   - 既存 `createRealChannelDispatcher` の振る舞いは absolute 不変 (R30 維持)。
+ *   - 本 helper は `mode='live'` 要求時に `env.VERCEL_PROD === 'true'` AND
+ *     `env.OWN_W5_PROD_ACK === 'received'` の二重 gate を強制し、満たさない場合は
+ *     dry-run に自動 downgrade する (実 通知発火 0 件厳守継承)。
+ *   - GTC-7 Owner ACK 連動。
+ */
+export type DispatcherEnv = {
+  VERCEL_PROD?: string
+  OWN_W5_PROD_ACK?: string
+}
+
+export type ResolvedDispatcherMode = {
+  effective: RealWireMode
+  downgradeReason?: 'env-not-prod' | 'owner-ack-pending'
+}
+
+export function resolveDispatcherModeWithEnv(
+  requested: RealWireMode,
+  env: DispatcherEnv,
+): ResolvedDispatcherMode {
+  if (requested !== 'live') return { effective: requested }
+  if (env.VERCEL_PROD !== 'true') {
+    return { effective: 'dry-run', downgradeReason: 'env-not-prod' }
+  }
+  if (env.OWN_W5_PROD_ACK !== 'received') {
+    return { effective: 'dry-run', downgradeReason: 'owner-ack-pending' }
+  }
+  return { effective: 'live' }
+}
+
+export function createRealChannelDispatcherWithEnvGate(
+  opts: RealWireOptions,
+  env: DispatcherEnv,
+): { dispatcher: ChannelDispatcher; resolved: ResolvedDispatcherMode } {
+  const resolved = resolveDispatcherModeWithEnv(opts.mode, env)
+  const dispatcher = createRealChannelDispatcher({
+    ...opts,
+    mode: resolved.effective,
+  })
+  return { dispatcher, resolved }
+}
