@@ -16,6 +16,10 @@ SCAN_ROOT="${SCAN_ROOT:-${REPO_ROOT}/projects/PRJ-019}"
 REPORT_DIR="${REPORT_DIR:-${REPO_ROOT}/projects/PRJ-019/reports/_sec-automation}"
 mkdir -p "${REPORT_DIR}"
 REPORT_FILE="${REPORT_DIR}/emoji-zero-$(date -u +%Y%m%dT%H%M%SZ).log"
+# R24 Sec-S Info 2: --audit-log-path optional override (v2 yml 経由 / job 別 path 分離).
+for arg in "$@"; do
+  case "${arg}" in --audit-log-path=*) REPORT_FILE="${arg#*=}";; esac
+done
 
 # read-only zone（既存 emoji 痕跡許容、改変は別 DEC 必要）
 IGNORE_PATTERNS=(

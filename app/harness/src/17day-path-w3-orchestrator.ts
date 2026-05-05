@@ -26,16 +26,20 @@
  *
  * 不可侵: Dev-AA の 第 1 弾 範囲 (C-OC-03 / C-OC-04 / P-UI-02) には触れない。
  */
+// Round 24 Dev-PP: ARCH-01 Phase 2 production rollout (DEC-019-041 Phase B / Dev-NN R23 spec).
+// 旧 `../../openclaw-runtime/src/controls/...` (cross-rootDir relative imports / TS6059) →
+// 新 `@clawbridge/openclaw-runtime/controls/...` (tsconfig paths + vitest resolve.alias 経由).
+// Phase 1 (Dev-MM R23) で resolver 動作実証済 (32/32 PASS) → Phase 2 で main code 移行.
 import {
   createKillTerminalSink,
   type KillTerminalSink,
-} from '../../openclaw-runtime/src/controls/p-ui-04-kill-switch-propagation.js'
-import type { PostRollbackNotifier } from '../../openclaw-runtime/src/controls/p-ui-05-anomaly-rollback.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-04-kill-switch-propagation.js'
+import type { PostRollbackNotifier } from '@clawbridge/openclaw-runtime/controls/p-ui-05-anomaly-rollback.js'
 import {
   createRlsAuditTrail,
   type RlsAuditTrail,
-} from '../../openclaw-runtime/src/controls/p-ui-09-rls-checklist.js'
-import type { PermissionAuditSink } from '../../openclaw-runtime/src/controls/hitl-10-permission-change.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-09-rls-checklist.js'
+import type { PermissionAuditSink } from '@clawbridge/openclaw-runtime/controls/hitl-10-permission-change.js'
 
 /**
  * 4 control を harness 側で end-to-end 駆動するための orchestrator context。
@@ -149,20 +153,21 @@ export function buildPostRollbackNotifier(
 //     → 後段 P-UI-05 evaluateAndAct.killQuery で rollback 抑止
 // ============================================================================
 
+// Round 24 Dev-PP: ARCH-01 Phase 2 production rollout — Round 20 Dev-DD 拡張部 (P-UI-02 / P-UI-04 第 2 段).
 import {
   evaluateCooldown,
   type CooldownClock,
   type CooldownInput,
   type CooldownOutput,
   type CooldownOverrideChecker,
-} from '../../openclaw-runtime/src/controls/p-ui-02-cooldown-modal.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-02-cooldown-modal.js'
 import {
   propagateKill,
   type KillInput,
   type KillOutput,
   type ProcessKiller,
   type KillBroadcasterOptions,
-} from '../../openclaw-runtime/src/controls/p-ui-04-kill-switch-propagation.js'
+} from '@clawbridge/openclaw-runtime/controls/p-ui-04-kill-switch-propagation.js'
 
 // ----------------------------------------------------------------------------
 // P-UI-02 cooldown — orchestrator-facing port group

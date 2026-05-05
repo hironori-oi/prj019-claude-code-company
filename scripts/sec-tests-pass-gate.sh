@@ -27,16 +27,19 @@ REPORT_FILE="${REPORT_DIR}/tests-pass-gate-$(date -u +%Y%m%dT%H%M%SZ).log"
 
 usage() { echo "Usage: $0 --suite <harness|workspace|openclaw-runtime> --pass <int> [--promote] [--require-streak <N>]"; exit 2; }
 
-SUITE=""; PASS=""; PROMOTE=0; REQUIRE_STREAK=0
+SUITE=""; PASS=""; PROMOTE=0; REQUIRE_STREAK=0; AUDIT_LOG_PATH_OPT=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --suite) SUITE="$2"; shift 2;;
     --pass) PASS="$2"; shift 2;;
     --promote) PROMOTE=1; shift;;
     --require-streak) REQUIRE_STREAK="$2"; shift 2;;
+    --audit-log-path) AUDIT_LOG_PATH_OPT="$2"; shift 2;;
     *) usage;;
   esac
 done
+# R24 Sec-S Info 2: --audit-log-path 指定時は REPORT_FILE を上書き (job 別 path 分離 / v2 yml 経由).
+[[ -n "${AUDIT_LOG_PATH_OPT}" ]] && REPORT_FILE="${AUDIT_LOG_PATH_OPT}"
 [[ -z "${SUITE}" || -z "${PASS}" ]] && usage
 
 if [[ ! -f "${BASELINE}" ]]; then

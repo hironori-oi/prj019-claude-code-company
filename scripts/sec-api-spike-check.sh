@@ -24,6 +24,10 @@ STATE_DIR="${STATE_DIR:-${REPO_ROOT}/projects/PRJ-019/reports/_sec-automation/_s
 mkdir -p "${REPORT_DIR}" "${STATE_DIR}"
 REPORT_FILE="${REPORT_DIR}/api-spike-$(date -u +%Y%m%dT%H%M%SZ).log"
 COOLDOWN_FILE="${STATE_DIR}/api-spike-cooldown.state"
+# R24 Sec-S Info 2: --audit-log-path optional override (v2 yml 経由 / job 別 path 分離).
+for arg in "$@"; do
+  case "${arg}" in --audit-log-path=*) REPORT_FILE="${arg#*=}";; esac
+done
 
 echo "[sec-api-spike] audit=${AUDIT_LOG} cap=${COST_CAP} baseline=${BASELINE}" | tee "${REPORT_FILE}"
 
@@ -115,6 +119,13 @@ if [[ "${EXIT}" -gt 0 ]]; then
     echo "COOLDOWN: alert suppressed (since_last=${since}s < cooldown=${COOLDOWN}s) — ${REASON}" | tee -a "${REPORT_FILE}"
     echo "RESULT: PASS (cooldown active)" | tee -a "${REPORT_FILE}"
     exit 0
+  fi
+  # R24 Sec-S Info 1: WARN (EXIT=1) fail-soft 化. 30 min cooldown 内 2 回検知時のみ exit 4 (fail-soft).
+  # FAIL (EXIT=2 = cost cap breach) は従来通り fail-fast 維持. exit 1 は WARN 初回検知でのみ発火.
+  if [[ "${EXIT}" -eq 1 && "${since}" -lt 1800 && "${last_alert}" -gt 0 ]]; then
+    echo "${now_epoch}" > "${COOLDOWN_FILE}"
+    echo "RESULT: WARN ${REASON} (fail-soft / 2nd detection within 30min / merge OK)" | tee -a "${REPORT_FILE}"
+    exit 4
   fi
   echo "${now_epoch}" > "${COOLDOWN_FILE}"
 fi

@@ -21,6 +21,10 @@ REPORT_DIR="${REPORT_DIR:-${REPO_ROOT}/projects/PRJ-019/reports/_sec-automation}
 AUDIT_LOG="${AUDIT_LOG:-${REPO_ROOT}/projects/PRJ-019/scripts/sec-audit.log}"
 mkdir -p "${REPORT_DIR}"
 REPORT_FILE="${REPORT_DIR}/side-effect-zero-$(date -u +%Y%m%dT%H%M%SZ).log"
+# R24 Sec-S Info 2: --audit-log-path optional override (v2 yml 経由 / job 別 path 分離).
+for arg in "$@"; do
+  case "${arg}" in --audit-log-path=*) REPORT_FILE="${arg#*=}";; esac
+done
 
 # Round 19 Sec-N R19 改善 §3.2-1: BASE_REF 既定値の明示的 fallback
 #   優先順位 1: BASE_REF 環境変数で明示指定（CI で pull_request.base.sha 推奨）
