@@ -184,3 +184,132 @@ export const __r32_internal__ = {
   isLiveModeEnabled,
   getKpiSnapshotLive,
 };
+
+/**
+ * R33 Dev-QQQ append-only dashboard expansion (line 1-186 absolute 不変).
+ *
+ * Adds 7 additional KPI axes for 60day rolling window observation, plus
+ * alert escalation routing visualisation. Wires to long-term-metrics
+ * (Dev-SSS R33 sla-tracker / cost-trend / quarter-window) and
+ * improvement-loop auto-routing (Dev-RRR R33). All data still mock-
+ * injected — fitForRelease driven by post-launch-60day fitForRelease v2.
+ *
+ * Constraints (R33 Dev-QQQ):
+ *   - line 1-186 frozen (R31 + R32 absolute 不変保持).
+ *   - mock injection only — no fetch / no real API call ($0).
+ *   - shadcn/ui + Tailwind CSS conventions only.
+ *   - Strict typing. TS6059 0 件継承. 副作用 0.
+ */
+
+export type RoutingPriority = 'P1' | 'P2' | 'P3';
+
+interface RollingWindow60dKpi {
+  rolling_p95_latency_ms: number;
+  drift_pct: number;
+  sustained_breach_streak_days: number;
+  recovery_latency_days: number;
+  sla_breach_rate_90d_pct: number;
+  cost_slope_jpy_per_day: number;
+  routing_p1_open_count: number;
+}
+
+const MOCK_60D_KPI: RollingWindow60dKpi = {
+  rolling_p95_latency_ms: 192,
+  drift_pct: 2.4,
+  sustained_breach_streak_days: 0,
+  recovery_latency_days: 0,
+  sla_breach_rate_90d_pct: 0.6,
+  cost_slope_jpy_per_day: 1.2,
+  routing_p1_open_count: 0,
+};
+
+export function get60dKpiSnapshot(): RollingWindow60dKpi {
+  return MOCK_60D_KPI;
+}
+
+export interface AlertEscalationLane {
+  priority: RoutingPriority;
+  queue: string;
+  open_count: number;
+  sla_hours: number;
+  hitl_required: boolean;
+}
+
+const MOCK_ESCALATION_LANES: ReadonlyArray<AlertEscalationLane> = [
+  { priority: 'P1', queue: 'ceo_ack_flow', open_count: 0, sla_hours: 4, hitl_required: true },
+  { priority: 'P2', queue: 'pm_ratification_queue', open_count: 1, sla_hours: 24, hitl_required: true },
+  { priority: 'P3', queue: 'knowledge_backlog', open_count: 3, sla_hours: 168, hitl_required: false },
+];
+
+export function getEscalationLanes(): ReadonlyArray<AlertEscalationLane> {
+  return MOCK_ESCALATION_LANES;
+}
+
+interface RollingKpiCardProps {
+  label: string;
+  value: string;
+  hint?: string;
+  severity?: 'ok' | 'warn' | 'critical';
+}
+
+export function RollingKpiCard({ label, value, hint, severity = 'ok' }: RollingKpiCardProps) {
+  const ringClass =
+    severity === 'critical'
+      ? 'border-red-300 bg-red-50'
+      : severity === 'warn'
+        ? 'border-amber-300 bg-amber-50'
+        : 'border-slate-200 bg-card';
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className={`rounded-xl border p-4 text-card-foreground shadow ${ringClass}`}
+    >
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+interface EscalationRowProps {
+  lane: AlertEscalationLane;
+}
+
+export function EscalationRow({ lane }: EscalationRowProps) {
+  return (
+    <div
+      role="listitem"
+      aria-label={`escalation-${lane.priority}`}
+      className="flex items-center justify-between rounded-md border border-slate-200 bg-card px-4 py-2 text-sm"
+    >
+      <span className="font-mono">
+        {lane.priority} → {lane.queue}
+      </span>
+      <span className="text-muted-foreground">
+        open={lane.open_count} / sla={lane.sla_hours}h / hitl={String(lane.hitl_required)}
+      </span>
+    </div>
+  );
+}
+
+export function deriveSeverityForDrift(driftPct: number): 'ok' | 'warn' | 'critical' {
+  if (driftPct >= 25) return 'critical';
+  if (driftPct >= 10) return 'warn';
+  return 'ok';
+}
+
+export function deriveSeverityForBreachStreak(days: number): 'ok' | 'warn' | 'critical' {
+  if (days > 3) return 'critical';
+  if (days >= 2) return 'warn';
+  return 'ok';
+}
+
+export const __r33_internal__ = {
+  MOCK_60D_KPI,
+  MOCK_ESCALATION_LANES,
+  deriveSeverityForDrift,
+  deriveSeverityForBreachStreak,
+};

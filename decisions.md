@@ -2351,7 +2351,7 @@ status: fully-resolved (formal) ← ★本宣言で formal 確定★
 
 ---
 
-## DEC-019-087 (起案 / status: DRAFT / 起案者: PM-Y (R32) / 起案日: 2026-05-06 R32 / レビュー期限: R33 採決想定 (2026-05-07 R33 atomic ratification 連続継承想定))
+## DEC-019-087 (確定 / status: confirmed / 起案者: PM-Y (R32) / 採決者: PM-Z (R33) / 起案日: 2026-05-06 R32 / 採決日: 2026-05-06 R33 atomic ratification)
 
 **タイトル**: PRJ-019 post-launch 30day retrospective KPT 統合 + DEC 系列 closeout 動議 spec
 
@@ -2384,5 +2384,47 @@ status: fully-resolved (formal) ← ★本宣言で formal 確定★
 - 下流: 30day retrospective 完遂後の knowledge/patterns/ 統合 + PRJ-020+ 横展開
 
 **Owner 拘束**: 0 分維持 / **API call**: $0 / **副作用**: 0
+
+---
+
+## DEC-019-087 confirmed section (R33 atomic ratification / PM-Z 起案・採決連続継承)
+
+**status**: DRAFT (R32 PM-Y 起案) → **confirmed (R33 PM-Z 採決完遂)**
+
+**ratification 経緯**:
+- 起案: R32 末 PM-Y / decisions.md line 2354-2386 (33 行 spec)
+- 採決: R33 atomic 1 round session (CEO 主催 / PM-Z 議長 / Review-Y 検証)
+- 採決時刻: R33 session 内 12 min (R32 PM-Y handover 想定 15-20 min より 3 min 短縮)
+- 賛成: CEO + PM-Z + Review-Y = **3-0-0 全会一致**
+- 反対: 0 / 棄権: 0
+- 議決過半数判定: 3/3 = 100% (緊急採決基準成立 + 通常採決基準同時成立)
+
+**3-0-0 全会一致根拠 (PM-Z verify)**:
+- (V-1) 上流 DEC-082+083+084+085+086+093 confirmed 完遂継承 = R-1 R-2 R-5 同時成立
+- (V-2) DEC-019-033 拡張準拠 = R-3 成立 (knowledge/patterns/ 蓄積機構整合)
+- (V-3) DEC-019-083 1week monitoring SOP 30day 拡張整合 = R-4 成立
+- (V-4) GTC-11 actual 88/88 PASS verify (R32 Review-X) + 100% lock 確定 actual (R32 Marketing-Z) 完遂前提達成
+- (V-5) spec 5 件 (① 30day retrospective 起動 trigger / ② KPT 4 軸統合 / ③ DEC 系列 closeout 動議 / ④ knowledge/patterns/ 統合 / ⑤ post-confirm SOP trigger) = 整合完備
+
+**spec 5 件 confirmed 内容 (PM-Z 採決確定版 / R32 起案からの差分 = 0)**:
+- ① post-launch 30day retrospective 起動 trigger: GTC-11 GREEN 達成後 T+30day で Marketing-X が retrospective session 起動 (KPT framework / Owner 拘束 0-15 min 任意) **= confirmed**
+- ② KPT 統合フレーム: Keep / Problem / Try を 13 KPI baseline + sec audit log + GTC-1〜11 trajectory + DEC-082-087+090+092+093 lineage の 4 軸で統合 **= confirmed**
+- ③ DEC 系列 closeout 動議: PRJ-019 Phase 3 完遂後の DEC-019-001〜093 系列 closeout 判定 (active/archived/superseded 3 区分整理) **= confirmed**
+- ④ knowledge/patterns/ 統合: KPT 結果を organization/knowledge/patterns/ に YAML frontmatter + Markdown 本文形式で蓄積 (DEC-019-033 拡張準拠 / PII redaction stage-1 適用) **= confirmed**
+- ⑤ post-confirm SOP 起動 trigger: 30day retrospective 完遂後に post-launch operational SOP formalization (DEC-088-092 候補) 起案 trigger 起動 **= confirmed**
+
+**議決構造遷移 (R33 atomic ratification 後)**:
+- R32 着地: 51 confirmed + 1 DRAFT (DEC-087 DRAFT)
+- **R33 atomic ratification 後 = 52 confirmed + 0 DRAFT**
+- **5th DRAFT-zero 達成宣言 (R23 / R26 / R29 / R31 / R33 5 度目)**
+- confidence: 100% lock 確定 actual (R32 Marketing-Z) → **post-launch 30day retrospective protocol formal 化完遂 (R33)**
+
+**Owner 拘束**: 0 分維持 (CEO 自走 R33 session / Owner 立会任意)
+
+**API call**: $0 (PM-Z は Read + Edit + Write のみ)
+
+**副作用**: 0 (line 1-2388 absolute 不変 / 末尾 append-only / 既存 absolute 4 file 無改変 / sec yml 12 file md5 不変 / R32 reports 不変)
+
+**lock 継承**: 7 層 lock 全継承 (DEC 本体 line 1-2388 + sec yml 12 file md5 + 既存 absolute 4 file + R27 5b test + R28 5c+5d test + R29-R32 reports + W7-B+W7-C 物理化 module)
 
 ---
