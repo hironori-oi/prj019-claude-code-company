@@ -152,6 +152,20 @@ export * from './paths.js'
 // Round 13 Dev-E 前倒し: KE 系 5 件 (KE-01〜04 + HITL-11) を W4→W2 push.
 export * from './knowledge/index.js'
 
+// Round 20 Dev-DD: 17 day path W3 — P-UI-02 cooldown + P-UI-04 kill-terminal-sink
+// orchestrator 接続 (port-injection / pure adapter / ctrl 無改変).
+export {
+  buildCooldownPolicy,
+  buildKillTerminalAdapter,
+  createCooldownOverrideRegistry,
+  type CooldownPolicy,
+  type CooldownOverrideRegistry,
+  type KillTerminalAdapter,
+  type KillTerminalAdapterOptions,
+  type KillTerminalState,
+  type KillLatchObserver,
+} from './17day-path-w3-orchestrator.js'
+
 // Round 19 Dev-AA: 17 day path W3 — OpenClaw orchestrator (C-OC-03 / C-OC-04 / P-UI-02 接続).
 // control-agnostic / port-injection で openclaw-runtime に依存しない設計。
 export {

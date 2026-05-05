@@ -123,3 +123,216 @@ export function buildPostRollbackNotifier(
     },
   }
 }
+
+// ============================================================================
+// Round 20 Dev-DD append-only 拡張:
+//   P-UI-02 cooldown state machine + P-UI-04 kill-terminal-sink を
+//   harness orchestrator 側で end-to-end 駆動する port + wire helper を追加。
+//
+// 設計原則:
+//   - ctrl 実装ファイル無改変 (Round 19 Dev-AA / Dev-BB 路線継続)
+//   - openclaw-runtime → harness の依存方向を維持
+//   - Dev-AA `openclaw-orchestrator.ts` は構造的 contract のみで実 ctrl と未接続。
+//     本拡張は **構造的 port (Dev-AA の OocCooldownInput / OocCooldownOutput) と
+//     実 ctrl (P-UI-02 evaluateCooldown) を bridge する pure adapter** を提供する。
+//   - P-UI-04 は既に Dev-BB context が killTerminalSink を保持している。本拡張は
+//     kill-trigger → P-UI-04 propagateKill → KillTerminalSink latch → 後段抑止の
+//     一連の lifecycle を harness 側で wrap する pure orchestrator port を追加する。
+//
+// Cross-control invariant 配線 (W3 拡張):
+//   trigger event (loop_abort / manual_stop / kill_switch) → P-UI-02 evaluateCooldown
+//     → cooldownState ∈ {active, expired, overridden} を query 可能形式で公開
+//   HITL 第 12 種 override webhook → CooldownOverrideRegistry.markOverridden(loopId)
+//     → 次回 evaluateCooldown で cooldownState='overridden'
+//   kill-trigger payload → KillTerminalAdapter.terminate(input)
+//     → ctrl propagateKill → killTerminalSink.markFired/markVerified (terminal latch)
+//     → 後段 P-UI-05 evaluateAndAct.killQuery で rollback 抑止
+// ============================================================================
+
+import {
+  evaluateCooldown,
+  type CooldownClock,
+  type CooldownInput,
+  type CooldownOutput,
+  type CooldownOverrideChecker,
+} from '../../openclaw-runtime/src/controls/p-ui-02-cooldown-modal.js'
+import {
+  propagateKill,
+  type KillInput,
+  type KillOutput,
+  type ProcessKiller,
+  type KillBroadcasterOptions,
+} from '../../openclaw-runtime/src/controls/p-ui-04-kill-switch-propagation.js'
+
+// ----------------------------------------------------------------------------
+// P-UI-02 cooldown — orchestrator-facing port group
+// ----------------------------------------------------------------------------
+
+/**
+ * cooldown state を query 形式で公開する port。
+ *
+ * orchestrator (Dev-AA `OpenClawOrchestratorPorts.evaluateCooldown`) に
+ * adapter として注入できる shape を提供する。
+ *
+ * - `isActive`: enqueue 抑止判定 (active のみ true)
+ * - `computeExpiry`: 次回 allowed 時刻 (UTC) を返す
+ * - `evaluate`: P-UI-02 evaluateCooldown の同等呼出 (state 完全形)
+ */
+export interface CooldownPolicy {
+  isActive(input: CooldownInput): boolean
+  computeExpiry(input: CooldownInput): Date
+  evaluate(input: CooldownInput): CooldownOutput
+}
+
+/**
+ * HITL 第 12 種 override port を harness 側で latch する registry。
+ *
+ * webhook 受信時に `markOverridden(loopId)` を呼び、以後の evaluateCooldown
+ * 結果が cooldownState='overridden' になる。`reset(loopId)` で latch 解除。
+ *
+ * latch shape は in-memory Set (副作用 0、test isolation 簡単)。
+ */
+export interface CooldownOverrideRegistry extends CooldownOverrideChecker {
+  markOverridden(loopId: string): void
+  reset(loopId: string): void
+  resetAll(): void
+}
+
+/** in-memory CooldownOverrideRegistry 実装。 */
+export function createCooldownOverrideRegistry(): CooldownOverrideRegistry {
+  const overridden = new Set<string>()
+  return {
+    isOverridden: (loopId) => overridden.has(loopId),
+    markOverridden: (loopId) => {
+      overridden.add(loopId)
+    },
+    reset: (loopId) => {
+      overridden.delete(loopId)
+    },
+    resetAll: () => {
+      overridden.clear()
+    },
+  }
+}
+
+/**
+ * P-UI-02 evaluateCooldown を CooldownPolicy port に bridge する builder。
+ *
+ * harness orchestrator は本 policy を保持し、`isActive` で enqueue 抑止判定、
+ * `evaluate` で full state を取得する。clock skew throw は ctrl 側そのまま伝搬
+ * (fail-closed 設計)。
+ *
+ * @param clock — 現在時刻 port (test 注入可)
+ * @param overrideRegistry — HITL 第 12 種 override 状態 (省略時は no-op)
+ */
+export function buildCooldownPolicy(
+  clock: CooldownClock,
+  overrideRegistry?: CooldownOverrideChecker,
+): CooldownPolicy {
+  const override = overrideRegistry
+  return {
+    isActive: (input) => {
+      const out = evaluateCooldown(input, clock, override)
+      return out.cooldownState === 'active'
+    },
+    computeExpiry: (input) => {
+      const out = evaluateCooldown(input, clock, override)
+      return new Date(out.nextAllowedAt)
+    },
+    evaluate: (input) => evaluateCooldown(input, clock, override),
+  }
+}
+
+// ----------------------------------------------------------------------------
+// P-UI-04 kill-terminal-sink — orchestrator-facing terminate port
+// ----------------------------------------------------------------------------
+
+/**
+ * kill-trigger 受信時に P-UI-04 propagateKill を呼び、結果を terminal state
+ * として返す orchestrator port。
+ *
+ * - `terminate`: kill input を受け、graceful → forceful → verified の chain を実行。
+ *   戻り値の terminal state には latch 状態 (sink active=true) と KillOutput を含む。
+ * - `observeLatch`: kill が fired/verified した瞬間を callback で受ける subscribe API。
+ *   broadcaster lifecycle の test 検証に用いる。
+ */
+export interface KillTerminalState {
+  readonly killOutput: KillOutput
+  readonly latchActive: boolean
+  readonly latchReason: string | null
+}
+
+export type KillLatchObserver = (event: 'fired' | 'verified' | 'failed', reason: string) => void
+
+export interface KillTerminalAdapter {
+  terminate(input: KillInput, options?: KillTerminalAdapterOptions): Promise<KillTerminalState>
+  observeLatch(callback: KillLatchObserver): () => void
+}
+
+/**
+ * terminate 呼出時に追加で渡せる options。
+ * - `processKiller`: SIGTERM / SIGKILL 実行 port (省略時は no-op = 全成功)
+ * - `gracePeriodMs` / `verifySurvivors` / `sleep` / `now`: ctrl propagateKill にそのまま転送
+ */
+export interface KillTerminalAdapterOptions {
+  readonly processKiller?: ProcessKiller
+  readonly gracePeriodMs?: number
+  readonly verifySurvivors?: KillBroadcasterOptions['verifySurvivors']
+  readonly sleep?: KillBroadcasterOptions['sleep']
+  readonly now?: KillBroadcasterOptions['now']
+}
+
+const ALWAYS_OK_KILLER: ProcessKiller = { signal: async () => true }
+
+/**
+ * KillTerminalSink を持つ orchestrator context (Dev-BB W3OrchestratorContext)
+ * から terminate adapter を組み立てる builder。
+ *
+ * broadcaster lifecycle:
+ *   propagateKill 内で killTokenBroadcaster('fired', reason) → 観察者全員に通知
+ *   verified / failed も同様に伝搬。
+ *   adapter は subscribe / unsubscribe を提供し、cleanup も明示的にできる。
+ */
+export function buildKillTerminalAdapter(
+  context: Pick<W3OrchestratorContext, 'killTerminalSink'>,
+): KillTerminalAdapter {
+  const observers = new Set<KillLatchObserver>()
+  const broadcast: KillLatchObserver = (event, reason) => {
+    for (const o of observers) {
+      try {
+        o(event, reason)
+      } catch {
+        // observer 1 個の throw が他の observer / lifecycle に伝搬しないよう吸収
+      }
+    }
+  }
+  return {
+    terminate: async (input, options = {}) => {
+      const killer = options.processKiller ?? ALWAYS_OK_KILLER
+      const broadcasterOpts: KillBroadcasterOptions = {
+        killTerminalSink: context.killTerminalSink,
+        killTokenBroadcaster: broadcast,
+        gracePeriodMs: options.gracePeriodMs ?? 0,
+        sleep: options.sleep ?? (async () => {}),
+      }
+      if (options.verifySurvivors !== undefined) {
+        broadcasterOpts.verifySurvivors = options.verifySurvivors
+      }
+      if (options.now !== undefined) {
+        broadcasterOpts.now = options.now
+      }
+      const killOutput = await propagateKill(input, killer, broadcasterOpts)
+      return {
+        killOutput,
+        latchActive: context.killTerminalSink.isActive(),
+        latchReason: context.killTerminalSink.lastReason(),
+      }
+    },
+    observeLatch: (callback) => {
+      observers.add(callback)
+      return () => {
+        observers.delete(callback)
+      }
+    },
+  }
+}
