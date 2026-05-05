@@ -1,0 +1,377 @@
+# sec-hardening-v3 — PRJ-019 Round 28 第 1 波 Sec-W 物理化 (T-5 5 件目 trigger 統合版).
+#
+# 出典:
+#   - R23 Sec-R `sec-r-r23-trigger-5-candidate-spec.md` (242 行 / 4 候補比較 + 最有力 1 件 spec 化)
+#   - R24 Dev-RR `dev-rr-r24-trigger-5-physical-spec-detail.md` (444 行 / 6 軸物理化 spec 詳細化)
+#   - R25 Sec-T `sec-t-r25-info-3-physical-and-baseline-11round.md` §6 (R26 物理化 readiness 7/7 軸 READY)
+#   - R26 Sec-U `sec-trigger5-monitor-spec.md` (約 280 行 / monitor script formal trigger 化 spec 物理化 IMPL 1/3)
+#   - R27 Sec-V `sec-v-r27-dec-068-v2-draft.md` (246 行 / DEC-068 v2 起案 / R28 議決待ち)
+#   - R27 Sec-V 物理化 IMPL 2/3 = `scripts/sec-trigger-5-knowledge-rate.sh` (67 行) + `runsheets/sec-trigger-5-baseline.json` (89 行)
+#
+# 連動 DEC: DEC-019-025 / DEC-019-033 / DEC-019-049 / DEC-019-053-v15.5
+#         / DEC-019-054 / DEC-019-055 / DEC-019-057 / DEC-019-062 / DEC-019-066 / DEC-019-068 v2.
+#
+# v2 → v3 差分:
+#   v1 (sec-hardening.yml / 291 行 / R21 Sec-P 物理化 / 絶対無改変 / md5 eaff4e5a) は保存.
+#   v2 (sec-hardening-v2.yml / 352 行 / R24 Sec-S 物理化 / 絶対無改変 / md5 0ac6f2b9) は保存.
+#   v3 (本 file / R28 Sec-W 物理化) で R26/R27 spec の T-5 5 件目 trigger を job 統合.
+#   差分:
+#     A. v2 の 5 job (sec-side-effect-zero / sec-emoji-zero / sec-tests-pass / sec-api-spike / sec-audit-aggregate)
+#        を完全 superset として継承 (audit-path schema は v3/<job-name>-* に変更).
+#     B. **新規 6 件目 job: sec-trigger-5-knowledge-rate** (R26 spec §6.2 / 4 段階閾値 fail-soft).
+#     C. v3 専用 audit log path: reports/_sec-automation/v3/<job-name>-<run_id>-<suite?>-$(date +%s).log
+#     D. cron schedule: 02:15 UTC = 11:15 JST (v1=02:00 / v2=02:05 / cron-audit=02:10 / v3=02:15 = 5 min ずらし 4 段 cascade).
+#     E. sec-audit-aggregate に T-5 path schema 拾い込み追加 (v1 / v2 / v3 path 全対応 / downward compat).
+#   無差分:
+#     - on: trigger / permissions / fail-fast 二段判定 / matrix.fail-fast: false / artifact retention 90 日
+#     - secrets 取扱 / SLACK_WEBHOOK_URL / 副作用 0 / API $0 / 絵文字 0
+#     - WARN fail-soft 条件 / 3-tier BASE_REF fallback (Round 19 Sec-N 由来)
+#
+# v1 / v2 並走方針:
+#   - v1 / v2 は historical baseline として無改変保存 (1 byte 不変厳守).
+#   - 同 PR で v1 / v2 / v3 三発火 (cron / push / PR 同 trigger). branch protection 移行は §R-INFO-5 引継.
+#   - v3 が PASS であれば v2 / v1 も PASS する設計 (v3 = v2 完全 superset + T-5 / downward compat).
+#
+# T-5 fail-soft 設計 (R26 spec §3 / R27 baseline JSON 整合):
+#   - INFO (ma >= 10.0) = log only / gate PASS / exit 0
+#   - WARN (8.0 <= ma < 10.0) = Slack #sec-warn / gate PASS / exit 0
+#   - WARN+ (6.0 <= ma < 8.0) = dashboard escalation + Slack #sec-warn / gate PASS / exit 0
+#   - FAIL (ma < 6.0) = merge block + Slack #sec-fail + CEO escalation / gate FAIL / exit 1 (連続 2 round 違反時のみ block)
+#   - 単発 FAIL = 1 round 限り fail-soft (continue-on-error 経由) / 連続 2 round で main merge block
+#
+# secrets 取扱:
+#   - SLACK_WEBHOOK_URL は repo secrets から injection. 未設定時は slack_alert() が no-op で動作.
+#   - artifact retention 90 日 (default 90 と整合 / DEC-019-066 §3 audit log 90 日保持要件).
+#
+# 副作用 0 / API $0 / 絵文字 0:
+#   - GitHub Actions は public repo で free tier 無制限 (private でも既存 budget 内).
+#   - 本 yml 内で外部 API call なし. checkout + script 実行 + artifact upload のみ.
+#   - sec-trigger-5-knowledge-rate.sh は read-only file count diff のみ (PII non-touch / network 0).
+
+name: sec-hardening-v3
+
+on:
+  # PR 起票・更新時に main merge 前 Sec gate を強制 (fail-fast 系は merge ブロック).
+  pull_request:
+    branches: [main]
+  # main 直接 push (CEO 統合 commit / merge commit 後) の post-mortem gate.
+  push:
+    branches: [main]
+  # 日次 02:15 UTC = 11:15 JST. v1 (02:00) / v2 (02:05) / cron-audit (02:10) と 5 min ずらした 4 段 cascade.
+  schedule:
+    - cron: '15 2 * * *'
+  # 手動 trigger 用 (debug / 5/26 review 時の集計用).
+  workflow_dispatch:
+
+permissions:
+  # checkout のみ. 書き込み権限は付与せず副作用 0 を yml level で担保.
+  contents: read
+
+# CI run 跨ぎで参照する共通 env (BASE_REF / HEAD_REF の 3-tier fallback は Round 19 Sec-N 由来).
+env:
+  ROUND: ${{ github.run_id }}
+  # v3 専用 audit log root (v1 / v2 path schema と分離).
+  V3_AUDIT_ROOT: projects/PRJ-019/reports/_sec-automation/v3
+
+jobs:
+  # ==========================================================================
+  # Job 1: sec-side-effect-zero — 既存テスト破壊 / schema 改変 / lock / secret diff 検知.
+  # v3 audit-path 対応 (v2 完全 superset).
+  # ==========================================================================
+  sec-side-effect-zero:
+    name: Sec / side-effect zero gate (v3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (full history for BASE_REF resolution)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 20 (script 内 node 1 行 JSON read 用)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare v3 audit dir
+        run: mkdir -p ${{ env.V3_AUDIT_ROOT }}
+
+      - name: Run sec-side-effect-zero-check.sh (v3 audit-path 対応)
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          HEAD_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          AUDIT_PATH="${{ env.V3_AUDIT_ROOT }}/side-effect-zero-${{ github.run_id }}-$(date +%s).log"
+          bash projects/PRJ-019/scripts/sec-side-effect-zero-check.sh \
+            --audit-log-path="${AUDIT_PATH}"
+
+      - name: Upload side-effect-zero log artifact (90 日 retention)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-side-effect-zero-log-v3-${{ github.run_id }}
+          path: |
+            projects/PRJ-019/reports/_sec-automation/side-effect-zero-*.log
+            projects/PRJ-019/reports/_sec-automation/v2/side-effect-zero-*.log
+            projects/PRJ-019/reports/_sec-automation/v3/side-effect-zero-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 2: sec-emoji-zero — UTF-8 emoji + 35 ペア多言語擬似絵文字検知.
+  # v3 audit-path 対応.
+  # ==========================================================================
+  sec-emoji-zero:
+    name: Sec / emoji zero gate (v3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Perl
+        run: perl --version | head -2
+
+      - name: Prepare v3 audit dir
+        run: mkdir -p ${{ env.V3_AUDIT_ROOT }}
+
+      - name: Run sec-emoji-zero-check.sh (v3 audit-path 対応)
+        run: |
+          AUDIT_PATH="${{ env.V3_AUDIT_ROOT }}/emoji-zero-${{ github.run_id }}-$(date +%s).log"
+          bash projects/PRJ-019/scripts/sec-emoji-zero-check.sh \
+            --audit-log-path="${AUDIT_PATH}"
+
+      - name: Upload emoji-zero log artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-emoji-zero-log-v3-${{ github.run_id }}
+          path: |
+            projects/PRJ-019/reports/_sec-automation/emoji-zero-*.log
+            projects/PRJ-019/reports/_sec-automation/v2/emoji-zero-*.log
+            projects/PRJ-019/reports/_sec-automation/v3/emoji-zero-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 3: sec-tests-pass-gate — harness / workspace / openclaw-runtime suite × 3 並列.
+  # v3 audit-path 対応.
+  # ==========================================================================
+  sec-tests-pass:
+    name: Sec / tests PASS gate v3 (suite=${{ matrix.suite }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [harness, workspace, openclaw-runtime]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Restore previous streak state artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sec-streak-state-${{ matrix.suite }}
+          path: projects/PRJ-019/scripts
+        continue-on-error: true
+
+      - name: Install dependencies (suite-specific)
+        run: |
+          if [ "${{ matrix.suite }}" = "harness" ]; then
+            cd projects/PRJ-019/app/harness && bun install
+          elif [ "${{ matrix.suite }}" = "workspace" ]; then
+            cd projects/PRJ-019/app && bun install
+          elif [ "${{ matrix.suite }}" = "openclaw-runtime" ]; then
+            cd projects/PRJ-019/app/openclaw-runtime && bun install
+          fi
+
+      - name: Run vitest and extract PASS count
+        id: vitest
+        run: |
+          set +e
+          if [ "${{ matrix.suite }}" = "harness" ]; then
+            cd projects/PRJ-019/app/harness
+          elif [ "${{ matrix.suite }}" = "workspace" ]; then
+            cd projects/PRJ-019/app
+          elif [ "${{ matrix.suite }}" = "openclaw-runtime" ]; then
+            cd projects/PRJ-019/app/openclaw-runtime
+          fi
+          bunx vitest run --reporter=json > vitest-output.json 2>&1
+          VITEST_EXIT=$?
+          PASS=$(node -e "const j=require('./vitest-output.json');process.stdout.write(String(j.numPassedTests||0))" 2>/dev/null || echo "0")
+          echo "pass=$PASS" >> $GITHUB_OUTPUT
+          echo "vitest_exit=$VITEST_EXIT" >> $GITHUB_OUTPUT
+
+      - name: Prepare v3 audit dir
+        run: mkdir -p ${{ env.V3_AUDIT_ROOT }}
+
+      - name: Run sec-tests-pass-gate.sh (v3 audit-path 対応)
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          AUDIT_PATH="${{ env.V3_AUDIT_ROOT }}/tests-pass-gate-${{ matrix.suite }}-${{ github.run_id }}-$(date +%s).log"
+          bash projects/PRJ-019/scripts/sec-tests-pass-gate.sh \
+            --suite ${{ matrix.suite }} \
+            --pass ${{ steps.vitest.outputs.pass }} \
+            --audit-log-path "${AUDIT_PATH}"
+
+      - name: Upload streak state artifact (round 跨ぎ持続化)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-streak-state-${{ matrix.suite }}
+          path: projects/PRJ-019/scripts/sec-streak-state.json
+          retention-days: 90
+
+      - name: Upload tests-pass-gate log artifact (v3)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-tests-pass-gate-log-v3-${{ matrix.suite }}-${{ github.run_id }}
+          path: |
+            projects/PRJ-019/reports/_sec-automation/tests-pass-gate-*.log
+            projects/PRJ-019/reports/_sec-automation/v2/tests-pass-gate-*.log
+            projects/PRJ-019/reports/_sec-automation/v3/tests-pass-gate-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 4: sec-api-spike — Anthropic spend 1h 窓 / 月次 trajectory 逸脱検知.
+  # v3 audit-path 対応.
+  # ==========================================================================
+  sec-api-spike:
+    name: Sec / API spike check (v3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare v3 audit dir
+        run: mkdir -p ${{ env.V3_AUDIT_ROOT }}
+
+      - name: Run sec-api-spike-check.sh (v3 audit-path 対応)
+        # exit code:
+        #   0 = PASS / 1 = WARN 初回 (fail-soft) / 2 = FAIL (fail-fast) / 4 = WARN 30min 再発 (fail-soft)
+        continue-on-error: true
+        run: |
+          AUDIT_PATH="${{ env.V3_AUDIT_ROOT }}/api-spike-${{ github.run_id }}-$(date +%s).log"
+          bash projects/PRJ-019/scripts/sec-api-spike-check.sh \
+            --audit-log-path="${AUDIT_PATH}"
+
+      - name: Upload api-spike log artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-api-spike-log-v3-${{ github.run_id }}
+          path: |
+            projects/PRJ-019/reports/_sec-automation/api-spike-*.log
+            projects/PRJ-019/reports/_sec-automation/v2/api-spike-*.log
+            projects/PRJ-019/reports/_sec-automation/v3/api-spike-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 5 (NEW / R28 Sec-W): sec-trigger-5-knowledge-rate — knowledge entry 増加率 4 round MA gate.
+  #   - R26 Sec-U sec-trigger5-monitor-spec.md §6.2 整合.
+  #   - R27 Sec-V scripts/sec-trigger-5-knowledge-rate.sh + runsheets/sec-trigger-5-baseline.json 物理化済.
+  #   - 4 段階閾値 fail-soft (INFO/WARN/WARN+ = exit 0 / FAIL = exit 1).
+  #   - DEC-019-068 v2 議決後に formal trigger T-5 として稼働 (R28 議決対象).
+  # ==========================================================================
+  sec-trigger-5-knowledge-rate:
+    name: Sec / T-5 knowledge entry growth rate (fail-soft / 4 段階閾値)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (knowledge 4 dir + baseline JSON 参照)
+        uses: actions/checkout@v4
+        with:
+          # round_history append-only 参照 / git history 不要なため shallow で OK.
+          fetch-depth: 50
+
+      - name: Setup Node 20 (script 内 node JSON 集計用)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare v3 audit dir
+        run: mkdir -p ${{ env.V3_AUDIT_ROOT }}
+
+      - name: Run sec-trigger-5-knowledge-rate.sh (R27 物理化版)
+        # exit code 解釈 (R26 spec §3 / R27 baseline JSON 整合):
+        #   0 = INFO/WARN/WARN+ (gate PASS / fail-soft)
+        #   1 = FAIL (連続 2 round 違反時のみ main merge block)
+        #   2 = argparse error
+        #   3 = runtime error (baseline JSON parse fail / file not found)
+        # 単発 FAIL は continue-on-error で 1 round 限り fail-soft 化 (連続 2 round 判定は外部 state).
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          AUDIT_PATH="${{ env.V3_AUDIT_ROOT }}/trigger-5-${{ github.run_id }}-$(date +%s).log"
+          bash projects/PRJ-019/scripts/sec-trigger-5-knowledge-rate.sh \
+            --baseline-json=projects/PRJ-019/runsheets/sec-trigger-5-baseline.json \
+            --window-size=4 \
+            --audit-log-path="${AUDIT_PATH}" \
+            --output-format=json
+
+      - name: Upload trigger-5 audit log artifact (90 日 retention / 5/26 review 集計対象)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-trigger-5-knowledge-rate-${{ github.run_id }}
+          path: projects/PRJ-019/reports/_sec-automation/v3/trigger-5-*.log
+          retention-days: 90
+
+  # ==========================================================================
+  # Job 6: sec-audit-aggregate — 5 job (v3 + T-5) の sec-audit.log を結合し SEC_OVERRIDE 件数集計.
+  #   - needs: 上記 5 job (T-5 含む). all complete 後に always() で発火.
+  #   - 5/26 review 時に `gh run download <run_id> -n sec-audit-aggregated-v3-<run_id>` で取得.
+  # v3 path schema 対応 (v1 / v2 path も併せて拾う / downward compat).
+  # ==========================================================================
+  sec-audit-aggregate:
+    name: Sec / aggregate audit logs v3 (SEC_OVERRIDE + T-5 集計)
+    runs-on: ubuntu-latest
+    needs: [sec-side-effect-zero, sec-emoji-zero, sec-tests-pass, sec-api-spike, sec-trigger-5-knowledge-rate]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Aggregate sec-audit.log (SEC_OVERRIDE + T-5 件数 / v3 path schema 対応)
+        run: |
+          mkdir -p aggregated
+          # 全 artifact 配下の log を結合. JSONL 1 行 = 1 event. v1 / v2 / v3 path 全対応.
+          find artifacts -type f -name "*.log" -exec cat {} \; > aggregated/aggregated-sec-audit-v3.log || true
+          # SEC_OVERRIDE 件数集計 (debug 出力).
+          SEC_OVERRIDE_COUNT=$(grep -c '"event":"sec_override"' aggregated/aggregated-sec-audit-v3.log 2>/dev/null || echo "0")
+          echo "SEC_OVERRIDE 件数 (v3): $SEC_OVERRIDE_COUNT"
+          # reason 分布集計 (top 5).
+          grep -o '"reason":"[^"]*"' aggregated/aggregated-sec-audit-v3.log 2>/dev/null \
+            | sort | uniq -c | sort -rn | head -5 || echo "(no override events)"
+          # WARN 30min 再発 (R24 Info 1) 件数集計.
+          WARN_REDETECT_COUNT=$(grep -c 'fail-soft / 2nd detection within 30min' aggregated/aggregated-sec-audit-v3.log 2>/dev/null || echo "0")
+          echo "WARN 30min 再発 件数 (R24 Info 1 / v3): $WARN_REDETECT_COUNT"
+          # T-5 level 分布集計 (R28 新規).
+          T5_INFO_COUNT=$(grep -c '"level":"INFO"' aggregated/aggregated-sec-audit-v3.log 2>/dev/null || echo "0")
+          T5_WARN_COUNT=$(grep -c '"level":"WARN"' aggregated/aggregated-sec-audit-v3.log 2>/dev/null || echo "0")
+          T5_WARN_PLUS_COUNT=$(grep -c '"level":"WARN_PLUS"' aggregated/aggregated-sec-audit-v3.log 2>/dev/null || echo "0")
+          T5_FAIL_COUNT=$(grep -c '"level":"FAIL"' aggregated/aggregated-sec-audit-v3.log 2>/dev/null || echo "0")
+          echo "T-5 level 分布: INFO=$T5_INFO_COUNT / WARN=$T5_WARN_COUNT / WARN+=$T5_WARN_PLUS_COUNT / FAIL=$T5_FAIL_COUNT"
+
+      - name: Upload aggregated sec-audit artifact (5/26 review 集計対象 / 90 日 retention)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-audit-aggregated-v3-${{ github.run_id }}
+          path: aggregated/aggregated-sec-audit-v3.log
+          retention-days: 90

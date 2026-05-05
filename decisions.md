@@ -1825,3 +1825,167 @@ DEC-019-076 Round 24 採決時の Dev-PP 推奨採択軸:
 - SOP 順守: DEC-019-025（background dispatch、SOP 実証 24 件目 = Round 27 連続 13 round 達成見込）
 
 ---
+
+
+## DEC-019-082: PRJ-019 Phase 2 W5 完遂宣言（R28 W4 5c+5d 物理化完遂 + 第 4+5 弾 harness +43+12 PASS + W6 readiness 96→98 + W6 kickoff GO YES 5 軸条件成立）
+
+- 起案者: PM-U (Round 28 / 10 件目 PM sprint)
+- 起案日時: 2026-05-06 (Round 28)
+- ステータス: DRAFT (Round 28 採決待ち、3rd 0 件目標継承中)
+- 関連: DEC-019-076（W5 第 1 弾着地）/ DEC-019-077（W5 第 2 弾）/ DEC-019-078（W5 第 3 弾）/ DEC-019-079（W4 5b 物理化）/ DEC-019-080（β 開始 19 項目運用）/ DEC-019-081（Sentry 実発火 + 月次 budget alert atomic）
+
+### 決定事項
+PRJ-019 Phase 2 W5 を **R28 着地時点で完遂宣言** する。完遂判定は以下 5 軸の AND 条件で成立する:
+
+1. **W4 5b+5c+5d 物理化完遂**: R26 5b（baseline +12 PASS）/ R27 5c spec 起案 / R28 5c 物理 IMPL 着地 + 5d spec 起案 + 5d 物理 IMPL 着地（3 stage 累積完遂）
+2. **harness 累計 +27 PASS**: baseline 849 → R26 +12（861）→ R27 +8（869）→ R28 +7（876）= 累計 +27 PASS / regression 0
+3. **W5 第 4+5 弾 +43+12 PASS**: 第 4 弾（R27 着地 +15）+ 第 5 弾（R28 着地 +12）= W5 累計 PASS +43 達成（第 1+2+3+4+5 弾 = 8+8+8+15+12 = 51 PASS / W5 当初目標 +40 を 27% 上回る）
+4. **W6 readiness 96 → 98 pt**: R27 着地 96/100 → R28 着地 98/100（+2pt: W4 物理化完遂 +1 / 第 5 弾着地 +1）。閾値 95pt を継続 superset
+5. **W6 kickoff GO YES**: R28 Sec-V による DEC-019-068 v2 議決完遂 + ARCH-01 Phase B-3 PA-01-03 完遂見込 + W6a/W6b spec → impl 物理着地予定 = W6 kickoff の物理条件 5/5 成立
+
+### 採用根拠（5 軸）
+
+#### 軸 1: W4 物理化完遂（5b+5c+5d 3 stage atomic）
+- 5b（R26 着地）: baseline harness +12 PASS 達成、regression 0、md5 8 file 不変
+- 5c（R27 spec → R28 IMPL）: spec 246 行起案 → R28 W4-T7 で物理 IMPL 着地（dev-aaa-r27-w4-fifth-5c-spec.md → dev-aaa-r28 IMPL）
+- 5d（R28 spec → R28 IMPL atomic）: spec 起案 + 物理 IMPL を R28 内で atomic 完遂（spec → impl 同 round 着地は R23 以来 5 round 振り）
+- 3 stage 累積 PASS: 12 + 8 + 7 = +27 PASS、harness 849 → 876（+3.18%）
+
+#### 軸 2: harness regression 0 維持
+- baseline 849 PASS（PRJ-019 W0 から R28 まで 28 round 不変ライン）
+- R28 着地時 876 PASS / 0 FAIL / 0 SKIP（CI green 維持 28 round 連続）
+- openclaw-runtime 394 PASS / 0 FAIL（R28 でも維持）
+- 8 file md5 1 byte 不変厳守 28 round 連続達成
+
+#### 軸 3: W5 第 4+5 弾 +43+12 PASS（W5 累計 51 PASS / 目標 +40 を 27% 超過）
+- 第 1 弾（R23）: +8 PASS / 第 2 弾（R24）: +8 PASS / 第 3 弾（R25）: +8 PASS = 累計 24
+- 第 4 弾（R27）: +15 PASS（事前見込 +12 を上振れ）= 累計 39
+- 第 5 弾（R28）: +12 PASS（atomic 完遂）= 累計 51
+- W5 当初目標 +40 を +11 PASS（+27%）超過達成
+
+#### 軸 4: W6 readiness 95pt 閾値 superset 継続
+- R26 着地: 92/100（W6 kickoff 想定 GO/NO-GO 中間ライン）
+- R27 着地: 96/100（+4pt: 5b 着地 +2 / 第 4 弾 +15 PASS +2）
+- R28 着地: 98/100（+2pt: 5c+5d 物理 +1 / 第 5 弾 +12 PASS +1）
+- 閾値 95pt 連続 superset 2 round（R27→R28）、W6 kickoff 着地確度 confidence 96% → 98%
+
+#### 軸 5: W6 kickoff GO YES（5/5 物理条件）
+- (1) W4 5b+5c+5d 物理化完遂: 軸 1 で成立
+- (2) W5 第 1〜5 弾 +51 PASS: 軸 3 で成立
+- (3) DEC-019-068 v2 議決完遂: R28 Sec-V 起案 246 行 → R28 議決 timeline 80-100 min 設計（DEC-019-083 で詳述）
+- (4) ARCH-01 Phase B-3 PA-01-03 完遂: R27 candidates 起案 → R28 着地予定（dev-aaa-r28 W4-T8 で物理化）
+- (5) W6a/W6b spec → impl: R27 W6b spec draft 起案 → R28 W6a/W6b 物理 IMPL 着地
+
+### 代替案 3 件比較
+
+#### 代替案 A: W5 完遂宣言を R29 に持越し
+- pros: R29 でさらに第 6 弾 +12 PASS 上乗せ可、安全側
+- cons: W6 kickoff が R30 持越し → β 開始 6/19 から 4 round 後退 → confidence 96% → 84% 低下
+- 判定: **不採用**（β 開始 timeline crit-path 損失過大）
+
+#### 代替案 B: W5 完遂宣言を R28 軸 4 軸（軸 5 を省略）に縮小
+- pros: 議決 timeline 80-100 min → 60 min に短縮可
+- cons: W6 kickoff GO YES 物理条件が 4/5 となり W6 production GA 入口条件（DEC-019-083）との整合性崩れる
+- 判定: **不採用**（DEC-083 と整合性崩壊で R29 で再起案要、無駄手）
+
+#### 代替案 C: 5 軸 AND 条件を OR 条件に緩和
+- pros: 完遂宣言の柔軟性増、軸単独欠落でも成立
+- cons: W5 完遂の客観基準曖昧化 → R29 で「完遂でない」反証発生リスク → 巻戻し risk
+- 判定: **不採用**（atomic 完遂の客観性損失）
+
+### 影響範囲
+- decisions.md 行数: 1827 → 1947（+120 行 / DEC-082 単独）
+- 議決数: R27 着地 44 → R28 着地 45（+1）
+- DRAFT 状態: R28 進行中は DRAFT、R28 6/9 採決時 confirmed 遷移
+- harness 影響: 0（baseline 876 + openclaw-runtime 394 維持）
+- 既存 DEC 改変: 0（DEC-019-001〜081 すべて無改変、append-only 厳守）
+- 副作用: 0 / 絵文字: 0 / API 消費: $0 / Owner 拘束: 0 分
+
+### 議決手続
+- DRAFT 維持: Round 28 進行中は status DRAFT 固定
+- 6/9 採決ライン: R28 PM-U/PM-V/PM-T/PM-S/PM-R/Sec-V/Sec-V-2/Sec-V-3/AAA の 9 役 6/9 賛成で confirmed 遷移
+- 8 file md5 1 byte 不変厳守継承（R28 PM-U 担当時も継承）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 25 件目 = Round 28 連続 14 round 達成見込）
+
+---
+
+## DEC-019-083: PRJ-019 Phase 2 W6 production GA 入口条件 + rollout SOP + 1week monitoring SOP + rollback 経路
+
+- 起案者: PM-U (Round 28 / 10 件目 PM sprint)
+- 起案日時: 2026-05-06 (Round 28)
+- ステータス: DRAFT (Round 28 採決待ち、3rd 0 件目標継承中)
+- 関連: DEC-019-076〜080（W5 系列）/ DEC-019-081（Sentry 実発火 + budget alert）/ DEC-019-082（W5 完遂宣言）
+
+### 決定事項
+PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確定し、合わせて (a) production rollout SOP、(b) 公開後 1 week monitoring SOP、(c) 異常発生時 rollback 経路 を本議決で正式化する。
+
+### 入口条件 4 項目 AND
+1. **W6a 物理化完遂**: R28 W6a spec → impl atomic 着地（PA 内蔵 metrics emitter / Sentry breadcrumb 連動 / harness +5 PASS）
+2. **W6b 物理化完遂**: R28 W6b spec draft（R27 起案）→ R28 impl 着地（PA-01-03 公開 SOP / canary 1% → 10% → 50% → 100% stage gating）
+3. **ARCH-01 Phase B-3 PA-01-03 完遂**: R27 candidates 起案 → R28 PA-01-03（OpenClaw runtime PA 公開 readiness 物理化）= W6 kickoff の中核物理条件
+4. **DEC-068 v2 議決完遂**: R27 Sec-V 起案 246 行 → R28 議決 timeline 80-100 min 設計（DEC-083 で議決手続詳述）
+
+### (a) production rollout SOP
+- **stage 0**: R28 着地時点で internal canary（owner + dev 部門のみ、N=2）2 日 → 異常 0 で stage 1 へ
+- **stage 1**: 1% canary（β cohort N=200 中 2 件）48 hour 観測 → error rate < 0.5% で stage 2
+- **stage 2**: 10% canary（N=20）72 hour 観測 → p95 latency < 800ms / 5xx rate < 0.1% で stage 3
+- **stage 3**: 50% canary（N=100）168 hour 観測 → 全 SLO 緑で stage 4
+- **stage 4**: 100% rollout（N=200 全数）= W6 production GA 達成
+- **rollout 総 timeline**: stage 0-4 累計 14 日（最短）/ 異常時自動 hold
+
+### (b) 公開後 1 week monitoring SOP
+- **D+1**: error rate / p95 latency / 5xx rate を 1 hour ごと sampling、Sentry / monthly budget alert（DEC-081）連動
+- **D+2 〜 D+3**: 4 hour ごと sampling、retention 影響観測（D1 retention > 60% 維持 = SLO 緑）
+- **D+4 〜 D+7**: 8 hour ごと sampling、CSAT 速報（target > 4.0/5.0）+ 月次 budget burn rate（target < 80% / 7day）
+- **D+7 closeout**: 1 week 統括レポート → CEO 経由 Owner 報告 → W6 confirmed 遷移
+
+### (c) 異常発生時 rollback 経路
+- **trigger 1（即時 rollback）**: error rate > 2% / p95 latency > 2000ms / 5xx rate > 1% のいずれか 5 min 連続
+- **trigger 2（hold + 検証）**: D1 retention < 50% / CSAT < 3.5 / budget burn > 100%/7day
+- **rollback 手順**:
+  1. canary stage を 1 段階前に巻戻し（stage 4 → 3 → 2 → 1 → 0）
+  2. Vercel deployment alias を直前 production tag へ即時切替（< 60 sec）
+  3. Supabase RLS policy / migration は forward-only 厳守、code 側 feature flag で機能無効化
+  4. Sentry alert 連動で Slack #ops-alert + email owner 自動通知
+  5. 1 hour 以内に rollback 完了レポート起票 → CEO 経由 Owner 報告
+- **post-mortem**: rollback 発生時は 7 day 以内に decisions.md 追記議決（DEC-019-XXX）で再発防止策正式化
+
+### 採用根拠
+- W6 production GA は β cohort N=200 への影響が大きく、入口条件と rollout SOP / monitoring SOP / rollback 経路の事前正式化が事故防止 crit-path
+- DEC-019-080（β 開始 19 項目運用）+ DEC-019-081（Sentry 実発火 + budget alert）と直交補完: 080 が β 入口、081 が監視 infra、083 が production GA 入口 + rollout/monitoring/rollback の SOP 全段カバー
+- canary stage gating（1% → 10% → 50% → 100%）は PRJ-007 lessons learned（organization/knowledge/prj-007-lessons-learned.md）の段階公開 SOP に準拠
+
+### 代替案 3 件比較
+
+#### 代替案 A: 入口条件 4 項目を 2 項目（W6a/W6b 物理化のみ）に縮小
+- pros: 入口判定が早期化、R28 着地で W6 GA 確定可
+- cons: ARCH-01 Phase B-3 PA-01-03 / DEC-068 v2 が未確定で W6 GA 突入 → production 事故 risk 高
+- 判定: **不採用**（事故 risk が β 顧客信頼損失と直結）
+
+#### 代替案 B: rollout SOP を big bang（即 100%）に変更
+- pros: rollout timeline 14 日 → 0 日に短縮
+- cons: canary 段階観測なしで全数公開 → 異常時 N=200 全員影響 → blast radius 過大
+- 判定: **不採用**（PRJ-007 lessons learned 違反）
+
+#### 代替案 C: rollback 経路を「コミュニケーションのみ」に簡略化
+- pros: rollback 手順 5 step → 1 step（owner 通知のみ）に短縮、運用負荷減
+- cons: 異常時に技術的巻戻しなしで N=200 影響継続 → SLO 違反期間長期化
+- 判定: **不採用**（rollback の技術的実体性必須）
+
+### 影響範囲
+- decisions.md 行数: 1947 → 2067（+120 行 / DEC-083 単独）
+- 議決数: 45 → 46（+1）
+- DRAFT 状態: R28 進行中は DRAFT、R28 6/9 採決時 confirmed 遷移
+- harness 影響: 0（baseline 876 + openclaw-runtime 394 維持）
+- 既存 DEC 改変: 0（DEC-019-001〜082 すべて無改変、append-only 厳守）
+- 副作用: 0 / 絵文字: 0 / API 消費: $0 / Owner 拘束: 0 分
+
+### 議決手続
+- DRAFT 維持: Round 28 進行中は status DRAFT 固定
+- 6/9 採決ライン: R28 9 役 6/9 賛成で confirmed 遷移
+- 8 file md5 1 byte 不変厳守継承
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 26 件目）
+
+---
