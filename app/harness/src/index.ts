@@ -152,6 +152,30 @@ export * from './paths.js'
 // Round 13 Dev-E 前倒し: KE 系 5 件 (KE-01〜04 + HITL-11) を W4→W2 push.
 export * from './knowledge/index.js'
 
+// Round 19 Dev-AA: 17 day path W3 — OpenClaw orchestrator (C-OC-03 / C-OC-04 / P-UI-02 接続).
+// control-agnostic / port-injection で openclaw-runtime に依存しない設計。
+export {
+  createOpenClawOrchestrator,
+  projectMajorDiffsToEscalation,
+  isCycleAborted,
+  type OpenClawOrchestrator,
+  type OpenClawOrchestratorPorts,
+  type OpenClawCycleInput,
+  type OpenClawCycleResult,
+  type OpenClawCycleAbortedResult,
+  type RunContractTestPort,
+  type EscalateBreakingChangePort,
+  type EvaluateCooldownPort,
+  type OocContractInput,
+  type OocContractOutput,
+  type OocContractDiff,
+  type OocEscalationInput,
+  type OocEscalationOutput,
+  type OocMajorDiff,
+  type OocCooldownInput,
+  type OocCooldownOutput,
+} from './openclaw-orchestrator.js'
+
 // Round 14 Dev-D Task A: HITL gate 第 12 種 (cli_version_update_approval) harness adapter.
 // - 既存 hitl-gate.ts / slack-quick-action.ts は無改変、本 adapter 経由で gate-12 を運用.
 // - HitlActionType への正式追加は CEO 議決待ち、現状は 'paid_api_call' 流用.

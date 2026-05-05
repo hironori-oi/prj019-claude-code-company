@@ -33,6 +33,19 @@ bash projects/PRJ-019/scripts/sec-tests-pass-gate.sh \
 - 未設定時は alert skip（API $0 / network 0 維持、外部依存 0）
 - 送信内容: `[Sec gate] REGRESSION <suite>: pass=X < baseline=Y`
 
+### §4.1 Slack 不達検知（Round 19 §3.4-1 改善）
+- 従来: `curl ... || true` で network 失敗を握りつぶし、alert 不達が log に残らなかった
+- 改善: curl 失敗時に REPORT_FILE へ `SLACK: send_failed msg="..."` を追記し、最終 exit code を `3` にする
+- exit code 3 の意味: gate 自体は PASS / PROMOTE 成功だが alert 不達。CI 上は別 alert 系統（メール / dashboard）で再通知することを推奨
+- `SLACK_WEBHOOK_URL` 未設定なら従来通り skip（exit 0）
+
+### §4.2 連続 N round streak 強制（Round 19 §3.4-2 改善）
+- 新ファイル: `scripts/sec-streak-state.json`（suite 別に `last_result` / `streak` / `updated_at` を保持）
+- regression 検出（exit 1）で streak リセット、PASS で streak +1
+- `--promote` に `--require-streak <N>` を併設すると streak < N 時 exit 6 で promote 拒否
+- 既定値（CEO 判定責任のみ運用）: `--require-streak` 未指定なら従来通り単発 promote 可
+- 推奨運用: 5/26 formal review 以降の baseline promote では `--require-streak 2` を default 化
+
 ## §5 CI integration
 ```yaml
 - name: harness vitest
