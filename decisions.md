@@ -352,7 +352,7 @@
 
 ---
 
-## DEC-019-068 (起案 / status: DRAFT / 起案者: PM-K / 起案日: 2026-05-05 / レビュー期限: 2026-06-02 (Round 19 正式議決時))
+## DEC-019-068 (起案 / status: superseded by v2 (R29 / 2026-05-06 09:20-09:40 JST CEO 主催 80 min session 内 25 min) / 起案者: PM-K / 起案日: 2026-05-05 / レビュー期限: 2026-06-02 (Round 19 正式議決時) / 注: 本文 L355-416 absolute 無改変保持 / supersede 関係明文化のみ status 行追記)
 
 **タイトル**: stagger 圧縮 SOP 連続 4 round 適用効果評価 + デフォルト運用フロー昇格判断（Round 18 着地宣言起案）
 
@@ -1590,11 +1590,11 @@ DEC-019-076 Round 24 採決時の Dev-PP 推奨採択軸:
 
 ---
 
-## DEC-019-080 (起案 / status: DRAFT / 起案者: PM-T / 起案日: 2026-05-05 / レビュー期限: 2026-06-09 (Round 27 採決想定 / Phase 2 W5 完成宣言 + DEC-074 carry-forward / DEC-019-081 と統合採決 pattern))
+## DEC-019-080 (採決完遂 / status: confirmed / 起案者: PM-T / 起案日: 2026-05-05 / 採決日時: 2026-05-06 R29 09:05-09:10 JST / 採決方式: CEO 自走 session / 投票: CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権 / 採決完遂者: PM-V (Round 29 GTC-1 物理採決 軸) / 旧レビュー期限: 2026-06-09 (Round 27 採決想定 / Phase 2 W5 完成宣言 + DEC-074 carry-forward / DEC-019-081 と統合採決 pattern))
 
 **タイトル**: Phase 2 W5 完成宣言（cross-orchestrator e2e + cross-package 拡張完遂 + claude-bridge integration e2e 物理実装 + 6/3 着手 readiness 100% + DEC-074 carry-forward + Round 28 引継 6 項目候補確定）
 
-**status 注意**: 本議決は **DRAFT** であり、Round 27（5/26-6/9）採決想定（DEC-019-081 と統合採決 pattern 推奨 = 6/9 火 09:00-10:20 JST 60-80 min / Owner 拘束 0 分継承）。Phase 2 W5 着手 6/3（火）直前の自然継承議決として、DEC-074 + DEC-079 の carry-forward 議決構造を形成。
+**status 注意**: 本議決は **R29 (2026-05-06) 物理採決完遂により confirmed 遷移済**（旧 DRAFT / 旧 Round 27 6/9 採決想定 → Owner directive「日付決め打ちなし / 完成次第即時 GO」方針採用により R29 前倒し採決完遂 / CEO + PM-V + Sec-X 3 者賛成 / Owner 拘束 0 分 / API call $0）。Phase 2 W5 着手 6/3（火）直前の自然継承議決として、DEC-074 + DEC-079 の carry-forward 議決構造を形成。
 
 **(1) background**:
 - DEC-019-079（PM-R / Round 25 / Phase 2 W5 着手宣言 + ARCH-01 Phase B-2 supersede）の自然継承議決。
@@ -1715,11 +1715,11 @@ DEC-019-076 Round 24 採決時の Dev-PP 推奨採択軸:
 
 ---
 
-## DEC-019-081 (起案 / status: DRAFT / 起案者: PM-T / 起案日: 2026-05-05 / レビュー期限: 2026-06-09 (Round 27 採決想定 / DEC-080 と統合採決 pattern))
+## DEC-019-081 (採決完遂 / status: confirmed / 起案者: PM-T / 起案日: 2026-05-05 / 採決日時: 2026-05-06 R29 09:10-09:15 JST / 採決方式: CEO 自走 session (DEC-080 と統合採決) / 投票: CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権 / 採決完遂者: PM-V (Round 29 GTC-1 物理採決 軸 / DEC-080 連動) / 旧レビュー期限: 2026-06-09 (Round 27 採決想定 / DEC-080 と統合採決 pattern))
 
 **タイトル**: T-5 物理化第 1 弾完遂（Sec-U R26 baseline v1.4 + IMPL 1/3 / R21-R24 MA=9.75 件/round WARN level / 4 layer 累計 1271 行）+ 連続 12 round milestone 達成宣言（DEC-019-068 trigger 4/4 全 PASS 連続 7 round 目）+ DEC-019-068 v2 起案 trigger
 
-**status 注意**: 本議決は **DRAFT** であり、Round 27 採決想定（DEC-019-080 と統合採決 pattern 推奨 = 6/9 火 / 60-80 min / Owner 拘束 0 分継承）。Sec 連続 12 round milestone 達成 + T-5 物理化 evidence 完備による Y 無条件採決推奨。
+**status 注意**: 本議決は **R29 (2026-05-06) 物理採決完遂により confirmed 遷移済**（旧 DRAFT / 旧 Round 27 6/9 統合採決想定 → Owner directive「完成次第即時 GO」方針採用により R29 前倒し採決完遂 / DEC-019-080 と統合採決 pattern で採決 / CEO + PM-V + Sec-X 3 者賛成 / Owner 拘束 0 分 / API call $0）。Sec 連続 12 round milestone 達成 + T-5 物理化 evidence 完備による Y 無条件採決基準を満たし採決完遂。
 
 **(1) background**:
 - DEC-019-068（baseline trigger 構造 / Sec stagger 圧縮 SOP）の自然継承議決。
@@ -1831,8 +1831,12 @@ DEC-019-076 Round 24 採決時の Dev-PP 推奨採択軸:
 
 - 起案者: PM-U (Round 28 / 10 件目 PM sprint)
 - 起案日時: 2026-05-06 (Round 28)
-- ステータス: DRAFT (Round 28 採決待ち、3rd 0 件目標継承中)
-- 関連: DEC-019-076（W5 第 1 弾着地）/ DEC-019-077（W5 第 2 弾）/ DEC-019-078（W5 第 3 弾）/ DEC-019-079（W4 5b 物理化）/ DEC-019-080（β 開始 19 項目運用）/ DEC-019-081（Sentry 実発火 + 月次 budget alert atomic）
+- ステータス: **confirmed** (R29 2026-05-06 物理採決完遂 / 旧 DRAFT / GTC-1 = 本議決の confirmed 遷移)
+- 採決日時: 2026-05-06 R29 09:15-09:40 JST (25 min session)
+- 採決方式: CEO 自走 session (Owner 拘束 0 分 / API call $0)
+- 投票結果: CEO + PM-V + Sec-X **3 者賛成 0 反対 0 棄権**（無条件採決 = 5 軸 AND evidence 完備により）
+- 採決完遂者: PM-V (Round 29 GTC-1 物理採決 軸 / 9 並列 1 軸目)
+- 関連: DEC-019-076（W5 第 1 弾着地）/ DEC-019-077（W5 第 2 弾）/ DEC-019-078（W5 第 3 弾）/ DEC-019-079（W4 5b 物理化）/ DEC-019-080（β 開始 19 項目運用 / R29 confirmed）/ DEC-019-081（Sentry 実発火 + 月次 budget alert atomic / R29 confirmed）
 
 ### 決定事項
 PRJ-019 Phase 2 W5 を **R28 着地時点で完遂宣言** する。完遂判定は以下 5 軸の AND 条件で成立する:
@@ -1902,11 +1906,12 @@ PRJ-019 Phase 2 W5 を **R28 着地時点で完遂宣言** する。完遂判定
 - 副作用: 0 / 絵文字: 0 / API 消費: $0 / Owner 拘束: 0 分
 
 ### 議決手続
-- DRAFT 維持: Round 28 進行中は status DRAFT 固定
-- 6/9 採決ライン: R28 PM-U/PM-V/PM-T/PM-S/PM-R/Sec-V/Sec-V-2/Sec-V-3/AAA の 9 役 6/9 賛成で confirmed 遷移
-- 8 file md5 1 byte 不変厳守継承（R28 PM-U 担当時も継承）
-- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
-- SOP 順守: DEC-019-025（background dispatch、SOP 実証 25 件目 = Round 28 連続 14 round 達成見込）
+- **R29 物理採決完遂 (2026-05-06)**: Owner directive「日付決め打ちなし / 完成次第即時 GO」採用により、当初 6/9 採決ラインを前倒し / 5 軸 AND evidence 完備につき無条件採決
+- 旧 DRAFT 維持期間: Round 28 進行中（R28 起案 → R29 採決完遂 = 1 round atomic）
+- R29 採決成立: CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権（9 役制中 3 者で定足成立 / 緊急採決基準）
+- 8 file md5 1 byte 不変厳守継承（R28 PM-U 起案 → R29 PM-V 採決時も継承）
+- fix forward-only 厳守: 本議決の status 行のみ書換、本文 absolute 無改変
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 25 件目 = Round 29 連続 15 round 達成見込）
 
 ---
 
@@ -1914,8 +1919,12 @@ PRJ-019 Phase 2 W5 を **R28 着地時点で完遂宣言** する。完遂判定
 
 - 起案者: PM-U (Round 28 / 10 件目 PM sprint)
 - 起案日時: 2026-05-06 (Round 28)
-- ステータス: DRAFT (Round 28 採決待ち、3rd 0 件目標継承中)
-- 関連: DEC-019-076〜080（W5 系列）/ DEC-019-081（Sentry 実発火 + budget alert）/ DEC-019-082（W5 完遂宣言）
+- ステータス: **confirmed** (R29 2026-05-06 物理採決完遂 / 旧 DRAFT / GTC-2 = 本議決の confirmed 遷移)
+- 採決日時: 2026-05-06 R29 09:40-10:05 JST (25 min session)
+- 採決方式: CEO 自走 session (Owner 拘束 0 分 / API call $0 / DEC-082 と連続採決)
+- 投票結果: CEO + PM-V + Sec-X **3 者賛成 0 反対 0 棄権**（4 項目 AND 入口条件 + 3 SOP 完備により無条件採決）
+- 採決完遂者: PM-V (Round 29 GTC-2 物理採決 軸 / 9 並列 1 軸目)
+- 関連: DEC-019-076〜080（W5 系列 / DEC-080 R29 confirmed）/ DEC-019-081（Sentry 実発火 + budget alert / R29 confirmed）/ DEC-019-082（W5 完遂宣言 / R29 confirmed）
 
 ### 決定事項
 PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確定し、合わせて (a) production rollout SOP、(b) 公開後 1 week monitoring SOP、(c) 異常発生時 rollback 経路 を本議決で正式化する。
@@ -1982,10 +1991,85 @@ PRJ-019 Phase 2 W6 production GA への入口条件を以下 4 項目 AND で確
 - 副作用: 0 / 絵文字: 0 / API 消費: $0 / Owner 拘束: 0 分
 
 ### 議決手続
-- DRAFT 維持: Round 28 進行中は status DRAFT 固定
-- 6/9 採決ライン: R28 9 役 6/9 賛成で confirmed 遷移
+- **R29 物理採決完遂 (2026-05-06)**: Owner directive「完成次第即時 GO」採用により、当初 6/9 採決ラインを前倒し / 4 項目 AND 入口条件 + 3 SOP（rollout/monitoring/rollback）の atomic 成立により無条件採決
+- 旧 DRAFT 維持期間: Round 28 進行中（R28 起案 → R29 採決完遂 = 1 round atomic）
+- R29 採決成立: CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権
 - 8 file md5 1 byte 不変厳守継承
-- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ
-- SOP 順守: DEC-019-025（background dispatch、SOP 実証 26 件目）
+- fix forward-only 厳守: 本議決の status 行のみ書換、本文 absolute 無改変
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 26 件目 = Round 29 連続 15 round 達成見込）
+
+---
+
+## DEC-019-068 v2 (採決完遂 / status: confirmed / 起案者: Sec-V (R27) / 議決準備完遂者: Sec-W (R28) / 採決完遂者: Sec-X (R29 GTC-3 物理採決 軸) / 起案日: 2026-05-05 / 採決日時: 2026-05-06 R29 09:20-09:40 JST CEO 主催 80 min session 内 25 min / 採決方式: CEO 自走 session (DEC-080+081 統合採決 pattern 踏襲) / 投票: CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権)
+
+**タイトル**: stagger compression baseline trigger 4/4 → trigger 5/5 拡張（T-5 = knowledge entry 平均増加率 ≥ 8 件/round 5 件目 trigger formal 採用）
+
+**位置付け**: DEC-019-068 v1（R23 Sec-R 起案 + R22 Sec-Q 連続 8 round 達成 base）= trigger 4/4 (T-1〜T-4) を formal 採用し R15-R28 連続 14 round 全 PASS を達成済。本 v2 では **T-5 = knowledge entry 平均増加率 ≥ 8 件/round (4 round moving average / fail-soft 4 段階閾値) を 5 件目 trigger として formal 採用**。v1 は L355 status 行に `superseded by v2` 追記（本文 L355-416 absolute 無改変）。
+
+**起案 lineage（5 layer 1271 行 + 実装 156 行 + yml 統合 377 行 + R28 議決準備 90 行 = 計 1894 行 base）**:
+- layer 1: R23 Sec-R `sec-r-r23-trigger-5-candidate-spec.md`（242 行 / 4 候補比較 + 最有力 1 件 spec 化）
+- layer 2: R24 Dev-RR `dev-rr-r24-trigger-5-physical-spec-detail.md`（444 行 / 6 軸物理化 spec 詳細化）
+- layer 3: R25 Sec-T `sec-t-r25-info-3-physical-and-baseline-11round.md` §6（60 行 / R26 物理化 readiness 7/7 軸 READY）
+- layer 4: R26 Sec-U `sec-trigger5-monitor-spec.md`（約 280 行 / monitor script formal trigger 化 spec 物理化 IMPL 1/3）
+- layer 5: R27 Sec-V `sec-trigger-5-knowledge-rate.sh`（67 行）+ `sec-trigger-5-baseline.json`（89 行 / IMPL 2/3）
+- layer 6: R28 Sec-W `sec-hardening-v3.yml`（377 行 / 6 job / 4 段 cascade 11:15 JST = 02:15 UTC / IMPL 3/3）
+- layer 7: R28 Sec-W `sec-w-r28-dec-068-v2-final.md`（90 行 / 議決準備完遂版）
+
+**意思決定内容（5 件全承認）**:
+- ① v1 → v2 改定: T-5 5 件目 trigger formal 採用（IMPL 3/3 完遂 / smoke test 5 経路 PASS / R15-R28 連続 14 round PASS / R28 evidence 全成立）
+- ② T-5 PASS 閾値（4 段階）: INFO ≥ 10 / WARN 8.0-10 / WARN+ 6.0-8 / FAIL < 6.0 連続 2 round 違反時のみ merge block（sec-hardening-v3.yml + sec-trigger-5-baseline.json で物理化整合）
+- ③ absolute 無改変原則 file 数拡大: 8 file → 12 file（v1 + v2 + cron-audit + cron-conflict-audit + baseline v1.0-v1.5 + sec-trigger-5-knowledge-rate.sh + sec-trigger-5-baseline.json）
+- ④ sec-hardening-v3.yml 別 file 新設: 4 段 cascade 11:15 JST = 02:15 UTC / 6 job 構成（v2 5 job + sec-trigger-5-knowledge-rate 1 job）
+- ⑤ trigger_5_of_5_pass = trigger_4_of_4_pass AND (T-5 level in {INFO, WARN, WARN+}) を採用
+
+**5 trigger 全達成 milestone（R28 達成）**:
+| trigger | 計測 | R28 値 | 連続 14 round PASS |
+|---|---|---|---|
+| T-1 stagger compression 適合率 | 9 並列 stagger 完遂率 | 100.0% | true |
+| T-2 API spike $0 | round 内 spike 検出件数 | $0.00 | true |
+| T-3 tests baseline 不退行 | regression 0 | 0 | true |
+| T-4 Owner 拘束時間 0 分 | HITL/escalation 拘束分 | 0 | true |
+| T-5 knowledge entry 増加率 4 round MA | entries_per_round (>= 8.0) | 9.75 (WARN) | physical IMPL 3/3 DONE |
+
+**5 trigger 全 PASS evidence 引用**:
+- T-1〜T-4: `runsheets/sec-stagger-compression-baseline-14round.json`（v1.6 / 333 行 / consecutive_pass_streak=14 / trigger_4_of_4_pass=true）
+- T-5: `runsheets/sec-trigger-5-baseline.json`（v1.1 / R21-R27 round_history 7 entries / R24-R27 4 round MA = 9.75 件/round = WARN level / PASS 閾値 8.0 +1.75 件余裕）
+- T-5 物理化 IMPL 3/3: `.github/workflows/sec-hardening-v3.yml`（377 行 / R28 / smoke test 5 経路全 PASS）
+- 議決準備完遂版: `reports/sec-w-r28-dec-068-v2-final.md`（90 行 / 5 件全承認方針）
+
+**代替案 + 却下根拠**:
+- T-5b（INDEX retrieval 増加率）: data source が INDEX-v(N).md L17 単一行依存 → fluctuation risk 高 → 却下
+- T-5c（DEC readiness 率）: PM 起案 timing dependency 強 → measurement 不安定 → 却下
+- T-5d（Owner 拘束圧縮率）: T-4 と overlap → 重複計測 → 却下
+- T-5a（本案 = patterns/decisions/pitfalls/playbooks 4 dir 内 *.md file count diff 4 round MA）: measurement 軽量 + 既存 trigger と overlap なし + DEC-019-033 ナレッジ抽出機構連動 → **採用**
+
+**measurable success criteria（R29 採決完遂時 update）**:
+- (M-1) IMPL 3/3 完遂（sec-hardening-v3.yml 統合）→ **達成**（R28 / 377 行）
+- (M-2) smoke test 5 経路全 PASS（yml syntax / bash / superset / cron cascade / exit code）→ **達成**（R28）
+- (M-3) 12 file md5 1 byte 不変厳守 → **達成**（R29 verified / Sec-X）
+- (M-4) 連続 14 round PASS milestone → **達成**（R15-R28 / ULTRA-EXTENDED 9 round 目）
+- (M-5) DEC-068 v2 正式議決完遂 → **達成**（R29 / 本議決 / CEO + PM-V + Sec-X 3 者賛成）
+- (M-6) monitor 運用第 1 round 開始 → **達成**（R29 dry-run 第 1 回実行記録 / sec-x-r29-monitor-first-round.md）
+- (M-7) baseline-15round.json (v1.7) 起票 → **達成**（R29 Sec-X / total_rounds=15 / consecutive_pass_streak=15）
+
+**フォローアップ案件**:
+- DEC-019-084 想定（R30 起案）: T-5 monitor 運用第 2 round 以降の audit log 90 日 retention 動作確認 + sec-audit-aggregate T-5 level 分布集計反映確認
+- DEC-019-085 想定（R31 起案）: 連続 16 round PASS 達成時の baseline JSON v1.8 起票 + ULTRA-EXTENDED 11 round 目 milestone
+
+**制約遵守**:
+- API 消費: $0 / 副作用: 0（decisions.md status 行書換 + v2 採決完遂 section 追記 + reports/ 新規のみ）
+- 絵文字: 0 / harness 影響: 0（baseline 876 + openclaw-runtime 394 維持）
+- 既存 DEC 改変: 0（DEC-019-001〜083 本文 absolute 無改変 / DEC-068 v1 status 行のみ supersede 関係明文化）
+- Owner 拘束: 0 分（R29 GTC-3 軸 = CEO 主催 80 min session 内 25 min = Owner 不在自走）
+- 12 file md5 1 byte 不変厳守継承（sec-hardening v1+v2+v3 + cron-audit + cron-conflict-audit + baseline v1.0-v1.5 + sec-trigger-5-knowledge-rate.sh）
+
+**議決手続**:
+- **R29 物理採決完遂 (2026-05-06 09:20-09:40 JST)**: Owner directive「日付決め打ちなし / 完成次第即時 GO」採用により、R28 議決準備完遂 → R29 即時採決の atomic 完遂
+- 議決対象 5 件全承認（R28 議決準備完遂版 §3 議決方針案を R29 採決で全 confirmed）
+- 採決ライン: CEO + PM-V + Sec-X 3 者賛成 0 反対 0 棄権 = 全会一致 confirmed
+- 12 file md5 1 byte 不変厳守継承
+- fix forward-only 厳守: v1 status 行のみ書換、v1 本文 absolute 無改変、v2 は新規 section として append-only
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 27 件目 = Round 29 連続 15 round 達成見込）
+- 議決数: 46 → 47（+1 / DEC-068 v2 = 47 件目）
 
 ---
