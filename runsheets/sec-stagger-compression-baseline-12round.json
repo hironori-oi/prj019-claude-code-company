@@ -1,0 +1,294 @@
+{
+  "$schema": "sec-stagger-compression-baseline-12round.v1",
+  "version": "1.4",
+  "owner": "Sec-U (Round 26 / 2026-05-05 W0-Week1)",
+  "purpose": "DEC-019-068 stagger compression trigger 4/4 PASS の連続 12 round baseline 拡張 (Round 15-26). 11 round baseline JSON v1.3 (Sec-T R25 / 265 行) を full copy + append-only 拡張. v1.0 (8 round / 152 行) / v1.1 (9 round / 181 行) / v1.2 (10 round / 241 行) / v1.3 (11 round / 265 行) は absolute 無改変保持. 連続 12 round milestone = T-5 formal 採否 trigger 到達 + ULTRA-EXTENDED 7 round 目達成.",
+  "predecessor": "projects/PRJ-019/runsheets/sec-stagger-compression-baseline-11round.json (v1.3 / 265 行 / Sec-T R25 / historical baseline 絶対無改変 / md5 83661d0e81f60736cd8f611e48369230)",
+  "predecessor_chain": [
+    "v1.0: sec-stagger-compression-baseline-8round.json (152 行 / Sec-Q R22 / 絶対無改変 / md5 85345c73b9d31dcd8088b02503111b74)",
+    "v1.1: sec-stagger-compression-baseline-9round.json (181 行 / Sec-R R23 / 絶対無改変 / md5 87cf158f20b1eb6b5ff98f16b863db9d)",
+    "v1.2: sec-stagger-compression-baseline-10round.json (241 行 / Sec-S R24 / 絶対無改変 / md5 8aca895edb56535524902b97fda1c310)",
+    "v1.3: sec-stagger-compression-baseline-11round.json (265 行 / Sec-T R25 / 絶対無改変 / md5 83661d0e81f60736cd8f611e48369230)",
+    "v1.4: sec-stagger-compression-baseline-12round.json (本 file / Sec-U R26 / 絶対無改変保持予定)"
+  ],
+  "trigger_definition": {
+    "T-1": "stagger compression 適合率 >= 95% (round 内 9 並列 stagger 完遂率)",
+    "T-2": "API spike $0 (round 内 spike 検出件数 = 0 / 1h 窓 cost cap breach 0)",
+    "T-3": "tests baseline 不退行 (regression 0 / harness + workspace + openclaw-runtime)",
+    "T-4": "Owner 拘束時間 0 分 (round 内 HITL/escalation 拘束時間 = 0)"
+  },
+  "trigger_5_candidate_definition": {
+    "T-5_lead": "knowledge entry 平均増加率 >= 8 件/round (R23 Sec-R 起票 / R24 Dev-RR 物理化 spec 詳細化 / R25 Sec-T readiness 確認 / R26 Sec-U 物理化第 1 弾 = monitor spec)",
+    "T-5_unit": "entries_per_round (>= 8.0)",
+    "T-5_window": "rolling 4 round moving average (R24 Dev-RR §5)",
+    "T-5_status": "physical_stage1 (R26 Sec-U で T-5 monitor script spec を物理 yml/json に落とし込み第 1 弾完遂 / R27 で実装物理化 / R28 で yml 統合)"
+  },
+  "baseline_metric_unit": {
+    "T-1": "percent (0-100)",
+    "T-2": "usd (>= 0.0)",
+    "T-3": "test_count_delta (>= 0 = baseline 維持)",
+    "T-4": "minutes (>= 0)"
+  },
+  "rounds": [
+    {
+      "round": 15,
+      "date_range": "2026-04-W4 / 2026-04-30",
+      "lead_dev": "Dev-K/L/M/N/P (5 並列)",
+      "sec_role": "Sec-K (R16 起案 prep)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "yaml fail-fast / cgroup syscall / gate12 / hitl11 / 50% 加速で Phase 1 95% 化 / Sec yet not formal"
+    },
+    {
+      "round": 16,
+      "date_range": "2026-05-01 / 2026-05-02",
+      "lead_dev": "Dev-Q/R/S (3 並列)",
+      "sec_role": "Sec-K (DEC-066 draft)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "gate11 zod merge / 17day-path kickoff / heartbeat hardening / Sec-K DEC-066 起案"
+    },
+    {
+      "round": 17,
+      "date_range": "2026-05-02 / 2026-05-03",
+      "lead_dev": "Dev-T/U/V/W (4 並列)",
+      "sec_role": "Sec-L (4 script 起案)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "W1 kickoff / heartbeat 50k load / hitl11 zod / W1 4ctrl / Sec-L 4 hardening script 起案"
+    },
+    {
+      "round": 18,
+      "date_range": "2026-05-03 / 2026-05-04",
+      "lead_dev": "Dev-X/Y/Z (3 並列)",
+      "sec_role": "Sec-M (sec-api-spike 物理化 + Major 4 件消化)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "W2 3ctrl/4ctrl / heartbeat 100k / Sec-M sec-api-spike-check.sh 物理化 + Major 4 件消化"
+    },
+    {
+      "round": 19,
+      "date_range": "2026-05-04 / 2026-05-04",
+      "lead_dev": "Dev-AA/BB/CC (3 並列)",
+      "sec_role": "Sec-N (3-tier BASE_REF / Slack 不達 / --require-streak 改善 3 軸)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "W3 3ctrl/4ctrl orchestrator / heartbeat 500k / Sec-N 4 script 全改善 (Major 0 件)"
+    },
+    {
+      "round": 20,
+      "date_range": "2026-05-04 / 2026-05-05",
+      "lead_dev": "Dev-DD/EE/FF (3 並列)",
+      "sec_role": "Sec-O (3 spec 起票 / 1M feasibility GO / 10 桁拡張 spec / CI 化 spec)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "W3 cooldown/killterminal / W3 rollback permission e2e / heartbeat 1M (Dev-FF) / Sec-O 3 spec 起票"
+    },
+    {
+      "round": 21,
+      "date_range": "2026-05-05 / 2026-05-05",
+      "lead_dev": "Dev-GG/HH/II (3 並列)",
+      "sec_role": "Sec-P (yml 物理化 291 行 + tos-monitor 10 桁拡張 +85 行)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "W4 bridge breach persist / monotonic clock e2e / og-image src migration / Sec-P sec-hardening.yml + tos-monitor matchDigits=10 物理化 + 12 新規 tests (771 + 394 = 1165 PASS)"
+    },
+    {
+      "round": 22,
+      "date_range": "2026-05-05 / 2026-05-05",
+      "lead_dev": "(Round 22 第 1 波 9 並列)",
+      "sec_role": "Sec-Q (yml verification + 8 round baseline + 1M longrun stability)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "yml verification PASS (Major 0 / Minor 0 / Info 3) / 8 round baseline 確立 / 1M 10 桁 longrun stability test 5 件追加"
+    },
+    {
+      "round": 23,
+      "date_range": "2026-05-05 / 2026-05-05",
+      "lead_dev": "(Round 23 第 1 波 9 並列)",
+      "sec_role": "Sec-R (9 round baseline 拡張 + trigger 5 候補 spec + yml Info 3 件 patch spec)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "8 round baseline JSON full copy + append-only 拡張 (152 → 9 round 181 行) / trigger 5 候補 4 件検討 → 最有力 1 件 spec 化 / Sec-Q R22 yml verification Info 3 件 patch spec 確定"
+    },
+    {
+      "round": 24,
+      "date_range": "2026-05-05 / 2026-05-05",
+      "lead_dev": "(Round 24 第 1 波 9 並列)",
+      "sec_role": "Sec-S (Info 1+2 物理化 = sec-api-spike WARN fail-soft + sec-hardening-v2.yml 別 file 新設 + 連続 10 round baseline)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "Info 1 物理化 (sec-api-spike-check.sh WARN exit 4 fail-soft +7 行 / 30min 内 2 回検知時のみ発火) / Info 2 物理化 (4 script に --audit-log-path 追加 + sec-hardening-v2.yml 352 行 新設 = v1 完全 superset) / 9 round baseline JSON full copy + append-only 拡張 (181 → 10 round) / sec-hardening.yml v1 absolute 無改変保持 (md5 eaff4e5a 1 byte 不変厳守) / bash syntax 4/4 OK"
+    },
+    {
+      "round": 25,
+      "date_range": "2026-05-05 / 2026-05-05",
+      "lead_dev": "(Round 25 第 1 波 9 並列)",
+      "sec_role": "Sec-T (Info 3 物理化 = sec-cron-conflict-audit.sh + sec-cron-audit.yml 別 file 新設 + 連続 11 round baseline + T-5 R26 物理化 readiness)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "Info 3 物理化 (sec-cron-conflict-audit.sh 39 行 read-only audit / sec-cron-audit.yml 87 行 別 file 新設 / 日次 02:10 UTC = v1 02:00 / v2 02:05 と 5 min ずらし cascade 整合) / 10 round baseline JSON full copy + append-only 拡張 (241 → 11 round) / sec-hardening.yml v1 + v2 absolute 無改変保持 (md5 eaff4e5a + 0ac6f2b9 1 byte 不変厳守) / bash syntax OK / yaml parse OK / T-5 R26 物理化 readiness 確認 (Dev-RR R24 spec 詳細化済 6 軸完遂)"
+    },
+    {
+      "round": 26,
+      "date_range": "2026-05-05 / 2026-05-05",
+      "lead_dev": "(Round 26 第 1 波 9 並列)",
+      "sec_role": "Sec-U (T-5 物理化第 1 弾 = monitor script spec 物理化 + sec-cron-conflict-audit.sh 実機 dry-run 実証 + 連続 12 round baseline + 5 file md5 1 byte 不変厳守)",
+      "T-1_compliance_pct": 100.0,
+      "T-2_api_spike_usd": 0.00,
+      "T-3_tests_baseline_delta": 0,
+      "T-4_owner_constraint_min": 0,
+      "round_pass": true,
+      "notes": "T-5 物理化第 1 弾 = sec-trigger5-monitor-spec.md (約 280 行 / formal trigger 化 spec / data source = INDEX-v14 entries / 4 round 移動平均 / fail-soft 4 段階閾値物理化 / R27 実装 ready) / sec-cron-conflict-audit.sh 実機 dry-run = 109 yml + 8 cron schedules + 1 conflict 検出 機能再現性 PASS / 11 round baseline JSON full copy + append-only 拡張 (265 → 12 round) / sec-hardening.yml v1 (md5 eaff4e5a) + v2 (md5 0ac6f2b9) + sec-cron-audit.yml (md5 946b06a1) + sec-cron-conflict-audit.sh (md5 a6426afb) + baseline JSON v1.0/v1.1/v1.2/v1.3 = 8 file 全 1 byte 不変厳守 / R21-R24 4 round 移動平均 = (9+10+10+10)/4 = 9.75 件/round = WARN level (R24 Dev-RR §4 spec 整合)"
+    }
+  ],
+  "aggregate": {
+    "total_rounds": 12,
+    "total_pass_rounds": 12,
+    "consecutive_pass_streak": 12,
+    "T-1_avg_compliance_pct": 100.0,
+    "T-1_min_compliance_pct": 100.0,
+    "T-2_total_api_spike_usd": 0.00,
+    "T-2_max_round_spike_usd": 0.00,
+    "T-3_total_regression_count": 0,
+    "T-3_max_round_regression": 0,
+    "T-4_total_owner_constraint_min": 0,
+    "T-4_max_round_owner_min": 0,
+    "trigger_4_of_4_pass": true,
+    "compression_ratio_observed": "9 並列 / 1 round 着地 = 単発 9 倍速 (12 round 連続)",
+    "stagger_dispatch_pattern": "background_dispatch_22_consecutive (R15 Dev-P 50% 加速 起案 → R23 Sec-R 19 件目候補 → R24 Sec-S 20 件目達成 + Info 1+2 物理化 → R25 Sec-T 21 件目達成 + Info 3 物理化 → R26 Sec-U 22 件目達成 + T-5 物理化第 1 弾)",
+    "formal_baseline_established_at": "Round 22 (Sec-Q / 2026-05-05 / 8 round)",
+    "formal_baseline_extended_at": "Round 23 (Sec-R / 2026-05-05 / 9 round)",
+    "formal_baseline_ultra_extended_at": "Round 24 (Sec-S / 2026-05-05 / 10 round)",
+    "formal_baseline_6round_milestone_at": "Round 25 (Sec-T / 2026-05-05 / 11 round = ULTRA-EXTENDED 6 round 目)",
+    "formal_baseline_7round_milestone_at": "Round 26 (Sec-U / 2026-05-05 / 12 round = ULTRA-EXTENDED 7 round 目 + T-5 物理化第 1 弾 trigger 到達)",
+    "next_review_milestone": "Round 27 (連続 13 round PASS) で trigger 5 件目 measurement script + baseline JSON 物理化 (R26 Sec-U monitor spec → R27 Sec-V 実装 → R28 yml 統合)",
+    "review_due_date": "2026-05-26 (W3 mid-check / DEC-019-066 §3 audit log 90 日 review)",
+    "schema_compatibility": "v1.0 (8 round) / v1.1 (9 round) / v1.2 (10 round) / v1.3 (11 round) / v1.4 (12 round / 本 file) は aggregate.total_rounds で自動判別可 / downward compat 維持"
+  },
+  "trigger_4_of_4_pass_history": {
+    "consecutive_round_count": 12,
+    "first_pass_round": 15,
+    "latest_pass_round": 26,
+    "no_FAIL_round_observed": true,
+    "no_partial_PASS_round_observed": true,
+    "all_4_trigger_simultaneous_pass_rounds": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+    "DEC_019_068_formal_baseline_status": "ESTABLISHED + EXTENDED + ULTRA-EXTENDED (12 round consecutive / 7 round 目 ULTRA-EXTENDED milestone / T-5 物理化第 1 弾 trigger 到達)"
+  },
+  "trigger_5_candidate_progress": {
+    "T-5_candidate_lead": "knowledge entry 平均増加率 >= 8 件/round",
+    "T-5_candidate_unit": "entries_per_round (>= 8.0)",
+    "T-5_candidate_definition": "organization/knowledge/{patterns,decisions,pitfalls,playbooks} の round 内新規追加 entries 平均 >= 8 件 (R24 Dev-RR で playbooks 追加 / 4 ディレクトリ計測)",
+    "T-5_candidate_rationale": "DEC-019-033 ナレッジ抽出機構連動 / Round 21-24 実績 4 round 移動平均 9.75 件/round (= WARN level) で実績下限満たす / measurement 軽量 (file count diff)",
+    "T-5_alternative_candidates": [
+      "T-5b: INDEX retrieval 100% 連続維持 (round 内 retrieval 不達 0 件)",
+      "T-5c: DEC readiness 軸増加率 >= 1 件/round (DEC 起票 → 議決 平均 lag 圧縮)",
+      "T-5d: Owner 拘束圧縮率 >= 70% baseline (R8-14 平均 30 分基準)"
+    ],
+    "T-5_review_milestone": "Round 26 連続 12 round PASS milestone 到達 (本 round) / R26 Sec-U で物理化第 1 弾 = monitor spec 物理 yml/json 落とし込み完遂 / R27 で実装物理化",
+    "T-5_spec_doc": "projects/PRJ-019/reports/sec-r-r23-trigger-5-candidate-spec.md (Round 23 Sec-R 起票)",
+    "T-5_physical_spec_detail_doc": "projects/PRJ-019/reports/dev-rr-r24-trigger-5-physical-spec-detail.md (Round 24 Dev-RR / 6 軸物理化詳細化 / 444 行)",
+    "T-5_physical_stage1_spec_doc": "projects/PRJ-019/runsheets/sec-trigger5-monitor-spec.md (Round 26 Sec-U / formal trigger 化 spec / monitor script spec 物理化第 1 弾)",
+    "T-5_physical_implementation_roadmap": {
+      "R25": "T-5 R26 物理化 readiness 確認 + observation 開始 (Sec-T R25 完遂)",
+      "R26": "T-5 物理化第 1 弾 = monitor script spec 物理化 (formal trigger 化 spec / data source = INDEX-v14 entries / 4 round 移動平均) (Sec-U R26 = 本 round 完遂)",
+      "R27": "T-5 baseline JSON v2.0 起票 (10 round + T-5 column 追加) + measurement script (sec-trigger-5-knowledge-rate.sh 60-80 行 + sec-trigger-5-baseline.json 30-50 行) 物理化",
+      "R28": "T-5 measurement automation script + sec-hardening.yml 5 件目 job 統合"
+    },
+    "T-5_R26_readiness_status": "PHYSICAL_STAGE1_DONE (R26 Sec-U で monitor script spec 物理化第 1 弾完遂 / R23 候補 spec 242 行 + R24 物理化 spec 詳細化 444 行 + R25 readiness 確認 + R26 monitor spec 物理化 = 4 layer 計約 1026 行 / R27 実装 ready)",
+    "T-5_R26_implementation_progress": "READY 7/7 (R25) → IMPL 1/3 (R26 monitor spec 物理化第 1 弾完遂 / R27 measurement script 実装予定 / R28 yml 統合予定)",
+    "T-5_R26_R21_R24_moving_average": {
+      "R21_entries_added": 9,
+      "R22_entries_added": 10,
+      "R23_entries_added": 10,
+      "R24_entries_added": 10,
+      "R21_R24_4round_moving_average": 9.75,
+      "level": "WARN (8.0 <= avg < 10.0)",
+      "level_rationale": "R24 Dev-RR §4 fail-soft 4 段階閾値 INFO=10 / WARN=8 / WARN+=6 / FAIL=4 に整合. R21-R24 4 round 移動平均 9.75 = WARN level. 8.0 件/round PASS 条件 (R23 Sec-R spec) は満たす. R25-R26 entries 加算は将来 round で計測"
+    }
+  },
+  "info_resolution_status": {
+    "info_1_sec_api_spike_warn_fail_soft": {
+      "spec_round": 23,
+      "spec_doc": "projects/PRJ-019/reports/sec-r-r23-yml-info-3-resolution.md §2",
+      "physical_round": 24,
+      "physical_doc": "projects/PRJ-019/reports/sec-s-r24-info-1-physical-implementation.md",
+      "physical_artifact": "projects/PRJ-019/scripts/sec-api-spike-check.sh (+7 行 / WARN exit 4 fail-soft / 30min 2回検知 trigger)",
+      "verification_round": 25,
+      "verification_status": "VERIFIED (R25 Sec-T / 5 軸 verification 完遂)",
+      "status": "PHYSICAL DONE + VERIFIED (R24 Sec-S 物理化 + R25 Sec-T verification)"
+    },
+    "info_2_audit_log_path": {
+      "spec_round": 23,
+      "spec_doc": "projects/PRJ-019/reports/sec-r-r23-yml-info-3-resolution.md §3",
+      "physical_round": 24,
+      "physical_doc": "projects/PRJ-019/reports/sec-s-r24-info-2-physical-implementation.md",
+      "physical_artifact": "projects/PRJ-019/.github/workflows/sec-hardening-v2.yml (新規 352 行 = v1 291 行 完全 superset) + 4 script に --audit-log-path option 追加",
+      "v1_immutability": "sec-hardening.yml v1 (291 行 / md5 eaff4e5a1b171e8fae373f6695b3ac1c) absolute 無改変保持 (1 byte 不変厳守 / R21→R22→R23→R24→R25→R26 全 round 不変)",
+      "v2_immutability": "sec-hardening-v2.yml (352 行 / md5 0ac6f2b982bc3ab7dea7cf257d0523c1) absolute 無改変保持 (1 byte 不変厳守 / R24→R25→R26 不変)",
+      "verification_round": 25,
+      "verification_status": "VERIFIED (R25 Sec-T / 5 軸 verification 完遂)",
+      "status": "PHYSICAL DONE + VERIFIED (R24 Sec-S 物理化 + R25 Sec-T verification)"
+    },
+    "info_3_cron_conflict_audit": {
+      "spec_round": 23,
+      "spec_doc": "projects/PRJ-019/reports/sec-r-r23-yml-info-3-resolution.md §4",
+      "physical_round": 25,
+      "physical_doc": "projects/PRJ-019/reports/sec-t-r25-info-3-physical-and-baseline-11round.md",
+      "physical_artifact": "projects/PRJ-019/scripts/sec-cron-conflict-audit.sh (39 行 / md5 a6426afb0e9f719e676ce3f0a190c6e0 / read-only audit / 全 yml cron schedule 抽出 + 衝突 path 列挙) + projects/PRJ-019/.github/workflows/sec-cron-audit.yml (87 行 / md5 946b06a11feae4552411233e7a95df28 / 日次 02:10 UTC / fail-soft / continue-on-error)",
+      "v2_cron_schedule_immutable": "v2 cron 02:05 UTC は R26 でも維持 (cascade: v1=02:00 / v2=02:05 / cron-audit=02:10 / 5 min ずらし整合)",
+      "dry_run_round": 26,
+      "dry_run_status": "VERIFIED (R26 Sec-U / 実機 audit dry-run / 109 yml + 8 cron schedules + 1 conflict 検出 = R25 smoke test 結果と完全一致 / 機能再現性 PASS)",
+      "status": "PHYSICAL DONE + DRY-RUN VERIFIED (R25 Sec-T 物理化 + R26 Sec-U 実機 dry-run)"
+    }
+  },
+  "metadata": {
+    "created_at": "2026-05-05",
+    "created_by": "Sec-U (Round 26 第 1 波)",
+    "predecessor_immutable": [
+      "sec-stagger-compression-baseline-8round.json (Sec-Q R22 / 絶対無改変 historical baseline / md5 85345c73)",
+      "sec-stagger-compression-baseline-9round.json (Sec-R R23 / 絶対無改変 historical baseline / md5 87cf158f)",
+      "sec-stagger-compression-baseline-10round.json (Sec-S R24 / 絶対無改変 historical baseline / md5 8aca895e)",
+      "sec-stagger-compression-baseline-11round.json (Sec-T R25 / 絶対無改変 historical baseline / md5 83661d0e)"
+    ],
+    "schema_version": "v1.4",
+    "schema_change_from_v1_3": "rounds[] に R26 entry 1 件 append / aggregate 11→12 / formal_baseline_7round_milestone_at field 新設 / trigger_5_candidate_progress に T-5_physical_stage1_spec_doc + T-5_R26_implementation_progress + T-5_R26_R21_R24_moving_average 3 field 追加 / T-5_R26_readiness_status を READY → PHYSICAL_STAGE1_DONE に遷移 / info_3 に dry_run_round + dry_run_status field 追加 / predecessor_chain に v1.3 entry 追加",
+    "schema_backward_compat": "aggregate.total_rounds で v1.0 (8) / v1.1 (9) / v1.2 (10) / v1.3 (11) / v1.4 (12) 自動判別可 / 既存 caller (R22 Sec-Q / R23 Sec-R / R24 Sec-S / R25 Sec-T 経路) 動作維持",
+    "next_update_round": 27,
+    "update_owner": "Sec-V (Round 27 第 1 波 想定 / T-5 baseline JSON v2.0 起票 + measurement script 物理化)",
+    "DEC_link": ["DEC-019-025", "DEC-019-033", "DEC-019-049", "DEC-019-053-v15.5", "DEC-019-054", "DEC-019-055", "DEC-019-057", "DEC-019-062", "DEC-019-066", "DEC-019-068"]
+  }
+}

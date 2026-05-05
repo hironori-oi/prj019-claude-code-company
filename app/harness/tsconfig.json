@@ -1,25 +1,37 @@
 {
   "_meta": {
-    "rolloutPhase": "A (warn) → ARCH-01 Phase 1 dev/staging migrate (Round 23 Dev-MM)",
-    "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
-    "issue": "ARCH-01 (DEC-019-041)",
-    "archPhase1": {
-      "since": "Round 23 Dev-MM (2026-05-05)",
-      "scope": "test files 1-2 個のみ alias 化 (議決不要 / regression 0 維持)",
-      "spec": "Dev-JJ R22 case A 推奨経路 = `@clawbridge/openclaw-runtime/*` paths 追加",
-      "production_rollout": "Phase 2 (Round 23 後半 Dev-NN 引継 = main code 全移行)"
+    "rolloutPhase": "ARCH-01 Phase B-2 (composite project references) — Round 26 Dev-WW 物理化",
+    "migrationHistory": [
+      "Phase A (warn) — Round 17-22",
+      "Phase 1 dev/staging migrate — Round 23 Dev-MM",
+      "Phase 2 main code migrate — Round 24 Dev-PP (paths alias)",
+      "Phase B-2 composite project references — Round 26 Dev-WW (DEC-019-041 supersede 経路)"
+    ],
+    "issue": "ARCH-01 (DEC-019-041 → resolved by supersede DEC-019-079 候補)",
+    "since": "Round 26 Dev-WW (2026-05-05)",
+    "archPhaseB2": {
+      "scope": "composite: true 化 + references 配線 (harness → openclaw-runtime 片方向)。paths alias (`@clawbridge/openclaw-runtime/*`) は backward compat fallback として継続維持 (runtime resolver 経路、vitest resolve.alias 経由)。",
+      "spec": "Dev-UU R25 feasibility §3.3 §4.2 案 X 採用 = harness 側のみ references 配線で循環依存回避。openclaw-runtime/src 内 @clawbridge/harness 実 import 0 件確認済 (Round 26 pre-flight)。",
+      "rationale": "Dev-PP R24 §3.4 重要発見: paths alias 経路では TS6059 解消不可。composite project references = `tsc --build` 経由の incremental build graph で各 project が独立 rootDir を持つ TypeScript 公式 mechanism (https://www.typescriptlang.org/docs/handbook/project-references.html)。"
     }
   },
   "extends": "../tsconfig.legacy-relax.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": false,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "baseUrl": "./src",
     "paths": {
       "@clawbridge/openclaw-runtime/*": ["../../openclaw-runtime/src/*"]
     }
   },
+  "references": [
+    { "path": "../openclaw-runtime" }
+  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts"]
 }

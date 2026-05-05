@@ -1,18 +1,28 @@
 {
   "_meta": {
-    "rolloutPhase": "A (warn) → ARCH-01 Phase 1 dev/staging migrate (Round 23 Dev-MM)",
-    "migrationTarget": "tsconfig.base.json (Phase B / Phase 1 W4 末)",
-    "issue": "ARCH-01 (DEC-019-041)",
-    "archPhase1": {
-      "since": "Round 23 Dev-MM (2026-05-05)",
-      "scope": "harness 側に `@clawbridge/openclaw-runtime/*` alias 追加。本 file は `@clawbridge/harness` 逆方向 alias で既に統一 pattern を実装済 (Dev-BB Round 19 由来)。Phase 1 段階では本 file 無改変 (annotate のみ)。",
-      "production_rollout": "Phase 2 (Round 23 後半 Dev-NN 引継 = main code 全移行)"
+    "rolloutPhase": "ARCH-01 Phase B-2 (composite project references) — Round 26 Dev-WW 物理化",
+    "migrationHistory": [
+      "Phase A (warn) — Round 17-22",
+      "Phase 1 dev/staging migrate — Round 23 Dev-MM",
+      "Phase 2 main code migrate — Round 24 Dev-PP (paths alias)",
+      "Phase B-2 composite project references — Round 26 Dev-WW (DEC-019-041 supersede 経路)"
+    ],
+    "issue": "ARCH-01 (DEC-019-041 → resolved by supersede DEC-019-079 候補)",
+    "since": "Round 26 Dev-WW (2026-05-05)",
+    "archPhaseB2": {
+      "scope": "composite: true 化 + declaration / declarationMap / sourceMap / tsBuildInfoFile 設定。paths alias (`@clawbridge/harness`) は backward compat fallback として継続維持 (runtime resolver 経路、vitest resolve.alias 経由)。harness → openclaw-runtime は片方向 references 配線、本 file 側は references 追加せず循環依存回避 (Dev-UU R25 feasibility §4.2 案 X 採用)。",
+      "rationale": "Dev-PP R24 §3.4 重要発見: paths alias は module name resolution のみ alias 化、解決後物理 file の rootDir 検査は実 path で行われる仕様 → TS6059 paths alias で解消不可。composite refs 経路で cross-project rootDir 緩和 = TS6059 5 件 formal 解消。"
     }
   },
   "extends": "../tsconfig.legacy-relax.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "composite": false,
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "@clawbridge/harness": ["../harness/src/index.ts"],
       "@clawbridge/harness/*": ["../harness/src/*"]
