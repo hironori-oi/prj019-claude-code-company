@@ -844,3 +844,121 @@
 - fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
 
 ---
+
+## DEC-019-074 (起案 / status: DRAFT / 起案者: PM-O / 起案日: 2026-05-05 / レビュー期限: 2026-06-02 (Round 23 採決想定))
+
+**タイトル**: Round 22 9 並列構成 + 17 日 path W4 完成（6/20 Phase 1 完遂）+ measurable success criteria 7 件
+
+**status 注意**: 本議決は **DRAFT** であり、Round 23（5/26-6/2）採決想定。Round 22 進行中は措置案 / 運用方針案として参照のみ可。確定値（W4 完遂判定 / harness 800+ / openclaw 410+ / ARCH-01 解消可否評価結果 / 6/12 D-7 本 rehearsal 結果）は Round 22 完遂着地時点で update する。
+
+**(1) background**:
+- DEC-019-067（PM-J / Round 17）+ DEC-019-068（PM-K / Round 18）+ DEC-019-069（PM-L / Round 19）+ DEC-019-070（PM-M / Round 20 W3 完成）+ DEC-019-073（PM-N / Round 21 W3→W4 移行）の継承議決。
+- Round 21 完遂着地（CEO 統合報告 v22 / 進捗 96→98%）で harness 720→771 PASS（+51）/ openclaw-runtime 394 維持 / W3 完成 + W4 着手 4/4 task / heartbeat 1M 10 桁衝突 0 件（256x 低減）/ Sec CI yml 物理化（291 行 4 trigger × 5 job）/ ContinuousRunDetector 8→10 桁拡張 / INDEX-v10 = 101 entries / DEC 4 件 readiness Y 揃い済（DEC-067/068/069/070）+ DRAFT 4 件（070/071/072/073）。
+- Owner formal「Round 22 9 並列 GO 丁寧に」directive trigger（5/5 受領）+ Owner formal「最速で進めよ」directive 継続中。
+- stagger 圧縮 SOP 連続 7 round 達成（Round 15-21）→ 8 round 目（Round 22）= DEC-019-068 デフォルト昇格 trigger 4/4 全 PASS 維持 + DEC-019-072 confirmed 昇格議決の基盤確立。
+- Phase 1 W4 完遂期限（6/20）まで 46 日 = Round 22 / 23 / 24 / 25 で W4 完遂までの実装計画を 4 round 内で消化必要。
+
+**(2) context**:
+- 17 日 path = Phase 1 W1（5/9 kickoff 確定）→ W2（cross-control invariants 28 件確立 / R18 完遂）→ W3（orchestrator 接続 65 tests + e2e 7ctrl 通し sequence / R19-20 完遂）→ **W4（6/20 完遂目標 / R21-22 想定）**の 4 週間 path。
+- Round 22 想定 17 日 = 5/19-6/5 の 17 日間で W4 完成 + 6/12 D-7 本 rehearsal 完遂 + Phase 1 完遂宣言（DEC-019-075 候補）。
+- W4 残作業（Round 21 着手後）: production e2e fully wired 検証 + Owner action card 自動化検討 + ARCH-01（DEC-019-041 Phase B 候補 = workspace alias 課題）解消可否評価。
+- Round 22 構成: 9 並列継続（DEC-019-068 SOP デフォルト昇格 + DEC-019-072 confirmed 昇格基盤）、第 1 波 4 部署 / 第 2 波 5 部署。
+
+**(3) alternatives**:
+- 代替案 A（Round 22 を 11 並列拡張 = DEC-019-046 11 並列 SOP 復帰）: rate limit 観測コスト増、SOP 連続性で 9 並列継続が安全、W4 集中期に dispatch 構成変更は不適 → 却下推奨
+- 代替案 B（Round 22 を 7 並列縮小 = SOP 連続性中断）: stagger 圧縮 SOP confirmed 昇格直前の縮小は SOP 定着評価に逆行 → 却下推奨
+- 代替案 C（9 並列継続 + W4 完成 + ARCH-01 解消可否評価 + 6/12 D-7 本 rehearsal）: 採用候補、Round 21 success path 継続
+- 代替案 D（9 並列 + W4 完成 + ARCH-01 評価 skip）: ARCH-01 = workspace alias 課題は relative imports fallback で運用可能だが Phase 2 + W5 で再課題化リスク → 却下推奨
+
+**(4) decision（DRAFT 採択 7 軸）**:
+
+① **Round 22 着地宣言 + 9 並列構成 SOP 連続 8 round 適用**
+- 9 並列 + T+0-50 / T+0-150 / hard limit T+180 を DEC-019-072 confirmed 昇格基盤継承（confirmed 昇格議決 5/26 統合採択 or Round 22 独立採決）
+- 第 1 波 4 = PM-O / Knowledge-Q / Dev-JJ / Sec-Q（想定）、第 2 波 5 = Dev-KK / Dev-LL / Review-N / Marketing-P / Web-Ops-I（想定）
+- 連続 8 round（R15-R22）累計 n=72 dispatch、SOP 適合率 80%+ 維持時は Round 23 で SOP 運用品質確認
+
+② **17 日 path W4 完成宣言（6/20 Phase 1 完遂）**
+- W4 残作業 = production e2e fully wired 検証 + Owner action card 自動化検討 + ARCH-01 解消可否評価
+- 完成判定: harness 771 → 800+ PASS（+29 = production e2e tests + DI container tests 想定）+ openclaw-runtime 394 → 410+ PASS（+16 = 本番依存注入 + DI container tests）
+- 完成 trigger: Round 22 完遂着地時点（5/26 想定）/ 6/20 期限の 25 日前
+
+③ **6/12 D-7 launch dry-run 本 rehearsal 実機実行完遂**
+- Marketing-O Round 21 詳細手順書（821 行 6 Phase 45 step）の実機実行
+- 6/11 D-8 pre-rehearsal validation 75 項目 完遂後の本実行
+- 完了基準: PASS 41/45 達成 / 6/19 confidence 80% 維持
+
+④ **ARCH-01（DEC-019-041 Phase B 候補 = workspace alias 課題）解消可否評価**
+- 評価軸: (a) workspace alias 適用範囲拡大可否 / (b) relative imports fallback pattern との並存可否 / (c) Phase 2 W5 着手前の解消必要性
+- 評価結果: GO（解消実施 = Round 23 で実装）/ HOLD（Phase 2 W5 で再評価）/ DEFER（Phase 2 完遂後評価）
+- 失敗時 fallback: relative imports fallback pattern 継続維持（DEC-019-041 で確立済）
+
+⑤ **INDEX-v11 起票 + Knowledge 蓄積 110+ entries**
+- 101 → 110+ entries（Round 21 由来 patterns +5 / decisions +1（DEC-072）/ pitfalls +2 / playbooks +1 想定）
+- retrieval 試験 22 種 100% 維持 + tag taxonomy 30→32 系統拡張
+
+⑥ **DEC-019-067 + 068 + 069 + 070 = 4 件まとめ採択完遂（5/26 statement）**
+- 4 件まとめ判定（PM-O Round 22 第 1 波 agenda 起案済）
+- 4 段階 verification 通過（Round 19 Review-K + Round 20 Review-L + Round 21 PM-N + Round 21 Review-M）/ 79 観点 / Critical 0 / Major 0 / Minor 1（議決妨げず）
+- CEO 自走採決 + Owner 拘束 0 分推奨
+
+⑦ **DEC-019-071 + 072 + 073 採決完遂（Round 22 完遂時 or 5/26 吸収）**
+- DEC-071（SOP 改訂条件 trigger formal 化）+ DEC-072（confirmed 昇格議決）+ DEC-073（W3→W4 移行宣言）
+- PM-O 6 軸 verification 通過（52 観点 / Critical 0 / Major 0 / Minor 0 / OK 46 + 評価対象外 2 + 部分達成 4）
+- 採決推奨判定: DEC-071 = Y 無条件 / DEC-072 = Y 無条件 / DEC-073 = Y 条件付（W4 完遂時 measurable 完全評価）
+
+**(5) rationale（DRAFT 採用根拠 8 件）**:
+- (a) Owner formal「Round 22 9 並列 GO 丁寧に」directive 受領（5/5）+ Owner formal「最速で進めよ」directive 継続 = SOP 確証 + Phase 1 加速 trajectory 確定
+- (b) Round 21 完遂着地で harness 720→771 PASS（+51 = +27%）/ openclaw 394 維持 / W3 完成 + W4 着手 4/4 task / heartbeat 1M 10 桁衝突 0 件 / Sec CI yml 物理化 / INDEX-v10 = 101 entries の 7 軸同時成立
+- (c) stagger 圧縮 SOP 連続 7 round 達成 = DEC-019-068 デフォルト昇格 trigger 4 条件 4/4 全 PASS（T-1 適合率 100% / T-2 API $0 / T-3 tests baseline / T-4 Owner 拘束 0 分）+ DEC-019-072 confirmed 昇格議決の基盤確立
+- (d) DEC-019-073 W3→W4 移行宣言 PM-O 6 軸 verification 通過 = W4 着手 4/4 task 達成確証 = 5/29 W4 着手 trigger 成立準備完了
+- (e) W4 着手 4/4 task 達成（Round 21 Dev-GG bridge + breach 永続化 / Dev-HH MonotonicClock + e2e fully wired）= W4 完成残作業 = production e2e fully wired 検証 + ARCH-01 解消可否評価のみ = 1 round 内消化可能
+- (f) heartbeat 1M 10 桁衝突 0 件達成（Round 21 Sec-P）= W4 本番 wiring 後の SLA 検証基盤確証 / 256x 低減実証
+- (g) Sec hardening 4/4 完成 + CI yml 物理化（Round 21 Sec-P 291 行 4 trigger × 5 job）= W4 本番 wiring の Sec 基盤整備済 + 自動化完遂
+- (h) INDEX-v10 = 101 entries 物理化済（Round 21 Knowledge-P）= v11 110+ entries への自然継続、retrieval 22 種 100% 維持
+
+**(6) measurable success criteria（M-1〜M-7）**:
+- (M-1) **harness 800+ PASS**: 771 → 800+（W4 production e2e tests +20 / DI container tests +10 想定） → 達成 / 部分達成 / 未達
+- (M-2) **openclaw-runtime 410+ PASS**: 394 → 410+（本番依存注入 + DI container tests +16 想定） → 達成 / 部分達成 / 未達
+- (M-3) **6/12 D-7 本 rehearsal 実機実行完遂**: Marketing-O 詳細手順書 6 Phase 45 step 実機実行 / PASS 41/45 達成 → 達成 / 部分達成 / 未達
+- (M-4) **ARCH-01 解消可否評価完了**: GO / HOLD / DEFER のいずれか確定（評価結果 + 根拠 + Round 23 implementation path 文書化）→ 達成 / 未達
+- (M-5) **INDEX-v11 110+ entries**: 101 → 110+（patterns +5 / decisions +1 / pitfalls +2 / playbooks +1 想定）→ 達成 / 未達
+- (M-6) **5/26 4 件まとめ採択完遂**: DEC-019-067 / 068 / 069 / 070 の 4 件全 confirmed 切替 → 達成 / 部分達成（3 件以下）/ 未達
+- (M-7) **6/11 D-8 pre-rehearsal validation 実行**: Marketing-O pre-rehearsal validation 75 項目 完遂 + 6/12 本 rehearsal 着手判定 → 達成 / 部分達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- DEC-019-075（Phase 1 完遂宣言 + W5 着手 trigger）= Round 24-25 採決想定、本 DEC-019-074 ② フォローアップ
+- DEC-019-076（heartbeat 5M load test 評価 + ContinuousRunDetector 12 桁拡張検討）= Round 23-24 採決想定、Round 21 Sec-P 1M 10 桁達成の自然継続
+- DEC-019-077（Phase 2 着手 timeline 確定）= Round 25 採決想定、Phase 1 完遂後の Phase 2 W5 着手 trigger
+- DEC-019-073 採決（5/29 W4 着手前 / Round 22 採決想定）+ DEC-019-071 / 072 採決（Round 22 完遂時 or 5/26 吸収）
+
+**(8) verification（Round 23 採決時 or Round 22 完遂時）**:
+- V-1: Round 22 完遂着地 commit hash + harness 800+ PASS + openclaw-runtime 410+ PASS の git plumbing trace
+- V-2: W4 完成 evidence = production e2e fully wired tests + DI container tests + ARCH-01 解消可否評価結果文書
+- V-3: 6/12 D-7 本 rehearsal 実機実行 log = Marketing-O SOP 6 Phase 45 step 全 step 実行 evidence + PASS 41/45 達成
+- V-4: ARCH-01 解消可否評価結果 = GO / HOLD / DEFER 確定 + 根拠文書 + Round 23 implementation path
+- V-5: INDEX-v11 起票 evidence = `organization/knowledge/INDEX-v11.md` 110+ entries
+- V-6: 5/26 statement 議事録 = DEC-019-067 / 068 / 069 / 070 全 confirmed 切替確認
+- V-7: CEO 経由 Owner 統合報告 v23 で formal 採択
+
+**Round 23 引継候補（6 項目）**:
+- ① INDEX-v12 起票（110+ → 120+ entries / Round 22 由来反映 = W4 完成 + ARCH-01 評価結果 + DEC-074 議決）= Knowledge-R 担当
+- ② Phase 1 完遂宣言（DEC-019-075 起案）+ W5 着手 trigger 評価（Phase 2 着手判定）= PM-P 担当
+- ③ DEC-019-074 採決準備（Round 23 採決想定）= 6 軸 verification + 5/26 4 件まとめ採択完遂 evidence 集計 = Review-N 担当
+- ④ 6/19 公開直前最終 verification（CARD A 7 sub-card 完遂 + Owner action card 自動化評価結果）= Web-Ops-I 担当
+- ⑤ heartbeat 5M load test 評価着手 / ContinuousRunDetector 12 桁拡張可否評価 = Sec-Q 担当
+- ⑥ DEC-019-071 / 072 / 073 採決完遂（Round 22 完遂時 or 5/26 吸収）= status DRAFT → confirmed 切替 + Round 23 baseline 反映 = Secretary 担当
+
+**議決 trajectory（36 → 37 件 update）**:
+- Round 21 完遂時点累計: **36 件**（DEC-019-001〜073、DRAFT 4 件 = DEC-070/071/072/073）
+- Round 22 着地時点予定: **37 件**（+ DEC-019-074 DRAFT 確定）
+- 5/26 statement 採択完遂時想定: **37 件**（DEC-019-067 / 068 / 069 / 070 すべて confirmed 切替 = 37 件中 4 件 status 遷移、DEC-072 吸収オプション選択時は +1 件吸収）
+- Round 22 完遂時想定: **37 件**（DEC-019-071 / 072 / 073 confirmed 切替 = 残 4 件中 3 件 status 遷移、DEC-074 = DRAFT 維持）
+
+**制約遵守**:
+- API 消費: $0（PM-O は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 末尾追記 + reports/ 新規のみ）
+- 絵文字: 0 / tests 影響: 0（baseline harness 771 + openclaw-runtime 394 維持）/ 既存 DEC 改変: 0（DEC-019-001〜073 すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 22 進行中は status DRAFT 固定、Round 23 採決時 or Round 22 完遂時に status: confirmed / rejected / revised へ遷移
+- relative imports fallback pattern 維持（ARCH-01 = DEC-019-041 Phase B 候補、本 DEC-074 ④ で解消可否評価）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+
+---
