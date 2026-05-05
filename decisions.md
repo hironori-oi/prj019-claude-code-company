@@ -1590,3 +1590,238 @@ DEC-019-076 Round 24 採決時の Dev-PP 推奨採択軸:
 
 ---
 
+## DEC-019-080 (起案 / status: DRAFT / 起案者: PM-T / 起案日: 2026-05-05 / レビュー期限: 2026-06-09 (Round 27 採決想定 / Phase 2 W5 完成宣言 + DEC-074 carry-forward / DEC-019-081 と統合採決 pattern))
+
+**タイトル**: Phase 2 W5 完成宣言（cross-orchestrator e2e + cross-package 拡張完遂 + claude-bridge integration e2e 物理実装 + 6/3 着手 readiness 100% + DEC-074 carry-forward + Round 28 引継 6 項目候補確定）
+
+**status 注意**: 本議決は **DRAFT** であり、Round 27（5/26-6/9）採決想定（DEC-019-081 と統合採決 pattern 推奨 = 6/9 火 09:00-10:20 JST 60-80 min / Owner 拘束 0 分継承）。Phase 2 W5 着手 6/3（火）直前の自然継承議決として、DEC-074 + DEC-079 の carry-forward 議決構造を形成。
+
+**(1) background**:
+- DEC-019-079（PM-R / Round 25 / Phase 2 W5 着手宣言 + ARCH-01 Phase B-2 supersede）の自然継承議決。
+- Round 26 完遂着地時点（CEO 統合報告 v27 / 9 並列 9/9 完全完遂 / Phase 2 W5 第 1+2+3 弾累計達成）= harness 836→849 PASS（+13）/ openclaw 394 維持 / W5 第 3 弾達成（claude-bridge integration e2e 650 行 / 13 tests / 5 groups W5-CB-1〜CB-5）/ ARCH-01 Phase B-2 物理実装完遂（10/10 step / TS6059 5→0 件 formal 解消）/ Sec 連続 12 round baseline ULTRA-EXTENDED 7 round 目 / INDEX-v14 正式 140 entries / 議決構造 42 件継続 + DEC-080 起案 = 43 件。
+- Owner formal「Round 26 9 並列 GO」directive 順守継続中、Round 27 directive も継承想定。
+- Phase 2 W5 着手 = 2026-06-03（火）= Phase 1 完遂期限 6/20 の 17 日前余裕確保 / 着手 readiness **100%** 達成（R26 完遂着地時）。
+- W5 累計達成: **+33 PASS**（816 → 849 / W5 第 1 弾 +10 / W5 第 2 弾 +10 / W5 第 3 弾 +13）。
+
+**(2) context**:
+- Round 27 想定 14 日 = 5/26-6/9 期間で Phase 2 W5 着手準備完成 + DEC-080 + DEC-081 採決完遂 + W6 着手 readiness 90+ pt 到達 + W6 第 1 弾 spec 詳細化。
+- Phase 2 W5 完成 = W5 第 1 弾（cross-orchestrator e2e）+ 第 2 弾（cross-package 拡張）+ 第 3 弾（claude-bridge integration e2e）の累計達成。
+- Phase 2 W6 着手 trigger 4 条件成立: (a) tests baseline 維持（849 PASS）/ (b) cross-package 拡張完遂 / (c) ARCH-01 Phase B-2 物理実装完遂（R26 Dev-WW / TS6059 5→0 件 formal 解消）/ (d) Owner 承認 = DEC-079 連鎖。
+- Phase 2 W5 完成 → Phase 2 進捗 25%（W5/W8）達成 / Phase 2 完遂期限 6/20 まで 11 日余裕確保。
+
+**(3) alternatives**:
+- 代替案 A（DEC-081 と統合採決 = 推奨 pattern）: Round 27 6/9 採決日に DEC-080 + DEC-081 = 2 件まとめ採決 / 60-80 min（DEC-080 30-45 min + DEC-081 25-35 min + 統合 5 min）/ Owner 拘束 0 分 → 採用候補
+- 代替案 B（DEC-080 単独採決 + DEC-081 別日採決）: 6/9 DEC-080 単独 + 6/16 DEC-081 単独 = 2 日採決 → 却下推奨（採決負荷増 / W6 着手 readiness 圧迫）
+- 代替案 C（W5 完成後採決 = Round 28 繰越）: W5 完成後の振り返り型議決だが、6/9 採決時点で W5 第 3 弾累計達成済 → 却下推奨（採決遅延の合理性なし）
+- 代替案 D（議決不要 = 自然移行）: W5 完成 + DEC-074 carry-forward は formal 化必要（progress / dashboard / 6/19 launch confidence 反映）= 議決必須 → 却下推奨
+
+**(4) decision（DRAFT 採択 6 軸）**:
+
+① **Phase 2 W5 完成宣言（Round 26 9 並列完遂着地時点）**
+- W5 第 1 弾達成（R25 / cross-orchestrator e2e / +10 PASS）
+- W5 第 2 弾達成（R25 / cross-package 拡張 / +10 PASS / 9 groups）
+- **W5 第 3 弾完遂（R26 / claude-bridge integration e2e / +13 PASS / 5 groups W5-CB-1〜CB-5 / 13 tests / MockClaudeBridge 戦略 / 実 spawn 0 / API call $0）**
+- W5 累計達成: **+33 PASS（816 → 849）**
+- W5 完成 = Phase 2 進捗 25%（W5/W8）達成判定
+
+② **cross-orchestrator e2e + cross-package 拡張 + claude-bridge integration e2e 累計達成宣言**
+- cross-orchestrator e2e R25-R26 累計: 4-5 groups
+- cross-package R25-R26 累計: 4 groups（W5-CP-1〜CP-4）
+- **claude-bridge integration e2e R26 完遂**: 5 groups（W5-CB-1〜CB-5）+ 13 tests / MockClaudeBridge 戦略 / production code 無改変
+- alias resolver 動作実証 R20-R26 累計 16+ imports / 1242+ PASS
+
+③ **Phase 2 W6 着手準備宣言（R30 着手想定）**
+- W5 完成 → W6 着手 trigger 4 条件成立 = (a) tests baseline 維持（849 PASS）/ (b) cross-package 拡張完遂 / (c) ARCH-01 Phase B-2 物理実装完遂（R26 Dev-WW / TS6059 5→0 件 formal 解消）/ (d) Owner 承認 = DEC-079 連鎖
+- 着手日想定 = Round 30（R30 着手 readiness 87/100 pt + R26-R29 期間で 13pt 収束見込）
+- W6 第 1 弾 W6-A spec 詳細化 R27 Dev-ZZ 担当（dispatch 想定）
+
+④ **議決構造 42 → 44 件達成 + DRAFT 構造再整理**
+- Round 26 着地時点累計: 42 件（DRAFT 6 件継続）
+- **Round 27 着地時点想定: 44 件**（DEC-080 + DEC-081 起案 = 本議決 + DEC-081 / DRAFT 2 件追加）
+- 6/9 統合採決完遂時想定: 44 件全 confirmed（DEC-080 + DEC-081 confirmed 切替）
+
+⑤ **Round 28 引継 6 項目候補確定**
+- ① INDEX-v16 起票（151+ → 160+ entries / Round 27 由来反映 = W5 完成 + DEC-080 + DEC-081 confirmed + ARCH-01 Phase B-2 物理化 + T-5 IMPL 2/3 + Marketing 96% + Web-Ops stage 1+2 完遂）= Knowledge-W 担当
+- ② Phase 2 W6 着手第 1 弾 W6-A 物理実装着手 = Dev-BBB 担当
+- ③ DEC-019-082 起案候補(候補 C = ARCH-01 Phase B-2 物理化完遂宣言）= PM-U 担当
+- ④ T-5 物理化 IMPL 3/3（yml 統合）+ DEC-068 v2 採決完遂 = Sec-W 担当
+- ⑤ ARCH-01 Phase B-3 候補探索（fallback 経路 + KNOW-TS 4 件解消）= Dev-CCC 担当
+- ⑥ launch day v3.5-delta-candidate 策定（confidence 94→96-98% 想定）= Marketing-V 担当
+
+⑥ **Phase 2 W5 完成 → Phase 2 進捗 25% 達成 → 6/20 完遂期限 余裕拡大**
+- Phase 2 W5 完成（6/3 着手 → 6/9 完成）= 6 日間
+- 6/20 完遂期限まで 11 日余裕確保（W6-W8 = 11 日 path）
+- Phase 2 完遂 trigger 確実化
+- DEC-074（W4 完成第 1+2 弾 / Y 条件付 satisfied / 5/19 confirmed 切替）→ DEC-080（W5 完成）への自然 carry-forward（supersede ではなく 後継議決の位置付け）
+
+**(5) rationale（DRAFT 採用根拠 8 件）**:
+- (a) Owner formal「Round 26 9 並列 GO」directive 受領（5/5）+ Owner formal「最速で進めよ」directive 継続 = Phase 2 W5 完成 trajectory 確定 + Round 27 directive 継承想定
+- (b) Round 26 完遂着地で 12 軸成立（harness 836→849 + W5 第 3 弾 + ARCH-01 Phase B-2 物理実装完遂 + TS6059 0 件 + Sec ULTRA-EXTENDED 7 round 目 + INDEX-v14 正式 140 entries + DEC readiness 86/88 + Marketing 94% confidence + Owner ack card 19 件 + Owner 拘束 4-6 min + Round 27 9 並列 GO 推奨）
+- (c) Phase 2 W6 着手 trigger 4 条件成立見込（DEC-080 採決完遂時）= R30 着手 ready 化 = Phase 2 完遂期限 6/20 余裕確保
+- (d) DEC-074 carry-forward = W4 完成第 1+2 弾 → W5 完成への自然継承議決（supersede ではなく後継議決 / DEC-074 confirmed 維持）
+- (e) DEC-079 ⑥ ② Round 26 引継候補「Phase 2 W5 着手第 2 弾」自然継承 + Phase 2 W5 完成への発展 = R26 W5 第 3 弾累計達成で trigger 成立
+- (f) DEC-080 + DEC-081 統合採決 pattern 推奨 = 6/9 採決日 60-80 min（標準 pattern）/ Owner 拘束 0 分 / 議決負荷集約
+- (g) Round 27 連続 13 round milestone（DEC-068 trigger 4/4 全 PASS 連続 8 round 目）= Round 26 連続 12 round 達成 → Round 27 連続 13 round 達成見込 = SOP 構造的収束確証 + DEC-081 連動議決
+- (h) PM-S Task 3 §2 候補 A DRAFT 文案の物理化 = decisions.md 末尾追記による formal 化 + Round 27 PM-T 物理起案担当
+
+**(6) measurable success criteria（M-1〜M-7）**:
+- (M-1) **Phase 2 W5 完成達成**: harness 849 PASS + W5 第 1+2+3 弾累計 +33 PASS evidence → 達成 / 部分達成 / 未達
+- (M-2) **cross-orchestrator e2e + cross-package + claude-bridge integration 累計達成**: R25-R26 累計 commit hash + tests group 数（13+）+ PASS 数（33+）→ 達成 / 未達
+- (M-3) **Phase 2 W6 着手 trigger 4 条件成立**: tests / cross-package / ARCH-01 Phase B-2 / Owner 承認 → 達成 / 部分達成 / 未達
+- (M-4) **議決構造 44 件達成**: Round 27 完遂時 DEC-019-001〜081 累計 44 件（DRAFT 0 件 = DEC-080 + DEC-081 confirmed 切替）→ 達成 / 未達
+- (M-5) **6/20 完遂期限余裕拡大**: Phase 2 W5 完成 6/9 → W6-W8 = 11 日 path 確保 evidence → 達成 / 未達
+- (M-6) **Round 28 引継 6 項目候補確定**: INDEX-v16 / W6 第 1 弾 / DEC-082 起案候補 / T-5 IMPL 3/3 / ARCH-01 Phase B-3 / launch v3.5-delta → 達成 / 未達
+- (M-7) **regression 0 維持達成**: Phase 1 全期間 + W5 全期間 regression 0 維持 → 達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- DEC-019-082（ARCH-01 Phase B-2 物理化完遂宣言 / 候補 C）= Round 28 採決想定（6/16 火 or 6/23 火）、Phase B-2 物理実装完遂後の自然継承
+- DEC-019-083（Phase 2 W6 着手宣言 + W6 第 1 弾 物理実装完遂）= Round 30 採決想定、W6 着手後の自然継承
+- DEC-019-084（Phase 2 完遂宣言 + Phase 3 着手 trigger）= Round 32-34 採決想定、6/20 Phase 2 完遂期限直前
+- INDEX-v15 起票（140 → 151+ entries）= Round 27 Knowledge-V 担当（dispatch 想定）
+- Round 27 統合採決（DEC-019-080 + DEC-019-081 = 2 件まとめ採決 pattern）= 6/9（火）09:00-10:20 JST 60-80 min / Owner 拘束 0 分継承
+
+**(8) verification（Round 27 採決時 or Round 27 完遂時）**:
+- V-1: Phase 2 W5 完成 evidence = harness 849 + W5 第 1+2+3 弾累計 PASS + e2e fully wired
+- V-2: cross-orchestrator e2e + cross-package 拡張 + claude-bridge integration 累計 evidence = R25-R26 累計 commit hash + tests group 数 + PASS 数
+- V-3: Phase 2 W6 着手 trigger 4 条件成立 evidence = tests / cross-package / ARCH-01 / Owner 承認の 4 evidence
+- V-4: 議決構造 44 件達成 evidence = decisions.md DEC-019-001〜081 物理化 + DRAFT 0 件達成
+- V-5: 6/20 完遂期限余裕拡大 evidence = Phase 2 進捗 trajectory + W6-W8 11 日 path
+- V-6: Round 28 引継 6 項目候補確定 evidence = 本書 §(6) 6 項目 + Round 28 第 1 波 dispatch 設計の基盤確立
+- V-7: 連続 12 round baseline 達成 evidence（DEC-081 連動 / Round 26 Sec-U baseline JSON v1.4 + IMPL 1/3）
+- V-8: CEO 経由 Owner 統合報告 v28（Round 27 完遂着地時）で formal 採択
+
+**Round 28 引継候補（6 項目）**:
+- ① INDEX-v16 起票（151 → 160+ entries / Round 27 由来反映）= Knowledge-W 担当
+- ② Phase 2 W6 着手第 1 弾 W6-A 物理実装着手 = Dev-BBB 担当
+- ③ DEC-019-082 起案候補（ARCH-01 Phase B-2 物理化完遂宣言）= PM-U 担当
+- ④ T-5 物理化 IMPL 3/3 + DEC-068 v2 採決完遂 = Sec-W 担当
+- ⑤ ARCH-01 Phase B-3 候補探索 = Dev-CCC 担当
+- ⑥ launch day v3.5-delta-candidate 策定（94 → 96-98%）= Marketing-V 担当
+
+**議決 trajectory（42 → 43 → 44 件 update）**:
+- Round 26 完遂時点累計: **42 件**（DEC-019-001〜079、DRAFT 6 件継続）
+- Round 27 着地時点予定: **43 件**（+ DEC-019-080 DRAFT 起案 = 本議決）→ DEC-081 起案で **44 件**
+- Round 27 6/9 統合採決完遂時想定: **44 件全 confirmed**（DEC-080 + DEC-081 confirmed 切替）
+
+**制約遵守**:
+- API 消費: $0（PM-T は Read + Edit + Write のみ）/ 副作用: 0（decisions.md 末尾追記 + reports/ 新規のみ）
+- 絵文字: 0 / tests 影響: 0（baseline harness 849 + openclaw-runtime 394 維持）/ 既存 DEC 改変: 0（DEC-019-001〜079 すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 27 進行中は status DRAFT 固定、Round 27 6/9 採決時に status: confirmed / rejected / revised へ遷移
+- DEC-074 carry-forward 仕様: supersede ではなく後継議決の位置付け / DEC-074 confirmed 維持 / W4 完成 → W5 完成の自然継承
+- relative imports fallback pattern 維持並存（ARCH-01 Phase B-2 物理化完遂 → DEC-079 supersede 経路維持）
+- manual fallback（OWN-PRE 80 min）維持（DEC-019-077 で並走議決、backward compat 完全保証）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 24 件目 = Round 27 連続 13 round 達成見込）
+
+---
+
+## DEC-019-081 (起案 / status: DRAFT / 起案者: PM-T / 起案日: 2026-05-05 / レビュー期限: 2026-06-09 (Round 27 採決想定 / DEC-080 と統合採決 pattern))
+
+**タイトル**: T-5 物理化第 1 弾完遂（Sec-U R26 baseline v1.4 + IMPL 1/3 / R21-R24 MA=9.75 件/round WARN level / 4 layer 累計 1271 行）+ 連続 12 round milestone 達成宣言（DEC-019-068 trigger 4/4 全 PASS 連続 7 round 目）+ DEC-019-068 v2 起案 trigger
+
+**status 注意**: 本議決は **DRAFT** であり、Round 27 採決想定（DEC-019-080 と統合採決 pattern 推奨 = 6/9 火 / 60-80 min / Owner 拘束 0 分継承）。Sec 連続 12 round milestone 達成 + T-5 物理化 evidence 完備による Y 無条件採決推奨。
+
+**(1) background**:
+- DEC-019-068（baseline trigger 構造 / Sec stagger 圧縮 SOP）の自然継承議決。
+- Round 26 Sec-U 完遂着地時点 = baseline JSON v1.4（294 行 / consecutive_pass_streak=12 / trigger 4/4 PASS）+ T-5 物理化第 1 弾 = `sec-trigger5-monitor-spec.md`（347 行 / formal trigger 化 spec）+ READY 7/7 → IMPL 1/3 stage 進行 + 4 layer 累計 1271 行 + 8 file md5 1 byte 不変厳守。
+- stagger 圧縮 SOP 連続 round: R15-R26 = **12 round milestone 達成**（ULTRA-EXTENDED 7 round 目 / trigger 4/4 全 PASS 連続 7 round 目）。
+- R21-R24 MA=9.75 件/round = WARN level（FAIL level 10.0 件/round 未満 / 構造的収束確証）。
+
+**(2) context**:
+- DEC-019-068（v1）= R15 Sec stagger 圧縮 SOP 起案議決、baseline trigger 4/4 構造を formal 化。
+- DEC-019-068 v2 起案 trigger = T-5 物理化 evidence 反映 + 連続 13 round milestone 達成 + IMPL 2/3 着手 = Round 27 Sec-V 担当（dispatch 想定）。
+- baseline JSON v2.0 起票 = Round 27 Sec-V 担当 / v1.4 → v2.0 移行 spec READY / 連続 13 round 累計 + T-5 IMPL 2/3 完遂 evidence + 4 layer 累計 1500+ 行想定。
+- T-5 物理化 IMPL 2/3 = `sec-trigger-5-knowledge-rate.sh` 実装 + `sec-trigger-5-baseline.json` 起票 / 工数想定 4-6h / Round 27 Sec-V 担当。
+- T-5 物理化 IMPL 3/3 = yml 統合 / Round 28 Sec-W 担当想定。
+
+**(3) alternatives**:
+- 代替案 A（DEC-080 と統合採決 = 推奨 pattern）: Round 27 6/9 採決日に DEC-080 + DEC-081 = 2 件まとめ採決 / 60-80 min / Owner 拘束 0 分 → 採用候補
+- 代替案 B（DEC-081 単独採決 = Round 27 後半繰越）: 6/16 単独採決 → 却下推奨（DEC-080 統合 pattern より採決負荷増 / 6/9 採決時点で連続 12 round milestone 達成済 evidence 完備）
+- 代替案 C（DEC-068 v2 起案待ち = Round 28 繰越）: T-5 IMPL 2/3 完遂後の振り返り型議決 → 却下推奨（連続 12 round milestone は R26 達成済 / 即時 formal 化が合理的）
+- 代替案 D（議決不要 = baseline JSON 反映のみ）: 連続 12 round milestone + T-5 物理化第 1 弾は formal 化必要（dashboard / progress / Sec ULTRA-EXTENDED 反映）= 議決必須 → 却下推奨
+
+**(4) decision（DRAFT 採択 6 軸）**:
+
+① **T-5 物理化第 1 弾完遂（Round 26 Sec-U 担当）**
+- T-5 物理化第 1 弾 = `sec-trigger5-monitor-spec.md`（347 行 / formal trigger 化 spec）
+- READY 7/7 軸 → **IMPL 1/3 stage 進行**
+- R21-R24 MA=9.75 件/round = WARN level（FAIL level 10.0 件/round 未満）
+- 4 layer 累計: 1271 行（baseline JSON v1.4 294 行 + monitor spec 347 行 + cron-audit + cron-conflict）
+- 8 file md5 1 byte 不変厳守（v1 5 round / v2 2 round / cron-audit + cron-conflict 1 round / baseline v1.0-v1.3 全不変）
+
+② **連続 12 round milestone 達成（DEC-019-068 trigger 4/4 全 PASS 連続 7 round 目）**
+- stagger 圧縮 SOP 連続 round: **R15-R26 = 12 round**
+- DEC-019-068 baseline: ULTRA-EXTENDED 7 round 目
+- trigger 4/4 全 PASS 連続: 7 round 目
+- consecutive_pass_streak=12 evidence = baseline JSON v1.4
+- sec-cron-conflict-audit.sh 実機 dry-run 8 軸完全一致
+
+③ **DEC-019-068 v2 起案 trigger（Round 27 Sec-V 担当）**
+- DEC-019-068（v1 / baseline trigger 構造）の v2 起案 = T-5 物理化 evidence 反映 + 連続 13 round milestone 達成 + IMPL 2/3 着手
+- v2 起案者想定: Sec-V（Round 27）
+- v2 採決想定日: Round 28（6/16 火 or 6/23 火）
+- v2 内容: T-5 物理化第 2 弾 evidence + baseline JSON v2.0 + 連続 13 round 累計 + 4 layer 累計 1500+ 行
+
+④ **baseline JSON v2.0 起票（連続 13 round 累計 + T-5 物理化 evidence）**
+- v1.4 (R26) → v2.0 (R27) 移行 spec READY
+- v2.0 = T-5 IMPL 2/3 完遂 evidence + 連続 13 round 達成 + 4 layer 累計 1500+ 行想定
+- 起票担当: Sec-V（Round 27）
+
+⑤ **議決構造 43 → 44 件達成（DEC-080 + DEC-081 = 2 件起案）**
+- DEC-080 起案後累計: 43 件（DEC-019-001〜080 / DRAFT 1 件 = DEC-080）
+- **DEC-081 起案後累計: 44 件**（DEC-019-001〜081 / DRAFT 2 件 = DEC-080 + DEC-081）
+- 6/9 統合採決完遂時想定: 44 件全 confirmed
+
+⑥ **Round 28 引継候補確定（DEC-080 §1.5 と並走）**
+- Sec-V R27 担当: T-5 物理化 IMPL 2/3 + DEC-068 v2 起案 + 連続 13 round baseline
+- Sec-W R28 担当: T-5 物理化 IMPL 3/3 = yml 統合 + 連続 14 round baseline + DEC-068 v2 採決完遂
+
+**(5) rationale（DRAFT 採用根拠 6 件）**:
+- (a) Owner formal「Round 26 9 並列 GO」directive 受領（5/5）+ 連続 12 round milestone 達成 = SOP 構造的収束確証
+- (b) Round 26 Sec-U 完遂着地で T-5 物理化第 1 弾 evidence 完備（baseline JSON v1.4 + monitor spec 347 行 + 4 layer 累計 1271 行）
+- (c) DEC-080 + DEC-081 統合採決 pattern 推奨 = 6/9 採決日 60-80 min / Owner 拘束 0 分 / 議決負荷集約
+- (d) DEC-019-068 v2 起案 trigger 自然継承 = Round 27 Sec-V 担当 / Round 28 採決想定
+- (e) PM-S Task 3 §3 候補 B DRAFT 文案の物理化 = decisions.md 末尾追記による formal 化 + Round 27 PM-T 物理起案担当
+- (f) 8 file md5 1 byte 不変厳守 evidence = absolute 確証 baseline + R26 Sec-U 完遂着地時の不変保持
+
+**(6) measurable success criteria（M-1〜M-6）**:
+- (M-1) **T-5 物理化第 1 弾完遂**: monitor spec 347 行 + READY → IMPL 1/3 stage 進行 evidence → 達成 / 未達
+- (M-2) **連続 12 round milestone 達成**: R15-R26 = 12 round + DEC-068 trigger 4/4 全 PASS 連続 7 round 目 evidence → 達成 / 未達
+- (M-3) **DEC-068 v2 起案 trigger**: Round 27 Sec-V 担当起案完遂 evidence → 達成 / 部分達成 / 未達
+- (M-4) **baseline JSON v2.0 起票**: Round 27 Sec-V 担当起票完遂 evidence → 達成 / 未達
+- (M-5) **議決構造 44 件達成**: DEC-019-001〜081 累計 44 件 → 達成 / 未達
+- (M-6) **Round 28 引継 evidence**: Sec-V R27 + Sec-W R28 task 起票完遂 → 達成 / 未達
+
+**(7) next-actions / フォローアップ**:
+- DEC-019-068 v2 起案 = Round 27 Sec-V 担当（dispatch 想定）
+- baseline JSON v2.0 起票 = Round 27 Sec-V 担当
+- T-5 物理化 IMPL 2/3 = `sec-trigger-5-knowledge-rate.sh` 実装 + `sec-trigger-5-baseline.json` 起票 = Round 27 Sec-V 担当
+- T-5 物理化 IMPL 3/3 = yml 統合 = Round 28 Sec-W 担当想定
+- Round 27 統合採決（DEC-019-080 + DEC-019-081 = 2 件まとめ採決 pattern）= 6/9（火）09:00-10:20 JST 60-80 min / Owner 拘束 0 分継承
+
+**(8) verification（Round 27 採決時 or Round 27 完遂時）**:
+- V-1: T-5 物理化第 1 弾 evidence = monitor spec 347 行 + READY 7/7 → IMPL 1/3
+- V-2: 連続 12 round milestone evidence = R15-R26 + DEC-068 trigger 4/4 全 PASS 連続 7 round 目
+- V-3: DEC-068 v2 起案 trigger evidence = Round 27 Sec-V 起案完遂
+- V-4: baseline JSON v2.0 起票 evidence = Round 27 Sec-V 起票完遂
+- V-5: 議決構造 44 件達成 evidence = decisions.md DEC-019-001〜081 物理化
+- V-6: 8 file md5 1 byte 不変厳守 evidence = R26 Sec-U 完遂着地時の不変保持
+
+**Round 28 引継候補**:
+- ① T-5 物理化 IMPL 3/3 + DEC-068 v2 採決完遂 = Sec-W 担当
+- ② baseline JSON v3.0 起票（連続 14 round 累計）= Sec-W 担当
+
+**議決 trajectory（43 → 44 件 update / DEC-080 連動）**:
+- DEC-080 起案後累計: **43 件**（DRAFT 1 件 = DEC-080）
+- **DEC-081 起案後累計: 44 件**（DRAFT 2 件 = DEC-080 + DEC-081）
+- 6/9 統合採決完遂時想定: **44 件全 confirmed**（DRAFT 0 件達成）
+
+**制約遵守**:
+- API 消費: $0 / 副作用: 0 / 絵文字: 0 / tests 影響: 0（baseline harness 849 + openclaw-runtime 394 維持）
+- 既存 DEC 改変: 0（DEC-019-001〜080 すべて無改変、append-only 厳守）
+- DRAFT 維持: Round 27 進行中は status DRAFT 固定、Round 27 6/9 採決時に status: confirmed / rejected / revised へ遷移
+- 8 file md5 1 byte 不変厳守継承（Sec-V R27 担当時も継承）
+- fix forward-only 厳守: 本起案は decisions.md 末尾追記のみ、既存議決すべて無改変
+- SOP 順守: DEC-019-025（background dispatch、SOP 実証 24 件目 = Round 27 連続 13 round 達成見込）
+
+---
